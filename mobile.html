@@ -3,11 +3,11 @@
   <head>
     <!-- SOURCES-->
 
-    <title>Mapping Early New York - New Amsterdam History</title>
+    <title>AHM - Discover Ames, Iowa History Map</title>
 
     <meta
       name="description"
-      content="New Amsterdam - Early New York Interactive Map with History Timeline"
+      content="Ames Historical Society is engaging to Discover Ames, Iowa History by Our Interactive Timeline Map"
     />
     <meta charset="utf-8" />
     <meta
@@ -19,29 +19,29 @@
     <!--  Essential META Tags -->
     <meta
       property="og:title"
-      content="Mapping Early New York - New Amsterdam History"
+      content="AHM - Discover Ames, Iowa History Map"
     />
     <meta property="og:type" content="website" />
     <meta
       property="og:image"
-      content="https://nahc-mapping.org/mappingNY/icons/FortAmsterdam.jpg"
+      content="./icons/AHM.jpg"
     />
-    <meta property="og:url" content="https://nahc-mapping.org/mappingNY/" />
-    <meta name="twitter:card" content="new_amsterdam_icon" />
+    <meta property="og:url" content="https://ameshistory.org/" />
+    <meta name="twitter:card" content="ahm_icon" />
 
     <!--  Non-Essential, But Recommended -->
     <meta
       property="og:description"
-      content="New Amsterdam - Early New York Interactive Map with History Timeline"
+      content="Ames Historical Society is engaging to Discover Ames, Iowa History by Our Interactive Timeline Map"
     />
-    <meta property="og:site_name" content="New Amsterdam History" />
-    <meta name="twitter:image:alt" content="New Amsterdam Icon" />
+    <meta property="og:site_name" content="AHM - Ames, Iowa History Map" />
+    <meta name="twitter:image:alt" content="AHM Icon" />
 
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="theme-color" content="#00A2E5" />
     <meta
       name="apple-mobile-web-app-title"
-      content="Mapping Early New York | New Amsterdam History"
+      content="AHM - Discover Ames, Iowa History Map"
     />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
@@ -122,12 +122,7 @@
       href="./icons/icon_512x512.png"
     />
 
-    <link
-      rel="shortcut icon"
-      href="./icons/icon_32x32.ico"
-      type="image/x-icon"
-    />
-    <link rel="icon" href="./icons/icon_32x32.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="https://ameshistory.org/sites/all/themes/ameshistoricalsociety/favicon.ico" type="image/vnd.microsoft.icon" />
 
     <link
       href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,600italic"
@@ -143,18 +138,20 @@
     <script src="timeline/vendor/jquery.ui.touch-punch.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/moment.min.js"></script>
     
-    <script src="https://api.mapbox.com/mapbox-gl-js/v1.0.0/mapbox-gl.js"></script>
-    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-compare/v0.1.0/mapbox-gl-compare.js"></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.js"></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-compare/v0.4.0/mapbox-gl-compare.js"></script>
     <link
-      href="https://api.mapbox.com/mapbox-gl-js/v1.0.0/mapbox-gl.css"
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.css"
       rel="stylesheet"
     />
     <link
       rel="stylesheet"
-      href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-compare/v0.1.0/mapbox-gl-compare.css"
+      href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-compare/v0.4.0/mapbox-gl-compare.css"
       type="text/css"
     />
     <link href="timeline/index.css" rel="stylesheet" />
+	<!--
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
@@ -162,6 +159,8 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+	-->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="js/layerSectionData.js"></script>
     <script src="timeline/js/modalinfo.js"></script>
     <script src="js/utils.js"></script>
@@ -197,78 +196,27 @@
           <h1>ABOUT</h1>
           <label for="o" id="close" title="Close">&times;</label>
         </div>
-        <div class="modal-content">
-          New York City was founded by the Dutch in 1624 as
-          <i>New Amsterdam</i>, the capital of New Netherland. The New Amsterdam
-          History Center is devoted to documenting and mapping New Amsterdam,
-          its diverse people, landscapes, institutions and global legacy today.
-          <p>
-            We’ve presented several versions of the <i>Castello Plan</i> and the
-            <i>Dutch Grants Map</i> here. You can see the settlement of houses,
-            farms, taverns and workshops, surrounded by walls. Over the three
-            centuries that followed, the area became the Financial District. The
-            east wall was torn down and named Wall Street. The canals were paved
-            over and turned into streets and in between developed skysrapers,
-            and the island was expanded with infill. Above ground, almost
-            nothing remains of New Amsterdam except the original street pattern.
-            Underground, archeologists have found evidence of the plots of
-            houses and gardens, Amsterdam yellow brick, and pollen samples of
-            plants.
-          </p>
-          You can swipe the map to compare the Castello Plan in 1660 to the
-          present, and explore each lot, where it shows what was there and who
-          lived there. Our next steps are to expand through the full history of
-          New Amsterdam with a timeline from 1624 to 1664, when it was taken
-          over by the English.
-          <p>
-            We need your help to make this work happen. Donate now to develop
-            the map and expand the research.
-          </p>
-        </div>
-
+        <div class="modal-content"></div>
       </div>
     </div>
+	
 <!-- HEADER -->
     <div class="header">
-      <a href="http://newamsterdamhistorycenter.org" class="logo">
+      <!--
+      <a href="https://ameshistory.org" class="logo">
+      -->
         <img
           id="logo-img-wide"
-          src="http://newamsterdamhistorycenter.org/wp-content/uploads/2018/02/cropped-cropped-sprite-1.png"
+          src="https://ameshistory.org/sites/all/themes/ameshistoricalsociety/logo.png"
           align="middle"
         />
-        <img id="logo-img" src="icons/icon_57x57.png" align="middle" />
+      <!--
       </a>
+      -->
 
       <!--PREVIOUS HEADER-->
 
-      <div id="header_text" class="headerText">
-        <span id="headerTextSuffix">|</span> Mapping Early New York
-      </div>
-
       <div class="header-right">
-
-        <a
-          class="encyclopedia"
-          href="https://newamsterdamhistorycenter.org/full-3d-model/"
-          target="_blank"
-          >3D Map
-          <img
-            class="img2"
-            height="18"
-            src="https://encyclopedia.nahc-mapping.org/sites/default/files/inline-images/external_link_icon.png"
-            width="18"
-        /></a>
-        <a
-          class="encyclopedia"
-          href="https://encyclopedia.nahc-mapping.org/"
-          target="_blank"
-          >Encyclopedia
-          <img
-            class="img2"
-            height="18"
-            src="https://encyclopedia.nahc-mapping.org/sites/default/files/inline-images/external_link_icon.png"
-            width="18"
-        /></a>
 
         <label for="o" id="open-popup" style="display: none">Open PopUp</label>
         <label id="about" class="trigger-popup" title="Open">ABOUT</label>
@@ -282,187 +230,149 @@
       <span id="dir-txt">&#9204;</span> <br /><br />
     </button>
     <div id="rightInfoBar" class="rightInfoBarBorder">
-      <div class="infoLayerElem" id="infoLayerGrantLots"></div>
-      <div class="infoLayerElem" id="infoLayerDutchGrants"></div>
-      <div class="infoLayerElem" id="infoLayerGravesend"></div>
-      <div class="infoLayerElem" id="infoLayerNativeGroups"></div>
-      <div class="infoLayerElem" id="infoLayerKarl"></div>
-      <div class="infoLayerElem" id="infoLayerFarms"></div>
-      <div class="infoLayerElem" id="infoLayerCastello"></div>
-      <div class="infoLayerElem" id="infoLayerSettlements"></div>
-	  <!-- A# -->
-	  <div class="infoLayerElem" id="infoLayerLongIslandLots"></div>
-	  <div class="infoLayerElem" id="infoLayerHistoricMarkers"></div>
-	  <div class="infoLayerElem" id="infoLayerHistoricPlaces"></div>
-	  <div class="infoLayerElem" id="infoLayerBurialsAnemhn"></div>
-	  <!-- A# -->
-      <div class="infoLayerElem" id="infoLayerInfoPoint"></div>
-      <div class="infoLayerElem" id="demoLayerInfo"></div>
-      <div class="infoLayerElem" id="infoLayerCurrLots"></div>
-	  <div class="infoLayerElem" id="longIslandLots"></div>
     </div>
     <div id="studioMenu">
       <i id="mobi-hide-sidebar" class="fa fa-arrow-circle-left fa-3x"></i>
       <p class="title">LAYERS</p>
       <br />
-      <center>
-        <b
-          ><i
+      
+	  <div id="roads-section-layers"></div>
+      <div id="rail-roads-cont"></div>
+	  
+	  <div id="buildings-section-layers"></div>
+	  <div id="city-limits-cont"></div>
+	  
+	  <br/>
+	  
+	   <div id="properties-section">
+        <div class="layer-list-row" style="display: flex; justify-content: center; align-items: center;">
+          <i
             class="fas fa-minus-square compress-expand-icon"
-            id="manahatta-section-caret"
-            onclick="sectionCompressExpand('#manahatta-section-layers','#manahatta-section-caret')"
+            id="properties-caret"
+            style="margin-right: 5px;"
+            onclick="sectionCompressExpand('#properties-content', '#properties-caret')"
           ></i>
-          &nbsp; Manhattan</b
-        >
-      </center>
-      <div id="manahatta-section-layers"></div>
-      <br />
-      <center>
-        <b
-          ><i
-            class="fas fa-plus-square compress-expand-icon"
-            id="long-island-section-caret"
-            onclick="sectionCompressExpand('#long-island-section-layers','#long-island-section-caret')"
-          ></i>
-          &nbsp; Long Island</b
-        >
-      </center>
-      <div id="long-island-section-layers"></div>
-      <br />
-      <center>
-        <b
-          ><i
-            class="fas fa-plus-square compress-expand-icon"
-            id="info-section-caret"
-            onclick="sectionCompressExpand('#info-section-layers','#info-section-caret')"
-          ></i>
-          &nbsp; Information of Interest</b
-        >
-      </center>
-      <div id="info-section-layers"></div>
+          <label style="font-weight: bold; margin-bottom: 0;">
+            Properties
+          </label>
+        </div>
+        <div id="properties-content">
+          <div id="parcels-section-layers"></div>
+          <div id="plss-parcels-section-layers"></div>
+        </div>
+      </div>
+	  
       <br />
       <div>
         <script src="js/generateLayers.js"></script>
         <hr />
         <p class="title">MAPS</p>
-        <!--CURRENT SATELLITE -->
+
+		<!--No Labels -->
         <div class="layer-list-row">
           <input
-            class="clm2yrx1y025401p93v26bhyl"
+            class="cjg705tp9c5xw2rlhsukbq0bs"
             type="radio"
             name="ltoggle"
-            value="clm2yrx1y025401p93v26bhyl"
+            value="cjg705tp9c5xw2rlhsukbq0bs"
             checked="checked"
           />
           <input
-            class="clm2yrx1y025401p93v26bhyl"
+            class="cjg705tp9c5xw2rlhsukbq0bs"
             type="radio"
             name="rtoggle"
-            value="clm2yrx1y025401p93v26bhyl"
+            value="cjg705tp9c5xw2rlhsukbq0bs"
+            checked="checked"
           />
           &nbsp;
-          <label for="clm2yrx1y025401p93v26bhyl"
-            >Current Satellite
+          <label for="cjg705tp9c5xw2rlhsukbq0bs"
+            >No Labels
             <div class="dummy-label-layer-space"></div
           ></label>
           <div class="layer-buttons-block">
-            <div class="layer-buttons-list">
-              <i style="width: 16px"></i>
-              <i
-                class="fa fa-info-circle layer-info trigger-popup"
-                id="satellite-image"
-                title="Layer Info"
-              ></i>
-            </div>
+          <div class="layer-buttons-list">
+            
+          </div>
           </div>
         </div>
-        <br />
-        <center>
-          <b
-            ><i
-              class="fas fa-minus-square compress-expand-icon"
-              id="castello-maps-section-caret"
-              onclick="sectionCompressExpand('#castello-maps-section','#castello-maps-section-caret')"
-            ></i>
-            &nbsp; 1660 | Castello Plan</b
-          >
-        </center>
-        <div id="castello-maps-section"></div>
-        <br />
-        <center>
-          <a
-            class="encyclopedia"
-            href="https://sandcastle.cesium.com/standalone.html#c=jVJtb9owEP4rJz5UIFUOL2q1drQaCxsKamCloYUqX0xiiMGxg+1Aw9T/PueFrVTdtE+W7567e57nzrJgIDHXYBNF03j4ADgIiFKgBWQilUAFB6wU0crnJQY5gqOQLHHKdK8Ae2JDONyAXyPZMFoMAjqmQ2d6cFoj6iiHTy4C27l0Nsns0R5eIQPahoNNDqLz9jMbxe7etZsXcy+M7rz7zsib6/n6O3Vps+n2e4ex52Ru/2s07k/pnT1Mnk0z13P3I89t5//57J6O19/ao8OmM1pvDm5/coWSUG6n6/XlUwtPPwnRfpqpcNuyqe1EQzqZKD7odWbRYnO1mvu1zz73eSC40rCjZE+kEcPJvjIFPRaxul8Lir8tuMaUE+nXzuGnzwE0kdJEfkixoyGR14D3mB49ReXjnWLQUorYONnLvXXCet4GoJU/jXOfvzYMp5ILUgHhBK2YWBDje6IjjyjdW5lmSlddDV8tU1Lo0DIrWZWCNGXEjDCID0h1+l6Zfk+nddlqNzsXOQuAEx6JpDHVdEcUwmFYr9qXwHJCBT8IEXviLSCHWBb0koRloCMC1RWB0hkjQJdgqskLVfmxHfmTFy2xygVWTItrRGW4mGrqKvsqbaatWU9YLzENODv7RxqZC/8PyPHiH3KqjWJNpcvwm1ip4uRy3rpcVP61Y6Hk1SweAqyDCOpmsUI2/mxSMIKYWFVxAzfg2nmtW0y9zVFfaJwIqSGVrI6QpUmcMKyJshZpsDH8AqXyuq51LOmGdAc0vPngsCFgxmeTWaaMPdAD8Wu3XcvgT8qYwCHlq/GOSIYzA8lpdKPW7V2ZQAh1LfPNh76v1UKwBZZv+ho1kdaJurYshXkYYKWN5pIaCkRsrTBjRGbWLw"
-            target="_blank"
-            ><button id="zoom-world">
-              &nbsp; &nbsp; <i class="fa fa-globe"></i> &nbsp;
-              <b>3D New Amsterdam</b> &nbsp; &nbsp; &nbsp;
-            </button></a
-          >
-          <br />
-        </center>
-        <br />
-        <center>
-          <b
-            ><i
-              class="fas fa-plus-square compress-expand-icon"
-              id="manahatta-maps-section-caret"
-              onclick="sectionCompressExpand('#manahatta-maps-section','#manahatta-maps-section-caret')"
-            ></i>
-            &nbsp; Manhattan and Surrounding</b
-          >
-        </center>
-        <div id="manahatta-maps-section"></div>
-        <br />
-        <center>
-          <b
-            ><i
-              class="fas fa-plus-square compress-expand-icon"
-              id="long-island-maps-section-caret"
-              onclick="sectionCompressExpand('#long-island-maps-section','#long-island-maps-section-caret')"
-            ></i>
-            &nbsp; Long Island</b
-          >
-        </center>
-        <div id="long-island-maps-section"></div>
-        <br />
-        <center>
-          <b
-            ><i
-              class="fas fa-plus-square compress-expand-icon"
-              id="new-netherland-maps-section-caret"
-              onclick="sectionCompressExpand('#new-netherland-maps-section','#new-netherland-maps-section-caret')"
-            ></i>
-            &nbsp; New Netherland</b
-          >
-        </center>
-        <div id="new-netherland-maps-section"></div>
-        <br />
-        <center>
-          <b
-            ><i
-              class="fas fa-plus-square compress-expand-icon"
-              id="new-england-maps-section-caret"
-              onclick="sectionCompressExpand('#new-england-maps-section','#new-england-maps-section-caret')"
-            ></i>
-            &nbsp; New England</b
-          >
-        </center>
-        <div id="new-england-maps-section"></div>
-        <br />
-        <center>
 
-          <button onclick="zoomtobounds('World')" id="zoom-world">
+        <div class="layer-list-row">
+          <input
+            class="basic-v9"
+            type="radio"
+            name="ltoggle"
+            value="basic-v9"
+          />
+          <input
+            class="basic-v9"
+            type="radio"
+            name="rtoggle"
+            value="basic-v9"
+          />
+          &nbsp;
+          <label for="basic-v9"
+            >Streets
+            <div class="dummy-label-layer-space"></div
+          ></label>
+          <div class="layer-buttons-block">
+          <div class="layer-buttons-list">
+            
+          </div>
+          </div>
+        </div>
+
+        <div class="layer-list-row">
+          <input
+            class="outdoors-v9"
+            type="radio"
+            name="ltoggle"
+            value="outdoors-v9"
+          />
+          <input
+            class="outdoors-v9"
+            type="radio"
+            name="rtoggle"
+            value="outdoors-v9"
+          />
+          &nbsp;
+          <label for="outdoors-v9"
+            >Terrain
+            <div class="dummy-label-layer-space"></div
+          ></label>
+          <div class="layer-buttons-block">
+          <div class="layer-buttons-list">
+            
+          </div>
+          </div>
+        </div>
+
+        <br />
+        <center>
+		
+		 <button onclick="zoomtobounds('Iowa')" class="zoom-labels">
+            &nbsp; &nbsp; <i class="fa fa-location-crosshairs"></i> &nbsp;
+            <b>Zoom to Iowa</b> &nbsp; &nbsp; &nbsp;
+          </button>
+          <br /><br />
+          <button onclick="zoomtobounds('USA')" class="zoom-labels">
+            &nbsp; &nbsp; <i class="fa fa-flag-usa"></i> &nbsp;
+            <b>Zoom to USA</b> &nbsp; &nbsp; &nbsp;
+          </button>
+          <br /><br />
+          <button onclick="zoomtobounds('World')" class="zoom-labels">
             &nbsp; &nbsp; <i class="fa fa-globe"></i> &nbsp;
             <b>Zoom to World</b> &nbsp; &nbsp; &nbsp;
           </button>
+      
         </center>
       </div>
     </div>
 
     <!-- MAP DIV-->
-    <div id="before" class="map"></div>
-    <div id="after" class="map"></div>
+	<div id="comparison-container">
+        <div id="before" class="map"></div>
+        <div id="after" class="map"></div>
+	</div>
 
     <!-- BASEMAP SWITCHER DIV -->
     <div id="mobi-view-sidebar"><i class="fa fa-bars fa-2x"></i></div>
@@ -511,8 +421,7 @@
     <!-- MAP.JS SOURCE -->
     <script src="js/mapData.js"></script>
     <script src="js/generateMaps.js"></script>
-    <script src="timeline/js/removeTaxPoints.js"></script>
-    <script src="timeline/js/getBeforeLayer.js"></script>
+    <script src="timeline/js/refreshLayers.js"></script>
     <script src="timeline/js/addMapLayer.js"></script>
     <script src="timeline/js/getLayer.js"></script>
     <script src="timeline/js/layersList.js"></script>
@@ -520,5 +429,8 @@
     <script src="timeline/js/beforelayers.js"></script>
     <script src="timeline/js/afterlayers.js"></script>
     <script src="timeline/js/sliderpopups.js"></script>
+	<script src="timeline/js/eventsList.js"></script>
+	<script src="timeline/js/eventsHandle.js"></script>
+	<script src="timeline/js/clicksHandle.js"></script>
   </body>
 </html>
