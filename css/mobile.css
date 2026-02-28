@@ -391,72 +391,48 @@ button#hide-zoom-label {
   display: none;
 }
 
-#demoLayerInfo,
-.demoLayerInfoPopUp {
-  background-color: rgb(50, 205, 50, 0.3); /* #32CD32 LimeGreen */
-  border: solid #32cd32 2px;
+#infoLayerCoral,
+.infoLayerCoralPopUp
+{
+  background-color: rgb(255, 127, 80, 0.5); /* #FF7F50 Coral */
+  border: solid # 2px;
+  padding: 5px;
 }
-#infoLayerCastello,
-.infoLayerCastelloPopUp {
+
+#infoLayerSlateBlue,
+.infoLayerSlateBluePopUp
+{
+  background-color: rgb(123, 104, 238, 0.5); /* #7B68EE MediumSlateBlue */
+  border: solid #7B68EE 2px;
+  padding: 5px;
+}
+
+#infoLayerAqua,
+.infoLayerAquaPopUp {
+  background-color: rgb(0, 255, 255, 0.5); /* #00FFFF Aqua */
+  border: solid #00FFFF 2px;
+  padding: 5px;
+}
+
+#infoLayerGreen,
+.infoLayerGreenPopUp {
+  background-color: rgba(53, 183, 121, 0.3); /* #35b779 */
+  border: solid #35b779 2px;
+  padding: 5px;
+}
+
+#infoLayerPink,
+.infoLayerPinkPopUp {
   background-color: rgb(255, 192, 203, 0.3); /* #FFC0CB Pink */
   border: solid pink 2px;
+  padding: 5px;
 }
-#infoLayerSettlements,
-.infoLayerSettlementsPopUp {
-  background-color: rgb(11, 14, 229, 0.2); /* #0b0ee5 */
-  border: solid #0b0ee5 2px;
-}
-#infoLayerLongIslandLots,
-.infoLayerLongIslandLotsPopUp {
-  background-color: rgb(11, 14, 229, 0.2); /* #0b0ee5 */
-  border: solid #0b0ee5 2px;
-}
-#infoLayerGrantLots,
-.infoLayerGrantLotsPopUp {
-  background-color: rgb(102, 205, 170, 0.3); /* #66CDAA MediumAquamarine */
-  border: solid #66cdaa 2px;
-}
-#infoLayerDutchGrants,
-.infoLayerDutchGrantsPopUp {
+
+#infoLayerYellow,
+.infoLayerYellowPopUp {
   background-color: rgb(255, 255, 0, 0.5); /* #FFFF00 Yellow */
   border: solid #ffff00 2px;
-}
-
-#infoLayerInfoPoint,
-.infoLayerInfoPointPopUp {
-  background-color: rgb(102, 205, 170, 0.3); /* #66CDAA MediumAquamarine */
-  border: solid #66cdaa 2px;
-}
-
-/* REPLACE THIS */
-#infoLayerGravesend,
-.infoLayerGravesendPopUp {
-  background-color: rgb(255, 255, 0, 0.5); /* #FFFF00 Yellow */
-  border: solid #ffff00 2px;
-}
-/* REPLACE THIS */
-
-#infoLayerNativeGroups,
-.infoLayerNativeGroupsPopUp {
-  background-color: rgb(255, 192, 203, 0.3); /* #FFC0CB Pink */
-  border: solid pink 2px;
-}
-
-#infoLayerKarl,
-.infoLayerKarlPopUp {
-  background-color: rgb(255, 255, 0, 0.5); /* #FFFF00 Yellow */
-  border: solid #ffff00 2px;
-}
-
-#infoLayerFarms,
-.infoLayerFarmsPopUp {
-  background-color: rgb(255, 255, 0, 0.5); /* #FFFF00 Yellow */
-  border: solid #ffff00 2px;
-}
-#infoLayerCurrLots,
-.infoLayerCurrLotsPopUp {
-  background-color: rgb(123, 104, 238, 0.3); /* #7B68EE MediumSlateBlue */
-  border: solid #7b68ee 2px;
+  padding: 5px;
 }
 
 i.compress-expand-icon {
@@ -494,19 +470,6 @@ div.layer-buttons-block {
   display: inline-block;
 }
 
-.demoLayerInfoPopUp,
-.infoLayerCastelloPopUp,
-.infoLayerGrantLotsPopUp,
-.infoLayerDutchGrantsPopUp,
-.infoLayerDutchGrantsPopUp,
-.infoLayerFarmsPopUp,
-.infoLayerCurrLotsPopUp,
-.infoLayerSettlementsPopUp,
-.infoLayerLongIslandLotsPopUp,
-.infoLayerInfoPointPopUp {
-  padding-left: 5px;
-  padding-right: 5px;
-}
 
 i#mobi-hide-sidebar,
 i#mobi-hide-infobar {
