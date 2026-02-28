@@ -13,130 +13,31 @@
  * }[]} layers
  * @returns {string}
  */
-function renderManhattanLayers(layers) {
-  const lastBitOfManhattanSectionTemplate = `
-<div class="layer-list-row">
-  <input
-    type="checkbox"
-    id="current_buildings_items"
-    name="current_buildings_items"
-  />
-  <label for="current_buildings_items">
-    <i class="fas fa-caret-down"></i> Current Buildings
-    <div class="dummy-label-layer-space"></div
-  ></label>
-</div>
-
-<div class="layer-list-row">
-  <input
-    type="checkbox"
-    class="current_buildings"
-    id="current_buildings"
-    name="current_buildings"
-  />
-  <label for="current_buildings">
-    <i class="fa fa-square" style="color: #ff7f50"></i> Current
-    Buildings</label
-  >
-</div>
-`; 
+function renderGroupedLayers(layers) {
   let r = "";
+  if (!layers) return r;
+  
+  // We need to know the group name for each item to pass to zoomToLayer.
+  // In the current structure, 'layers' IS the group array.
+  // The first item in 'layers' is usually the group header which has the label.
+  let groupName = "Unknown";
+  let isGroupCollapsed = false;
+  if (layers.length > 0 && layers[0].type === "group") {
+      groupName = layers[0].label;
+      if (layers[0].collapsed) {
+        isGroupCollapsed = true;
+      }
+  }
+
   layers.forEach((layer) => {
     if (layer.type === "group") {
-      r += renderLayerRow(layer);
-    } else if (layer.type === "lots-events") {
-      r += renderCirclePointLayerRow(layer);
-    } else if (layer.type === "grants-lots") {
-      r += renderGrantLotsLayerRow(layer);
-    } else if (layer.type === "castello-points") {
-      r += renderCastelloPointsLayerRow(layer);
-    } else if (layer.type === "current-buildings"){
-      r += lastBitOfManhattanSectionTemplate;
-      r += `<div class="layer-list-row">
-      <input
-        type="checkbox"
-        class="current_buildings"
-        id="current_buildings_lines"
-        name="current_buildings_lines"
-      />
-      <label for="current_buildings_lines">
-        <i class="far fa-square" style="color: #0000ff"></i> Current
-        Buildings
-        <div class="dummy-label-layer-space"></div
-      ></label>
-      <div class="layer-buttons-block">
-        <div class="layer-buttons-list">
-          <i
-            class="fa fa-crosshairs zoom-to-layer"
-            onclick="zoomtocenter('NA')"
-            title="Zoom to Layer"
-          ></i>
-          <i
-            class="fa fa-info-circle layer-info trigger-popup"
-            id="current-buildings-lines-info-layer"
-            title="Layer Info"
-          ></i>
-        </div>
-      </div>
-    </div>`
+      r += renderLayerRow(layer, groupName);
     } else {
-      r += renderManahattaLayerItem(layer);
+      r += renderGroupLayerItem(layer, groupName, isGroupCollapsed);
     }
   });
   return r;
 }
-
-/**
- * @param {{
-*  id: string;
-* name?: string;
-* caretId?: string;
-* label: string;
-* iconColor?: string;
-* itemSelector?: string;
-* zoomTo?: string;
-* infoId: string;
-* type?: "group" | "lots-events" | "grants-lots" | "castello-points" | "current-buildings" | "custom_indian_paths";
-* iconType?: "square"
-* }[]} layers
-* @returns {string}
-*/
-function renderLongIslandLayers(layers){
-  let r = ''
-  const customIndianTemplate = `<div class="layer-list-row">
-  <input type="checkbox" id="indian_paths" name="indian_paths" />
-  <label for="indian_paths">
-    <i class="fas fa-slash slash-icon" style="color: #ff0000"></i>
-    1600-64 | Paths
-    <div class="dummy-label-layer-space"></div
-  ></label>
-  <div class="layer-buttons-block">
-    <div class="layer-buttons-list">
-      <i
-        class="fa fa-crosshairs zoom-to-layer"
-        onclick="zoomtobounds('Brooklyn')"
-        title="Zoom to Layer"
-      ></i>
-      <i
-        class="fa fa-info-circle layer-info trigger-popup"
-        id="indian-paths-info-layer"
-        title="Layer Info"
-      ></i>
-    </div>
-  </div>
-</div>`
-  layers.forEach(layer => {
-    if(layer.type === "group"){
-      r += renderLayerRow(layer, true);
-    } else if(layer.type === "custom_indian_paths"){
-      r+= customIndianTemplate;
-    } else {
-      r+= renderManahattaLayerItem(layer)
-    }
-  })
-  return r;
-}
-
 
 /**
  * 
@@ -152,26 +53,30 @@ function renderLongIslandLayers(layers){
 * type?: "group" | "lots-events" | "grants-lots" | "castello-points" | "current-buildings";
 * iconType?: "square";
 * isSolid?: boolean;
+* collapsed?: boolean;
 * }} layerData 
+ * @param {string} groupName
  * @returns {string}
  */
-function renderLayerRow(layerData, isMinus=false) {
+function renderLayerRow(layerData, groupName) {
+  const iconClass = layerData.collapsed ? "fa-plus-square" : "fa-minus-square";
   const html = `
       <div class="layer-list-row">
         <input
           type="checkbox"
-          class="manahatta_items"
-          id="${layerData.id || "manahatta_items"}"
-          name="${layerData.name || "manahatta_items"}"
+          class="group_items"
+          id="${layerData.id || "group_items"}"
+          name="${layerData.name || "group_items"}"
+          ${layerData.checked ? 'checked="checked"' : ""}
         />
         <i
-          class="fas fa-${isMinus? "minus" : "plus"}-square compress-expand-icon"
-          id="${layerData.caretId || "manahatta-layer-caret"}"
+          class="fas ${iconClass} compress-expand-icon"
+          id="${layerData.caretId || "group-layer-caret"}"
           onclick="itemsCompressExpand('${layerData.itemSelector || ""}','#${
     layerData.caretId || ""
   }')"
         ></i>
-        <label for="${layerData.id || "manahatta_items"}">
+        <label for="${layerData.id || "group_items"}">
           ${layerData.label || ""}
           <div class="dummy-label-layer-space"></div>
         </label>
@@ -179,12 +84,12 @@ function renderLayerRow(layerData, isMinus=false) {
           <div class="layer-buttons-list">
             <i
               class="fa fa-crosshairs zoom-to-layer"
-              onclick="${(layerData.id === "current_lots_items" || layerData.id === "grants_layer_items")? "zoomtocenter('NA')" :(layerData.id === "farms_layer_items"? `zoomtocenter('${layerData.zoomTo}')`:`zoomtobounds('${layerData.zoomTo || ""}')`)}"
+              onclick="zoomToLayer('${groupName}')"
               title="Zoom to Layer"
             ></i>
             <i
               class="fa fa-info-circle layer-info trigger-popup"
-              id="${layerData.infoId || "manahatta-info"}"
+              id="${layerData.infoId || "group-info"}"
               title="Layer Info"
             ></i>
           </div>
@@ -193,6 +98,7 @@ function renderLayerRow(layerData, isMinus=false) {
     `;
   return html;
 }
+
 /**
  * 
  * @param {{
@@ -207,20 +113,26 @@ function renderLayerRow(layerData, isMinus=false) {
 * type?: "group" | "lots-events" | "grants-lots" | "castello-points" | "current-buildings";
 * iconType?: "square";
 * isSolid?: boolean;
+* checked?: boolean;
 * }} layerData 
+ * @param {string} groupName
+ * @param {boolean} [isGroupCollapsed=false]
  * @returns {string}
  */
-function renderManahattaLayerItem(layerData) {
+function renderGroupLayerItem(layerData, groupName, isGroupCollapsed = false) {
+  // Removed the zoom button div block entirely
+  const style = isGroupCollapsed ? 'style="display: none;"' : '';
   const html = `
-      <div class="layer-list-row ${layerData.topLayerClass}_item">
+      <div class="layer-list-row ${layerData.topLayerClass}_item" ${style}>
         &nbsp; &nbsp; &nbsp;
         <input
           type="checkbox"
           class="${layerData.className}"
-          id="${layerData.id || "lenape_trails"}"
-          name="${layerData.name || "lenape_trails"}"
+          id="${layerData.id}"
+          name="${layerData.name}"
+          ${layerData.checked ? 'checked="checked"' : ""}
         />
-        <label for="${layerData.id || "lenape_trails"}">
+        <label for="${layerData.id}">
           <i class="${layerData.isSolid? "fas" : "far"} fa-${layerData.iconType || "slash"} ${["square", "circle", "comment-dots"].includes(layerData.iconType)? "" : "slash-icon"}" style="color: ${
             layerData.iconColor || "#ff0000"
           }"></i>
@@ -233,166 +145,120 @@ function renderManahattaLayerItem(layerData) {
 }
 
 /**
- * 
+ * Sets up the group toggle logic for a given layer section.
+ * @param {Array} sectionData - The array of layer data objects.
+ */
+function setupLayerGroupListeners(sectionData) {
+    if (!sectionData || sectionData.length < 2) return;
+
+    const groupInfo = sectionData[0];
+    const groupCheckboxId = groupInfo.id;
+    const groupCheckbox = $(`#${groupCheckboxId}`);
+
+    if (groupCheckbox.length === 0) return;
+
+    // Identify child checkboxes. 
+    const childItems = sectionData.slice(1);
+    const childIds = childItems.map(item => `#${item.id}`).join(", ");
+    const $childCheckboxes = $(childIds);
+
+    // 1. Group Checkbox Change Listener
+    groupCheckbox.on('change', function () {
+        const isChecked = $(this).is(':checked');
+        $childCheckboxes.prop('checked', isChecked);
+        
+        // Trigger map update
+        if (typeof refreshLayers === 'function') {
+            refreshLayers();
+        }
+    });
+
+    // 2. Child Checkbox Change Listener (to update Group Checkbox UI)
+    $childCheckboxes.on('change', function () {
+        const total = $childCheckboxes.length;
+        const checked = $childCheckboxes.filter(':checked').length;
+        
+        // If all checked, check group. If not all checked, uncheck group.
+        groupCheckbox.prop('checked', total === checked);
+    });
+}
+
+/**
  * @param {{
 *  id: string;
 * name?: string;
-* caretId?: string;
 * label: string;
 * iconColor?: string;
-* itemSelector?: string;
-* zoomTo?: string;
-* infoId: string;
-* type?: "group" | "lots-events" | "grants-lots" | "castello-points" | "current-buildings";
-* iconType?: "square"
+* iconType?: "square";
+* isSolid?: boolean;
+* checked?: boolean;
+* topLayerClass?: string;
+* className?: string;
 * }} layerData 
  * @returns {string}
  */
-function renderCirclePointLayerRow(layerData) {
+function renderSingleLayer(layerData) {
   const html = `
-      <div class="layer-list-row">
+      <div class="layer-list-row ${layerData.topLayerClass}_item">
         <input
           type="checkbox"
-          id="${layerData.id || "circle_point"}"
-          name="${layerData.name || "circle_point"}"
+          class="${layerData.className}"
+          id="${layerData.id}"
+          name="${layerData.name}"
           ${layerData.checked ? 'checked="checked"' : ""}
         />
+        <label for="${layerData.id}">
+          <i class="${layerData.isSolid ? "fas" : "far"} fa-${layerData.iconType || "slash"} ${["square", "circle", "comment-dots"].includes(layerData.iconType) ? "" : "slash-icon"}" style="color: ${layerData.iconColor || "#ff0000"}"></i>
+          ${layerData.label}
+        </label>
+		<div class="layer-buttons-block">
+          <div class="layer-buttons-list">
+            <i
+              class="fa fa-crosshairs zoom-to-layer"
+              onclick="zoomToLayer('${layerData.label}')"
+              title="Zoom to Layer"
+            ></i>
+            <i
+              class="fa fa-info-circle layer-info trigger-popup"
+              id="${layerData.infoId}"
+              title="Layer Info"
+            ></i>
+          </div>
+        </div>
+      </div>
+    `;
+  return html;
+}
+
+
+try {
+	  
+  if (typeof roadsSection !== 'undefined') {
+    $("#roads-section-layers").html(renderGroupedLayers(roadsSection));
+    setupLayerGroupListeners(roadsSection);
+  }
   
-        <label for="${layerData.id || "circle_point"}">
-          <i class="fa fa-play-circle" style="color: ${
-            layerData.iconColor || "#097911"
-          }"></i>${layerData.label || "1643-75 | Lot Events"}
-          <div class="dummy-label-layer-space"></div>
-        </label>
-        <div class="layer-buttons-block">
-          <div class="layer-buttons-list">
-            <i
-              class="fa fa-crosshairs zoom-to-layer"
-              onclick="zoomtocenter('${layerData.zoomTo || "NA"}')"
-              title="Zoom to Layer"
-            ></i>
-            <i
-              class="fa fa-info-circle layer-info trigger-popup"
-              id="${layerData.infoId || "demo-taxlot-info-layer"}"
-              title="Layer Info"
-            ></i>
-          </div>
-        </div>
-      </div>
-    `;
-
-  return html;
-}
-
-/**
- * 
- * @param {{
-*  id: string;
-* name?: string;
-* caretId?: string;
-* label: string;
-* iconColor?: string;
-* itemSelector?: string;
-* zoomTo?: string;
-* infoId: string;
-* type?: "group" | "lots-events" | "grants-lots" | "castello-points" | "current-buildings";
-* iconType?: "square"
-* }} layerData 
- * @returns {string}
- */
-function renderGrantLotsLayerRow(layerData) {
-  const html = `
-      <div class="layer-list-row">
-        <input
-          type="checkbox"
-          id="${layerData.id || "grant_lots"}"
-          name="${layerData.name || "grant_lots"}"
-        />
-        <label for="${layerData.id || "grant_lots"}">
-          <i class="fa fa-square" style="color: ${
-            layerData.iconColor || "#008888"
-          }"></i>${layerData.label || "1643-67 | Demo Grant Divisions: C7"}
-          <div class="dummy-label-layer-space"></div>
-        </label>
-        <div class="layer-buttons-block">
-          <div class="layer-buttons-list">
-            <i
-              class="fa fa-crosshairs zoom-to-layer"
-              onclick="zoomtocenter('${layerData.zoomTo || "NA"}')"
-              title="Zoom to Layer"
-            ></i>
-            <i
-              class="fa fa-info-circle layer-info trigger-popup"
-              id="${layerData.infoId || "demo-grant-info-layer"}"
-              title="Layer Info"
-            ></i>
-          </div>
-        </div>
-      </div>
-    `;
-
-  return html;
-}
-
-/**
- * 
- * @param {{
-*  id: string;
-* name?: string;
-* caretId?: string;
-* label: string;
-* iconColor?: string;
-* itemSelector?: string;
-* zoomTo?: string;
-* infoId: string;
-* type?: "group" | "lots-events" | "grants-lots" | "castello-points" | "current-buildings";
-* iconType?: "square"
-* }} layerData 
- * @returns {string}
- */
-function renderCastelloPointsLayerRow(layerData) {
-  const html = `
-      <div class="layer-list-row">
-        <input
-          type="checkbox"
-          id="${layerData.id || "castello_points"}"
-          name="${layerData.name || "castello_points"}"
-        />
-        <label for="${layerData.id || "castello_points"}">
-          <i class="fa fa-circle" style="color: ${
-            layerData.iconColor || "#ff0000"
-          }"></i>${layerData.label || "1660 | Castello Taxlots"}
-          <div class="dummy-label-layer-space"></div>
-        </label>
-        <div class="layer-buttons-block">
-          <div class="layer-buttons-list">
-            <i
-              class="fa fa-crosshairs zoom-to-layer"
-              onclick="zoomtocenter('${layerData.zoomTo || "NA"}')"
-              title="Zoom to Layer"
-            ></i>
-            <i
-              class="fa fa-info-circle layer-info trigger-popup"
-              id="${layerData.infoId || "castello-info-layer"}"
-              title="Layer Info"
-            ></i>
-          </div>
-        </div>
-      </div>
-    `;
-
-  return html;
-}
-
-
-
-try{
-$("#long-island-section-layers").html(renderLongIslandLayers(longIslandLayerSections))
-$("#manahatta-section-layers").html(
-  renderManhattanLayers(manhattanLayerSections)
-);
-$("#info-section-layers").html(renderLongIslandLayers(informationOfInterest))
-}catch(error){
+  if (typeof buildingsSection !== 'undefined') {
+    $("#buildings-section-layers").html(renderGroupedLayers(buildingsSection));
+    setupLayerGroupListeners(buildingsSection);
+  }
+  
+  if (typeof parcelsSection !== 'undefined') {
+    $("#parcels-section-layers").html(renderGroupedLayers(parcelsSection));
+    setupLayerGroupListeners(parcelsSection);
+  }
+  
+  if (typeof parcelsPLSSsection !== 'undefined') {
+    $("#plss-parcels-section-layers").html(renderGroupedLayers(parcelsPLSSsection));
+    setupLayerGroupListeners(parcelsPLSSsection);
+  }
+  
+  if (typeof singleLayers !== 'undefined') {
+    singleLayers.forEach(layer => {
+      $(`#${layer.containerId}`).html(renderSingleLayer(layer));
+    });
+  }
+  
+} catch(error){
   console.log(error)
 }
-console.log("generateLayer script ran successfully :)");
