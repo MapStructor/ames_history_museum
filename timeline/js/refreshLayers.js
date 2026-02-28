@@ -1,23 +1,58 @@
 function refreshLayers() {
-    layers.forEach(layer => {
-        const id = layer.id;
-        const checkbox = document.getElementById(layer.toggleElement);
-        
-        afterMap.setLayoutProperty(
-            id,
-            "visibility",
-            checkbox.checked ? "visible" : "none"
-          );
-        
-    })
+    if (typeof afterLineLayers !== 'undefined') {
+        afterLineLayers.forEach(layer => {
+            const id = layer.id;
+            const checkbox = document.getElementById(layer.toggleElement);
+            if (checkbox && afterMap.getLayer(id)) {
+                afterMap.setLayoutProperty(
+                    id,
+                    "visibility",
+                    checkbox.checked ? "visible" : "none"
+                );
+            }
+        });
+    }
 
-    beforeLayers.forEach(layer => {
-        const id = layer.id;
-        const checkbox = document.getElementById(layer.toggleElement);
-        beforeMap.setLayoutProperty(
-            id,
-            "visibility",
-            checkbox.checked ? "visible" : "none"
-          );
-    })
+    if (typeof beforeLineLayers !== 'undefined') {
+        beforeLineLayers.forEach(layer => {
+            const id = layer.id;
+            const checkbox = document.getElementById(layer.toggleElement);
+            if (checkbox && beforeMap.getLayer(id)) {
+                beforeMap.setLayoutProperty(
+                    id,
+                    "visibility",
+                    checkbox.checked ? "visible" : "none"
+                );
+            }
+        });
+    }
+	
+	if (typeof afterAreaLayers !== 'undefined') {
+        afterAreaLayers.forEach(layer => {
+            const id = layer.id;
+            const checkbox = document.getElementById(layer.toggleElement);
+            if (checkbox && afterMap.getLayer(id)) {
+                afterMap.setLayoutProperty(
+                    id,
+                    "visibility",
+                    checkbox.checked ? "visible" : "none"
+                );
+            }
+        });
+    }
+
+    if (typeof beforeAreaLayers !== 'undefined') {
+        beforeAreaLayers.forEach(layer => {
+            const id = layer.id;
+            const checkbox = document.getElementById(layer.toggleElement);
+            if (checkbox && beforeMap.getLayer(id)) {
+                beforeMap.setLayoutProperty(
+                    id,
+                    "visibility",
+                    checkbox.checked ? "visible" : "none"
+                );
+            }
+        });
+    }
+	
 }
