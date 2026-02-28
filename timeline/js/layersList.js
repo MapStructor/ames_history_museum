@@ -1,2492 +1,336 @@
-const layers = [
-  {
-    //ID: CHANGE THIS, 1 OF 3
-    id: "dutch_grants-5ehfqe-right-highlighted",
-    type: "fill",
-    source: {
-      type: "vector",
-      //URL: CHANGE THIS, 2 OF 3
-      url: "mapbox://mapny.7q2vs9ar",
-    },
-    layout: {
-      visibility: document.getElementById("grants_layer").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "dutch_grants-5ehfqe",
-    paint: {
-      "fill-color": "#e3ed58",
-      "fill-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        0.8,
-        0,
-      ],
-      "fill-outline-color": "#FF0000",
-    },
-    toggleElement: "grants_layer",
-  },
-  {
-    //ID: CHANGE THIS, 1 OF 3
-    id: "dutch_grants-5ehfqe-right",
-    type: "fill",
-    source: {
-      type: "vector",
-      //URL: CHANGE THIS, 2 OF 3
-      url: "mapbox://mapny.7q2vs9ar",
-    },
-    layout: {
-      visibility: document.getElementById("grants_layer").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "dutch_grants-5ehfqe",
-    paint: {
-      "fill-color": "#e3ed58",
-      "fill-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        0.8,
-        0.45,
-      ],
-      "fill-outline-color": "#FF0000",
-    },
-    toggleElement: "grants_layer"
-  },
-  {
-    id: "grant-lots-right",
-    type: "fill",
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.26xwjv4e",
-    },
-    layout: {
-      visibility: document.getElementById("grant_lots").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "demo_divisions_grant_c7-42w8pa",
-    paint: {
-      "fill-color": "#088",
-      "fill-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        0.8,
-        0.5,
-      ],
-      "fill-outline-color": "#FF0000",
-    },
-    toggleElement: "grant_lots"
-  },
-  {
-    id: "grant-lots-lines-right",
+const afterLineLayers = [
+    {
+    id: "rail-roads-right",
     type: "line",
     source: {
       type: "vector",
-      url: "mapbox://mapny.7dw0tqar",
+      url: "mapbox://nittyjee.bfibuetx",
     },
     layout: {
-      visibility: document.getElementById("grants_layer_lines").checked
-        ? "visible"
-        : "none",
+      visibility: "visible", 
     },
-    "source-layer": "dutch_grants_lines-0y4gkx",
+    "source-layer": "railroads-bdj6n3",
     paint: {
       "line-color": "#FF0000",
       "line-width": 3,
-      "line-opacity": 0.8,
+      "line-opacity": 1.0,
     },
-    toggleElement: "grants_layer_lines"
-  },
-  {
-    //ID: CHANGE THIS, 1 OF 3
-    id: "gravesend_boundaries-c6qrbw-right-highlighted",
-    type: "fill",
-    source: {
-      type: "vector",
-      //URL: CHANGE THIS, 2 OF 3
-      url: "mapbox://mapny.5q4mas7d",
-    },
-    layout: {
-      visibility: document.getElementById("gravesend_layer").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "brooklyn_grants-7qxrvu",
-    paint: {
-      "fill-color": "#e3ed58",
-      "fill-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        0.8,
-        0,
-      ],
-      "fill-outline-color": "#FF0000",
-    },
-    toggleElement: "gravesend_layer"
-  },
-  {
-    //ID: CHANGE THIS, 1 OF 3
-    id: "gravesend_boundaries-c6qrbw-right",
-    type: "fill",
-    source: {
-      type: "vector",
-      //URL: CHANGE THIS, 2 OF 3
-      url: "mapbox://mapny.5q4mas7d",
-    },
-    layout: {
-      visibility: document.getElementById("gravesend_layer").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "brooklyn_grants-7qxrvu",
-    paint: {
-      "fill-color": "#e3ed58",
-      "fill-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        0.8,
-        0.45,
-      ],
-      "fill-outline-color": "#FF0000",
-    },
-    toggleElement: "gravesend_layer"
-  },
-  {
-    id: "gravesend-lines-right",
+    toggleElement: "rail-roads"
+   },
+   {
+    id: "confirmed-roads-right",
     type: "line",
     source: {
       type: "vector",
-      url: "mapbox://mapny.9t6krwcz",
+      url: "mapbox://nittyjee.5u39kagk",
     },
     layout: {
-      visibility: document.getElementById("gravesend_layer_lines").checked
-        ? "visible"
-        : "none",
+      visibility: "visible", 
     },
-    "source-layer": "brooklyn_grants_lines-8ry03u",
+    "source-layer": "roads_maps_ames_iowa-4rufgk",
     paint: {
-      "line-color": "#FF0000",
-      "line-width": 3,
-      "line-opacity": 0.8,
-    },
-    toggleElement: "gravesend_layer_lines"
-  },
-  {
-    //ID: CHANGE THIS, 1 OF 3
-    id: "karl_long_island-right-highlighted",
-    type: "fill",
-    source: {
-      type: "vector",
-      //URL: CHANGE THIS, 2 OF 3
-      url: "mapbox://mapny.brthat7a",
-    },
-    layout: {
-      visibility: document.getElementById("karl_layer").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "boundaries_LI_to_1700-8zmmzq",
-    paint: {
-      "fill-color": "#e3ed58",
-      "fill-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        0.8,
-        0,
-      ],
-      "fill-outline-color": "#FF0000",
-    },
-    toggleElement: "karl_layer"
-  },
-  {
-    //ID: CHANGE THIS, 1 OF 3
-    id: "karl_long_island-right",
-    type: "fill",
-    source: {
-      type: "vector",
-      //URL: CHANGE THIS, 2 OF 3
-      url: "mapbox://mapny.brthat7a",
-    },
-    layout: {
-      visibility: document.getElementById("karl_layer").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "boundaries_LI_to_1700-8zmmzq",
-    paint: {
-      "fill-color": "#e3ed58",
-      "fill-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        0.8,
-        0.45,
-      ],
-      "fill-outline-color": "#FF0000",
-    },
-    toggleElement: "karl_layer"
-  },
-  {
-    id: "karl-lines-right",
-    type: "line",
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.6ro0a0e0",
-    },
-    layout: {
-      visibility: document.getElementById("karl_layer_lines").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "boundaries_lines_LI_to_1700-190acb",
-    paint: {
-      "line-color": "#FF0000",
-      "line-width": 3,
-      "line-opacity": 0.8,
-    },
-    toggleElement: "karl_layer_lines"
-  },
-  {
-    //ID: CHANGE THIS, 1 OF 3
-    id: "original_grants_and_farms-right-highlighted",
-    type: "fill",
-    source: {
-      type: "vector",
-      //URL: CHANGE THIS, 2 OF 3
-      url: "mapbox://mapny.dv6se6sa",
-    },
-    layout: {
-      visibility: document.getElementById("farms_layer").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "original_farms-6bsj3k",
-    paint: {
-      "fill-color": "#e3ed58",
-      "fill-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        0.8,
-        0,
-      ],
-      "fill-outline-color": "#FF0000",
-    },
-    toggleElement: "farms_layer"
-  },
-  {
-    //ID: CHANGE THIS, 1 OF 3
-    id: "original_grants_and_farms-right",
-    type: "fill",
-    source: {
-      type: "vector",
-      //URL: CHANGE THIS, 2 OF 3
-      url: "mapbox://mapny.dv6se6sa",
-    },
-    layout: {
-      visibility: document.getElementById("farms_layer").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "original_farms-6bsj3k",
-    paint: {
-      "fill-color": "#e3ed58",
-      "fill-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        0.8,
-        0.45,
-      ],
-      "fill-outline-color": "#FF0000",
-    },
-    toggleElement: "farms_layer"
-  },
-  {
-    id: "farms-lines-right",
-    type: "line",
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.6dwzmxth",
-    },
-    layout: {
-      visibility: document.getElementById("farms_layer_lines").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "original_farms_lines-57l4u7",
-    paint: {
-      "line-color": "#FF0000",
-      "line-width": 3,
-      "line-opacity": 0.8,
-    },
-    toggleElement: "farms_layer_lines"
-  },
-
-
-  {
-    id: "info-points-right",
-    type: "symbol", // Change the type to "symbol"
-
-    /*
-    //MAPBOX:
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.4oxcibaa",
-    },
-    */
-
-    //GEOJSON:
-    source: {
-        type: "geojson",
-        //Public URL:
-        data: 'https://res.cloudinary.com/dk8ilk3ek/raw/upload/v1726463420/info_of_interest_kel5xa.geojson'
-    },
-
-    "layout": {
-      "visibility": document.getElementById("info_points").checked ? "visible" : "none",
-      "icon-image": "info_points_image",
-      "icon-allow-overlap": true,
-      "icon-size": [
-        "interpolate", ["linear"], ["zoom"],
-        8, 0.05, // Constant size at zoom 8
-        15, 0.08 // Constant size at zoom 15
-      ]      
-    },
-
-    //"source-layer": "info_of_interest3-0euqvk",
-
-    paint: {
-      "icon-opacity": [
-        "interpolate", ["linear"], ["zoom"],
-        7, 0, // Opacity at zoom 7
-        8, 1.0 // Opacity becomes fully opaque (1.0) at zoom 8
-      ]
-    },
-    toggleElement: "info_points"
-  },
-
-{
-  id: "info-labels-right",
-  type: "symbol",
-
-  /*
-  //MAPBOX:
-  source: {
-    type: "vector",
-    url: "mapbox://mapny.4oxcibaa",
-  },
-  */
-
-  //GEOJSON:
-  source: {
-    type: "geojson",
-    data: 'https://res.cloudinary.com/dk8ilk3ek/raw/upload/v1726463420/info_of_interest_kel5xa.geojson'
-  },
-
-  layout: {
-    "text-field": ["get", "Label"],
-    "text-size": [
-      "interpolate", ["linear"], ["zoom"],
-      0, ["match", ["get", "changetext"], "2", 4, 4], // Size at zoom 0
-      22, ["match", ["get", "changetext"], "2", 21, 16] // Size at zoom 22
-    ],
-    "text-anchor": "left",
-    "text-justify": "left",
-    "text-offset": [1.5, 0],
-    "visibility": document.getElementById("info_labels").checked ? "visible" : "none"
-  },
-
-  //MAPBOX:
-  //"source-layer": "info_of_interest3-0euqvk",
-
-  paint: {
-    "text-color": [
-      "match",
-      ["get", "changetext"],
-      "2", "#ff0000", // Red color for "2"
-      "#2c0202" // Default color
-    ],
-    "text-opacity": [
-      "interpolate", ["linear"], ["zoom"],
-      7, ["match", ["get", "changetext"], "2", 0, 0], // Opacity at zoom 6
-      8, ["match", ["get", "changetext"], "2", 1.0, 1.0] // Opacity at zoom 7
-    ],
-    "text-halo-color": "#ffffff",
-    "text-halo-width": [
-      "interpolate", ["linear"], ["zoom"],
-      0, ["match", ["get", "changetext"], "2", 5, 4], // Halo width at zoom 0
-      22, ["match", ["get", "changetext"], "2", 5, 4] // Halo width at zoom 22
-    ],
-    "text-halo-blur": [
-      "interpolate", ["linear"], ["zoom"],
-      0, ["match", ["get", "changetext"], "2", 1, 1], // Halo blur at zoom 0
-      22, ["match", ["get", "changetext"], "2", 1, 1] // Halo blur at zoom 22
-    ]
-  },
-  minzoom: 1,
-  toggleElement: "info_labels"
-},
-
-  {
-    id: "settlements-right",
-    type: "circle",
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.98y0pxrl",
-    },
-    layout: {
-      visibility: document.getElementById("settlements_points").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "settlements-1yjzfy",
-    paint: {
-      "circle-color": "#0b0ee5",
-      "circle-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        0.5,
-        1,
-      ],
-      "circle-stroke-width": 2,
-      "circle-stroke-color": "#0b0ee5",
-      "circle-stroke-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        1,
-        0,
-      ],
-    },
-    toggleElement: "settlements_points"
-  },
-  {
-    id: "settlements-labels-right",
-    type: "symbol",
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.98y0pxrl",
-    },
-    layout: {
-      visibility: document.getElementById("settlements_labels").checked
-        ? "visible"
-        : "none",
-      "text-field": "{corr_label}",
-      "text-offset": [0, 1],
-      "text-size": {
-        stops: [
-          [0, 4],
-          [22, 21],
-        ],
-      },
-    },
-
-    "source-layer": "settlements-1yjzfy",
-
-    paint: {
-      "text-color": "#0b0ee5",
-      "text-halo-color": "#ffffff",
-      "text-halo-width": 5,
-      "text-halo-blur": 1,
-      "text-opacity": {
-        stops: [
-          [8, 0],
-          [9, 1],
-        ],
-      },
-    },
-    toggleElement: "settlements_labels"
-  },
-  {
-    id: "places-right",
-    type: "circle",
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.25sxlb0c",
-    },
-    layout: {
-      visibility: document.getElementById("castello_points").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "taxlots-7i9lld",
-    paint: {
-      "circle-color": "#FF0000",
-      "circle-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        0.5,
-        1,
-      ],
-      "circle-stroke-width": 2,
-      "circle-stroke-color": "#FF0000",
-      "circle-stroke-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        1,
-        0,
-      ],
-    },
-    toggleElement: "castello_points"
-  },
-  {
-    id: "curr-lots-high-right",
-    type: "fill",
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.8gy1c1uu",
-    },
-    layout: {
-      visibility: document.getElementById("current_lots").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "current_lots-94syr2",
-    paint: {
-      "fill-color": "#7B68EE",
-      "fill-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        0.5,
-        0.0,
-      ],
-      "fill-outline-color": "transparent",
-    },
-    toggleElement: "current_lots"
-  },
-  {
-    id: "curr-lots-right",
-    type: "fill",
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.8gy1c1uu",
-    },
-    layout: {
-      visibility: document.getElementById("current_lots").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "current_lots-94syr2",
-    paint: {
-      "fill-color": "#7B68EE",
-      "fill-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        0.8,
-        0.0,
-      ],
-      "fill-outline-color": "#000000",
-    },
-    toggleElement: "current_lots"
-  },
-  {
-    id: "curr-lots-lines-right",
-    type: "line",
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.6ziby9ed",
-    },
-    layout: {
-      visibility: document.getElementById("current_lots_lines").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "current_lots_lines-41dc4r",
-    paint: {
-      "line-color": "#000080",
-      "line-width": 3,
-      "line-opacity": 0.7,
-    },
-    toggleElement: "current_lots_lines"
-  },
-  {
-    id: "curr-builds-lines-right",
-    type: "line",
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.5w8vqpgq",
-    },
-    layout: {
-      visibility: document.getElementById("current_buildings_lines").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "current_buildings_lines-3k97hu",
-    paint: {
-      "line-color": "#0000FF",
+      "line-color": "#A9A9A9",
       "line-width": 2,
-      "line-opacity": 0.7,
+      "line-opacity": 1.0,
     },
-    toggleElement: "current_buildings_lines"
-  },
-  {
-    id: "curr-builds-right",
-    type: "fill",
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.9bfdcno0",
-    },
-    layout: {
-      visibility: document.getElementById("current_buildings").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "current_buildings-1dzyhp",
-    paint: {
-      "fill-color": "#FF7F50",
-      "fill-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        0.8,
-        0.2,
-      ],
-      "fill-outline-color": "#000000",
-    },
-    toggleElement: "current_buildings"
-  },
-  {
-    id: "long-island-right",
+    toggleElement: "confirmed-roads"
+   },
+   {
+    id: "sub-roads-right",
     type: "line",
     source: {
       type: "vector",
-      url: "mapbox://mapny.0g0oj4rl",
+      url: "mapbox://nittyjee.5a51yr96",
     },
     layout: {
-      visibility: document.getElementById("longisland_coastline").checked
-        ? "visible"
-        : "none",
+      visibility: "visible", 
     },
-    "source-layer": "long_island_coastline_lines-0bxmn5",
+    "source-layer": "roads_subd_ames_iowa-apmxo6",
     paint: {
-      "line-color": "#006400",
-      "line-width": 3,
+      "line-color": "#808080",
+      "line-width": 2,
       "line-opacity": 1.0,
     },
-    toggleElement: "longisland_coastline"
-  },
-  {
-    id: "long-island-area-right",
-    type: "fill",
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.c64cpp25",
-    },
-    layout: {
-      visibility: document.getElementById("longisland_area").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "long_island_coastline_area-9vxity",
-    paint: {
-      "fill-color": "#00FF7F",
-      "fill-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        0.8,
-        0.2,
-      ],
-      "fill-outline-color": "#000000",
-    },
-    toggleElement: "longisland_area"
-  },
-  {
-    id: "lenape-trails-right",
+    toggleElement: "sub-roads"
+   },
+   {
+    id: "proxy-roads-right",
     type: "line",
     source: {
       type: "vector",
-      url: "mapbox://mapny.3lqznx9l",
+      url: "mapbox://nittyjee.proxy-roads",
     },
     layout: {
-      visibility: document.getElementById("lenape_trails").checked
-        ? "visible"
-        : "none",
+      visibility: "visible", 
     },
-    "source-layer": "lenape_trails-bxaww5",
+    "source-layer": "roads_proximity_ames_iowa-458tl3",
     paint: {
-      "line-color": "#FF0000",
-      "line-width": 4,
+      "line-color": "#696969",
+      "line-width": 2,
       "line-opacity": 1.0,
     },
-    toggleElement: "lenape_trails"
-  },
-  {
-    id: "manahatta-shoreline-right",
+    toggleElement: "proxy-roads"
+   },
+   {
+    id: "lot-lines-right",
     type: "line",
     source: {
       type: "vector",
-      url: "mapbox://mapny.a0lop49m",
+      url: "mapbox://nittyjee.95nfth3k",
     },
     layout: {
-      visibility: document.getElementById("manahatta_shoreline").checked
-        ? "visible"
-        : "none",
+      visibility: "visible", 
     },
-    "source-layer": "manahatta_shoreline-1xswf8",
+    "source-layer": "lots-bv0zn0",
     paint: {
-      "line-color": "#FFD700",
-      "line-width": 4,
+      "line-color": "#ffd700",
+      "line-width": 2,
       "line-opacity": 1.0,
     },
-    toggleElement: "manahatta_shoreline"
-  },
-  {
-    id: "streams-right",
-    type: "line",
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.a9o6nugn",
-    },
-    layout: {
-      visibility: document.getElementById("manahatta_streams").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "manahatta_area_streams-a2x39f",
-    paint: {
-      "line-color": "#0000FF",
-      "line-width": 4,
-      "line-opacity": 1.0,
-    },
-    toggleElement: "manahatta_streams"
-  },
-  {
-    id: "indian-paths-right",
-    type: "line",
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.a39vr1hw",
-    },
-    layout: {
-      visibility: document.getElementById("indian_paths").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "indian_paths_brooklyn-27hu9d",
-    paint: {
-      "line-color": "#FF0000",
-      "line-width": 5,
-      "line-opacity": 1.0,
-    },
-    toggleElement: "indian_paths"
-  },
-  {
-    id: "native-groups-lines-right",
-    type: "line",
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.bwpbasrr",
-    },
-    layout: {
-      visibility: document.getElementById("native_groups_lines").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "indian_borders_simplified_lon-buo3kf",
-    paint: {
-      "line-color": "#ff9900",
-      "line-width": 15,
-      "line-blur": 20,
-      "line-opacity": 1.0,
-    },
-    toggleElement: "native_groups_lines"
-  },
-  {
-    id: "native-groups-area-right",
-    type: "fill",
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.8in6hi37",
-    },
-    layout: {
-      visibility: document.getElementById("native_groups_area").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "indian_areas_long_island-50h2dj",
-    paint: {
-      "fill-color": "#FF1493",
-      "fill-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        0.5,
-        0.2,
-      ],
-      "fill-outline-color": "#FFD700",
-    },
-    toggleElement: "native_groups_area"
-  },
-  {
-    id: "native-groups-area-right-highlighted",
-    type: "fill",
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.8in6hi37",
-    },
-    layout: {
-      visibility: document.getElementById("native_groups_area").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "indian_areas_long_island-50h2dj",
-    paint: {
-      "fill-color": "#FF1493",
-      "fill-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        0.3,
-        0,
-      ],
-      "fill-outline-color": "#FFD700",
-    },
-    toggleElement: "native_groups_area"
-  },
-  {
-    id: "native-groups-labels-right",
-    type: "symbol",
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.5m6t979e",
-    },
-    layout: {
-      visibility: document.getElementById("settlements_labels").checked
-        ? "visible"
-        : "none",
-      "text-field": "{name}",
-      "text-offset": [0, 1],
-      "text-size": {
-        stops: [
-          [0, 4],
-          [22, 34],
-        ],
-      },
-    },
-    "source-layer": "indian_labels_long_island-247yi6",
-    paint: {
-      "text-color": "#000080",
-      "text-halo-color": "#ffffff",
-      "text-halo-width": 5,
-      "text-halo-blur": 1,
-      "text-opacity": {
-        stops: [
-          [6, 0],
-          [7, 1],
-        ],
-      },
-    },
-    toggleElement: "settlements_labels"
-  },
-  {
-    //ID: CHANGE THIS, 1 OF 3
-    id: "lot_events-bf43eb-right",
-    type: "circle",
-    source: {
-      type: "vector",
-      //URL: CHANGE THIS, 2 OF 3
-      url: "mapbox://mapny.9s9s67wu",
-    },
-    layout: {
-      visibility: document.getElementById("circle_point").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "lot_events-bf43eb",
-    paint: {
-      //CIRCLE COLOR
-      "circle-color": {
-        type: "categorical",
-        property: "color",
-        stops: [
-          ["6", "#0000ee"],
-          ["5", "#097911"],
-          ["4", "#0000ee"],
-          ["3", "#097911"],
-          ["2", "#0000ee"],
-          ["1", "#097911"],
-        ],
-        default: "#FF0000",
-      },
-
-      //CIRCLE OPACITY
-      "circle-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        0.5,
-        1,
-      ],
-      "circle-stroke-width": 2,
-      "circle-stroke-color": {
-        type: "categorical",
-        property: "color",
-        stops: [
-          ["6", "#0000ee"],
-          ["5", "#097911"],
-          ["4", "#0000ee"],
-          ["3", "#097911"],
-          ["2", "#0000ee"],
-          ["1", "#097911"],
-        ],
-        default: "#FF0000",
-      },
-      "circle-stroke-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        1,
-        0,
-      ],
-
-      //CIRCLE RADIUS
-      "circle-radius": {
-        type: "categorical",
-        property: "TAXLOT",
-        stops: [["C7", 9]],
-      },
-    },
-    toggleElement: "circle_point"
-  },
-  {
-    id: "long-island-lot-right",
-    type: "circle",
-    source: {
-      type: "vector",
-      // url: "mapbox://mapny.98y0pxrl",
-      // url: "mapbox://mapny.0884by5y",
-	  url: "mapbox://mapny.5bsrtpc9",
-    },
-    layout: {
-      visibility: document.getElementById("long-island-lot").checked
-        ? "visible"
-        : "none",
-    },
-    // "source-layer": "settlements-1yjzfy",
-    // "source-layer": "LI_lots-4gv85t",
-	"source-layer": "wikipedia_villages_and_hamlet-2oq6k9",
-    paint: {
-      "circle-color": "#e5870b",
-      "circle-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        0.5,
-        1,
-      ],
-      "circle-stroke-width": 2,
-      "circle-stroke-color": "#e5870b",
-      "circle-stroke-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        1,
-        0,
-      ],
-    },
-    toggleElement: "long-island-lot"
-  },
-
-{
-  id: "long-island-lot-labels-right",
-  type: "symbol",
-  source: {
-    type: "vector",
-    // url: "mapbox://mapny.98y0pxrl",
-    // url: "mapbox://mapny.0884by5y",
-	url: "mapbox://mapny.5bsrtpc9",
-  },
-  layout: {
-    visibility: document.getElementById("long_island_lot_labels").checked
-      ? "visible"
-      : "none",
-    "text-field": "{Label}",
-    "text-offset": [0, 1],
-    "text-size": {
-      stops: [
-        [0, 4],
-        [22, 21],
-      ],
-    },
-  },
-
-  // "source-layer": "settlements-1yjzfy",
-  // "source-layer": "LI_lots-4gv85t",
-  "source-layer": "wikipedia_villages_and_hamlet-2oq6k9",
-
-  paint: {
-    "text-color": "#0b0ee5",
-    "text-halo-color": "#ffffff",
-    "text-halo-width": 5,
-    "text-halo-blur": 1,
-    "text-opacity": {
-      stops: [
-        [10, 0],
-        [11, 1],
-      ],
-    },
-  },
-  toggleElement: "long_island_lot_labels"
-},
-
-  // -> Start  Historic Markers Right
-{
-  id: "historic-markers-right",
-  type: "circle",
-  source: {
-    type: "vector",
-	url: "mapbox://mapny.3cy8p1tr",
-  },
-  layout: {
-    visibility: document.getElementById("historic-markers").checked
-      ? "visible"
-      : "none",
-  },
-  "source-layer": "historic_markers-8989o0",
-  paint: {
-    "circle-color": "#00FFF2",
-    "circle-opacity": [
-      "case",
-      ["boolean", ["feature-state", "hover"], false],
-      0.5,
-      1,
-    ],
-    "circle-stroke-width": 2,
-    "circle-stroke-color": "#00FFF2",
-    "circle-stroke-opacity": [
-      "case",
-      ["boolean", ["feature-state", "hover"], false],
-      1,
-      0,
-    ],
-  },
-  toggleElement: "historic-markers"
-},
-
-
-{
-  id: "historic-markers-labels-right",
-  type: "symbol",
-  source: {
-    type: "vector",
-	url: "mapbox://mapny.3cy8p1tr",
-  },
-  layout: {
-    visibility: document.getElementById("historic_markers_labels").checked
-      ? "visible"
-      : "none",
-    "text-field": "{Label}",
-    "text-offset": [0, 1],
-    "text-size": {
-      stops: [
-        [0, 4],
-        [22, 21],
-      ],
-    },
-  },
-  "source-layer": "historic_markers-8989o0",
-
-  paint: {
-    "text-color": "#0b0ee5",
-    "text-halo-color": "#ffffff",
-    "text-halo-width": 5,
-    "text-halo-blur": 1,
-    "text-opacity": {
-      stops: [
-        [10, 0],
-        [11, 1],
-      ],
-    },
-  },
-  toggleElement: "historic_markers_labels"
-},
-
-  // -> End    Historic Markers Right
-
-  // -> Start  Historic Places Right
-
-{
-  id: "historic-places-right",
-  type: "circle",
-  source: {
-    type: "vector",
-	url: "mapbox://mapny.bo77v2ph",
-  },
-  layout: {
-    visibility: document.getElementById("historic-places").checked
-      ? "visible"
-      : "none",
-  },
-  "source-layer": "national_register-6ohqde",
-  paint: {
-    "circle-color": "#74EC00",
-    "circle-opacity": [
-      "case",
-      ["boolean", ["feature-state", "hover"], false],
-      0.5,
-      1,
-    ],
-    "circle-stroke-width": 2,
-    "circle-stroke-color": "#74EC00",
-    "circle-stroke-opacity": [
-      "case",
-      ["boolean", ["feature-state", "hover"], false],
-      1,
-      0,
-    ],
-  },
-  toggleElement: "historic-places"
-},
-
-
-{
-  id: "historic-places-labels-right",
-  type: "symbol",
-  source: {
-    type: "vector",
-	url: "mapbox://mapny.bo77v2ph",
-  },
-  layout: {
-    visibility: document.getElementById("historic_places_labels").checked
-      ? "visible"
-      : "none",
-    "text-field": "{Label}",
-    "text-offset": [0, 1],
-    "text-size": {
-      stops: [
-        [0, 4],
-        [22, 21],
-      ],
-    },
-  },
-  "source-layer": "national_register-6ohqde",
-
-  paint: {
-    "text-color": "#0b0ee5",
-    "text-halo-color": "#ffffff",
-    "text-halo-width": 5,
-    "text-halo-blur": 1,
-    "text-opacity": {
-      stops: [
-        [10, 0],
-        [11, 1],
-      ],
-    },
-  },
-  toggleElement: "historic_places_labels"
-},
-
-  // -> End    Historic Places Right
-
-  // -> Start  Burials Right
-
-{
-  id: "burials-anemhn-right",
-  type: "circle",
-  source: {
-    type: "vector",
-	url: "mapbox://mapny.1j270qhp",
-  },
-  layout: {
-    visibility: document.getElementById("burials-anemhn").checked
-      ? "visible"
-      : "none",
-  },
-  "source-layer": "burials-anemhn",
-  paint: {
-    "circle-color": "#ff0000",
-    "circle-opacity": [
-      "case",
-      ["boolean", ["feature-state", "hover"], false],
-      0.5,
-      1,
-    ],
-    "circle-stroke-width": 2,
-    "circle-stroke-color": "#ff0000",
-    "circle-stroke-opacity": [
-      "case",
-      ["boolean", ["feature-state", "hover"], false],
-      1,
-      0,
-    ],
-  },
-  toggleElement: "burials-anemhn"
-},
-
-
-{
-  id: "burials-anemhn-labels-right",
-  type: "symbol",
-  source: {
-    type: "vector",
-	url: "mapbox://mapny.1j270qhp",
-  },
-  layout: {
-    visibility: document.getElementById("burials_anemhn_labels").checked
-      ? "visible"
-      : "none",
-    "text-field": "{Label}",
-    "text-offset": [0, 1],
-    "text-size": {
-      stops: [
-        [0, 4],
-        [22, 21],
-      ],
-    },
-  },
-  "source-layer": "burials-anemhn",
-
-  paint: {
-    "text-color": "#0b0ee5",
-    "text-halo-color": "#ffffff",
-    "text-halo-width": 5,
-    "text-halo-blur": 1,
-    "text-opacity": {
-      stops: [
-        [10, 0],
-        [11, 1],
-      ],
-    },
-  },
-  toggleElement: "burials_anemhn_labels"
-},
-
-  // -> End    Burials Right
-
+    toggleElement: "lot-lines"
+   },
 ];
 
-const beforeLayers = [
-  {
-    //ID: CHANGE THIS, 1 OF 3
-    id: "dutch_grants-5ehfqe-left-highlighted",
-    type: "fill",
-    source: {
-      type: "vector",
-      //URL: CHANGE THIS, 2 OF 3
-      url: "mapbox://mapny.7q2vs9ar",
-    },
-    layout: {
-      visibility: document.getElementById("grants_layer").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "dutch_grants-5ehfqe",
-    paint: {
-      "fill-color": "#e3ed58",
-      "fill-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        0.8,
-        0,
-      ],
-      "fill-outline-color": "#FF0000",
-    },
-    toggleElement: "grants_layer"
-  },
-  {
-    //ID: CHANGE THIS, 1 OF 3
-    id: "dutch_grants-5ehfqe-left",
-    type: "fill",
-    source: {
-      type: "vector",
-      //URL: CHANGE THIS, 2 OF 3
-      url: "mapbox://mapny.7q2vs9ar",
-    },
-    layout: {
-      visibility: document.getElementById("grants_layer").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "dutch_grants-5ehfqe",
-    paint: {
-      "fill-color": "#e3ed58",
-      "fill-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        0.8,
-        0.5,
-      ],
-      "fill-outline-color": "#000000",
-    },
-    toggleElement: "grants_layer"
-  },
-  {
-    //ID: CHANGE THIS, 1 OF 3
-    id: "lot_events-bf43eb-left",
-    type: "circle",
-    source: {
-      type: "vector",
-      //URL: CHANGE THIS, 2 OF 3
-      url: "mapbox://mapny.9s9s67wu",
-    },
-    layout: {
-      visibility: document.getElementById("circle_point").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "lot_events-bf43eb",
-    paint: {
-      //CIRCLE COLOR
-      "circle-color": {
-        type: "categorical",
-        property: "color",
-        stops: [
-          ["6", "#0000ee"],
-          ["5", "#097911"],
-          ["4", "#0000ee"],
-          ["3", "#097911"],
-          ["2", "#0000ee"],
-          ["1", "#097911"],
-        ],
-        default: "#FF0000",
-      },
-
-      //CIRCLE OPACITY
-      "circle-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        0.5,
-        1,
-      ],
-      "circle-stroke-width": 2,
-      "circle-stroke-color": {
-        type: "categorical",
-        property: "color",
-        stops: [
-          ["6", "#0000ee"],
-          ["5", "#097911"],
-          ["4", "#0000ee"],
-          ["3", "#097911"],
-          ["2", "#0000ee"],
-          ["1", "#097911"],
-        ],
-        default: "#FF0000",
-      },
-      "circle-stroke-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        1,
-        0,
-      ],
-
-      //CIRCLE RADIUS
-      "circle-radius": {
-        type: "categorical",
-        property: "TAXLOT",
-        stops: [["C7", 9]],
-      },
-    },
-    toggleElement: "circle_point"
-  },
-  {
-    id: "grant-lots-left",
-    type: "fill",
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.26xwjv4e",
-    },
-    layout: {
-      visibility: document.getElementById("grant_lots").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "demo_divisions_grant_c7-42w8pa",
-    paint: {
-      "fill-color": "#088",
-      "fill-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        0.8,
-        0.5,
-      ],
-      "fill-outline-color": "#FF0000",
-    },
-    toggleElement: "grant_lots"
-  },
-  {
-    id: "grant-lots-lines-left",
+const beforeLineLayers = [
+    {
+    id: "rail-roads-left",
     type: "line",
     source: {
       type: "vector",
-      url: "mapbox://mapny.7dw0tqar",
+      url: "mapbox://nittyjee.bfibuetx",
     },
     layout: {
-      visibility: document.getElementById("grants_layer_lines").checked
-        ? "visible"
-        : "none",
+      visibility: "visible",
     },
-    "source-layer": "dutch_grants_lines-0y4gkx",
+    "source-layer": "railroads-bdj6n3",
     paint: {
       "line-color": "#FF0000",
       "line-width": 3,
-      "line-opacity": 0.8,
+      "line-opacity": 1.0,
     },
-    toggleElement: "grants_layer_lines"
-  },
-  {
-    //ID: CHANGE THIS, 1 OF 3
-    id: "gravesend_boundaries-c6qrbw-left-highlighted",
-    type: "fill",
-    source: {
-      type: "vector",
-      //URL: CHANGE THIS, 2 OF 3
-      url: "mapbox://mapny.5q4mas7d",
+    toggleElement: "rail-roads"
     },
-    layout: {
-      visibility: document.getElementById("gravesend_layer").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "brooklyn_grants-7qxrvu",
-    paint: {
-      "fill-color": "#e3ed58",
-      "fill-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        0.8,
-        0,
-      ],
-      "fill-outline-color": "#FF0000",
-    },
-    toggleElement: "gravesend_layer"
-  },
-  {
-    //ID: CHANGE THIS, 1 OF 3
-    id: "gravesend_boundaries-c6qrbw-left",
-    type: "fill",
-    source: {
-      type: "vector",
-      //URL: CHANGE THIS, 2 OF 3
-      url: "mapbox://mapny.5q4mas7d",
-    },
-    layout: {
-      visibility: document.getElementById("gravesend_layer").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "brooklyn_grants-7qxrvu",
-    paint: {
-      "fill-color": "#e3ed58",
-      "fill-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        0.8,
-        0.45,
-      ],
-      "fill-outline-color": "#FF0000",
-    },
-    toggleElement: "gravesend_layer"
-  },
-  {
-    id: "gravesend-lines-left",
+    {
+    id: "confirmed-roads-left",
     type: "line",
     source: {
       type: "vector",
-      url: "mapbox://mapny.9t6krwcz",
+      url: "mapbox://nittyjee.5u39kagk",
     },
     layout: {
-      visibility: document.getElementById("gravesend_layer_lines").checked
-        ? "visible"
-        : "none",
+      visibility: "visible", 
     },
-    "source-layer": "brooklyn_grants_lines-8ry03u",
+    "source-layer": "roads_maps_ames_iowa-4rufgk",
     paint: {
-      "line-color": "#FF0000",
-      "line-width": 3,
-      "line-opacity": 0.8,
-    },
-    toggleElement: "gravesend_layer_lines"
-  },
-  {
-    //ID: CHANGE THIS, 1 OF 3
-    id: "karl_long_island-left-highlighted",
-    type: "fill",
-    source: {
-      type: "vector",
-      //URL: CHANGE THIS, 2 OF 3
-      url: "mapbox://mapny.brthat7a",
-    },
-    layout: {
-      visibility: document.getElementById("karl_layer").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "boundaries_LI_to_1700-8zmmzq",
-    paint: {
-      "fill-color": "#e3ed58",
-      "fill-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        0.8,
-        0,
-      ],
-      "fill-outline-color": "#FF0000",
-    },
-    toggleElement: "karl_layer"
-  },
-  {
-    //ID: CHANGE THIS, 1 OF 3
-    id: "karl_long_island-left",
-    type: "fill",
-    source: {
-      type: "vector",
-      //URL: CHANGE THIS, 2 OF 3
-      url: "mapbox://mapny.brthat7a",
-    },
-    layout: {
-      visibility: document.getElementById("karl_layer").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "boundaries_LI_to_1700-8zmmzq",
-    paint: {
-      "fill-color": "#e3ed58",
-      "fill-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        0.8,
-        0.45,
-      ],
-      "fill-outline-color": "#FF0000",
-    },
-    toggleElement: "karl_layer"
-  },
-  {
-    id: "karl-lines-left",
-    type: "line",
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.6ro0a0e0",
-    },
-    layout: {
-      visibility: document.getElementById("karl_layer_lines").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "boundaries_lines_LI_to_1700-190acb",
-    paint: {
-      "line-color": "#FF0000",
-      "line-width": 3,
-      "line-opacity": 0.8,
-    },
-    toggleElement: "karl_layer_lines"
-  },
-  {
-    //ID: CHANGE THIS, 1 OF 3
-    id: "original_grants_and_farms-left-highlighted",
-    type: "fill",
-    source: {
-      type: "vector",
-      //URL: CHANGE THIS, 2 OF 3
-      url: "mapbox://mapny.dv6se6sa",
-    },
-    layout: {
-      visibility: document.getElementById("farms_layer").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "original_farms-6bsj3k",
-    paint: {
-      "fill-color": "#e3ed58",
-      "fill-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        0.8,
-        0,
-      ],
-      "fill-outline-color": "#000000",
-    },
-    toggleElement: "farms_layer"
-  },
-  {
-    //ID: CHANGE THIS, 1 OF 3
-    id: "original_grants_and_farms-left",
-    type: "fill",
-    source: {
-      type: "vector",
-      //URL: CHANGE THIS, 2 OF 3
-      url: "mapbox://mapny.dv6se6sa",
-    },
-    layout: {
-      visibility: document.getElementById("farms_layer").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "original_farms-6bsj3k",
-    paint: {
-      "fill-color": "#e3ed58",
-      "fill-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        0.8,
-        0.5,
-      ],
-      "fill-outline-color": "#000000",
-    },
-    toggleElement: "farms_layer"
-  },
-  {
-    id: "farms-lines-left",
-    type: "line",
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.6dwzmxth",
-    },
-    layout: {
-      visibility: document.getElementById("farms_layer_lines").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "original_farms_lines-57l4u7",
-    paint: {
-      "line-color": "#FF0000",
-      "line-width": 3,
-      "line-opacity": 0.8,
-    },
-    toggleElement:"farms_layer_lines"
-  },
-
-
-  {
-    id: "info-points-left",
-    type: "symbol", // Change the type to "symbol"
-
-    /*
-    //MAPBOX:
-    source: {
-        type: "vector",
-        url: "mapbox://mapny.4oxcibaa",
-    },
-    */
-
-    //GEOJSON:
-    source: {
-      type: "geojson",
-      //Public URL:
-      data: 'https://res.cloudinary.com/dk8ilk3ek/raw/upload/v1726463420/info_of_interest_kel5xa.geojson'
-    },
-
-    "layout": {
-      "visibility": document.getElementById("info_points").checked ? "visible" : "none",
-      "icon-image": "info_points_image",
-      "icon-allow-overlap": true,
-      "icon-size": [
-        "interpolate", ["linear"], ["zoom"],
-        8, 0.05, // Constant size at zoom 8
-        15, 0.08 // Constant size at zoom 15
-      ]      
-    },
-
-    //"source-layer": "info_of_interest3-0euqvk",
-    
-    "paint": {
-      "icon-opacity": [
-        "interpolate", ["linear"], ["zoom"],
-        7, 0, // Opacity at zoom 8
-        8, 1.0 // Opacity becomes fully opaque (1.0) at zoom 9
-      ]
-    },
-    toggleElement: "info_points"
-},
-
-
-{
-  id: "info-labels-left",
-  type: "symbol",
-
-  /*
-  //MAPBOX:
-  source: {
-    type: "vector",
-    url: "mapbox://mapny.4oxcibaa",
-  },
-  */
-
-  //GEOJSON:
-  source: {
-    type: "geojson",
-    data: 'https://res.cloudinary.com/dk8ilk3ek/raw/upload/v1726463420/info_of_interest_kel5xa.geojson'
-  },
-
-  layout: {
-    "text-field": ["get", "Label"],
-    "text-size": [
-      "interpolate", ["linear"], ["zoom"],
-      0, ["match", ["get", "changetext"], "2", 4, 4], // Size at zoom 0
-      22, ["match", ["get", "changetext"], "2", 21, 16] // Size at zoom 22
-    ],
-    "text-anchor": "left", // This positions the left end of the text at the anchor point
-    'text-justify': 'left', // Options: 'left', 'center', 'right'
-    "text-offset": [1.5, 0],
-    //"visibility": document.getElementById("info_labels").checked ? "visible" : "none",
-    "visibility": document.getElementById("info_labels").checked ? "visible" : "none",
-  },
-  paint: {
-    "text-color": [
-      "match",
-      ["get", "changetext"],
-      "2", "#ff0000", // Red color for "2"
-      "#2c0202" // Default color
-    ],
-    "text-opacity": [
-      "interpolate", ["linear"], ["zoom"],
-      7, ["match", ["get", "changetext"], "2", 0, 0], // Opacity at zoom 6
-      8, ["match", ["get", "changetext"], "2", 1.0, 1.0] // Opacity at zoom 7
-    ],
-    "text-halo-color": [
-      "interpolate", ["linear"], ["zoom"],
-      0, ["match", ["get", "changetext"], "2", "#ffffff", "#ffffff"], // Halo color at zoom 0
-      22, ["match", ["get", "changetext"], "2", "#ffffff", "#ffffff"] // Halo color at zoom 22
-    ],
-    "text-halo-width": [
-      "interpolate", ["linear"], ["zoom"],
-      0, ["match", ["get", "changetext"], "2", 5, 4], // Halo width at zoom 0
-      22, ["match", ["get", "changetext"], "2", 5, 4] // Halo width at zoom 22
-    ],
-    "text-halo-blur": [
-      "interpolate", ["linear"], ["zoom"],
-      0, ["match", ["get", "changetext"], "2", 1, 1], // Halo blur at zoom 0
-      22, ["match", ["get", "changetext"], "2", 1, 1] // Halo blur at zoom 22
-    ],
-  },
-  minzoom: 1,
-  toggleElement: "info_labels"
-},
-
-/* 
-{
-  id: "long-island-lot-left",
-  type: "circle",
-  source: {
-    type: "vector",
-    url: "mapbox://mapny.0884by5y",
-  },
-  layout: {
-    visibility: document.getElementById("long-island-lot").checked
-      ? "visible"
-      : "none",
-  },
-  "source-layer": "LI_lots-4gv85t",
-  paint: {
-    "circle-color": "#0b0ee5",
-    "circle-opacity": [
-      "case",
-      ["boolean", ["feature-state", "hover"], false],
-      0.5,
-      1,
-    ],
-    "circle-stroke-width": 2,
-    "circle-stroke-color": "#0b0ee5",
-    "circle-stroke-opacity": [
-      "case",
-      ["boolean", ["feature-state", "hover"], false],
-      1,
-      0,
-    ],
-  },
-  toggleElement: "long-island-lot"
-},
- */
-
-{
-  id: "long-island-lot-left",
-  type: "circle",
-  source: {
-    type: "vector",
-    // url: "mapbox://mapny.98y0pxrl",
-    //url: "mapbox://mapny.0884by5y",
-	url: "mapbox://mapny.5bsrtpc9",
-  },
-  layout: {
-    visibility: document.getElementById("long-island-lot").checked
-      ? "visible"
-      : "none",
-  },
-  // "source-layer": "settlements-1yjzfy",
-  // "source-layer": "LI_lots-4gv85t",
-  "source-layer": "wikipedia_villages_and_hamlet-2oq6k9",
-  paint: {
-    "circle-color": "#e5870b",
-    "circle-opacity": [
-      "case",
-      ["boolean", ["feature-state", "hover"], false],
-      0.5,
-      1,
-    ],
-    "circle-stroke-width": 2,
-    "circle-stroke-color": "#e5870b",
-    "circle-stroke-opacity": [
-      "case",
-      ["boolean", ["feature-state", "hover"], false],
-      1,
-      0,
-    ],
-  },
-  toggleElement: "long-island-lot"
-},
-
-
-{
-  id: "long-island-lot-labels-left",
-  type: "symbol",
-  source: {
-    type: "vector",
-    // url: "mapbox://mapny.98y0pxrl",
-    // url: "mapbox://mapny.0884by5y",
-	url: "mapbox://mapny.5bsrtpc9",
-  },
-  layout: {
-    visibility: document.getElementById("long_island_lot_labels").checked
-      ? "visible"
-      : "none",
-    "text-field": "{Label}",
-    "text-offset": [0, 1],
-    "text-size": {
-      stops: [
-        [0, 4],
-        [22, 21],
-      ],
-    },
-  },
-
-  // "source-layer": "settlements-1yjzfy",
-  // "source-layer": "LI_lots-4gv85t",
-  "source-layer": "wikipedia_villages_and_hamlet-2oq6k9",
-
-  paint: {
-    "text-color": "#0b0ee5",
-    "text-halo-color": "#ffffff",
-    "text-halo-width": 5,
-    "text-halo-blur": 1,
-    "text-opacity": {
-      stops: [
-        [10, 0],
-        [11, 1],
-      ],
-    },
-  },
-  toggleElement: "long_island_lot_labels"
-},
-
-
-  // -> Start  Historic Markers Left
-{
-  id: "historic-markers-left",
-  type: "circle",
-  source: {
-    type: "vector",
-	url: "mapbox://mapny.3cy8p1tr",
-  },
-  layout: {
-    visibility: document.getElementById("historic-markers").checked
-      ? "visible"
-      : "none",
-  },
-  "source-layer": "historic_markers-8989o0",
-  paint: {
-    "circle-color": "#00FFF2",
-    "circle-opacity": [
-      "case",
-      ["boolean", ["feature-state", "hover"], false],
-      0.5,
-      1,
-    ],
-    "circle-stroke-width": 2,
-    "circle-stroke-color": "#00FFF2",
-    "circle-stroke-opacity": [
-      "case",
-      ["boolean", ["feature-state", "hover"], false],
-      1,
-      0,
-    ],
-  },
-  toggleElement: "historic-markers"
-},
-
-
-{
-  id: "historic-markers-labels-left",
-  type: "symbol",
-  source: {
-    type: "vector",
-	url: "mapbox://mapny.3cy8p1tr",
-  },
-  layout: {
-    visibility: document.getElementById("historic_markers_labels").checked
-      ? "visible"
-      : "none",
-    "text-field": "{Label}",
-    "text-offset": [0, 1],
-    "text-size": {
-      stops: [
-        [0, 4],
-        [22, 21],
-      ],
-    },
-  },
-  "source-layer": "historic_markers-8989o0",
-
-  paint: {
-    "text-color": "#0b0ee5",
-    "text-halo-color": "#ffffff",
-    "text-halo-width": 5,
-    "text-halo-blur": 1,
-    "text-opacity": {
-      stops: [
-        [10, 0],
-        [11, 1],
-      ],
-    },
-  },
-  toggleElement: "historic_markers_labels"
-},
-
-  // -> End    Historic Markers Left
-
-  // -> Start  Historic Places Left
-
-{
-  id: "historic-places-left",
-  type: "circle",
-  source: {
-    type: "vector",
-	url: "mapbox://mapny.bo77v2ph",
-  },
-  layout: {
-    visibility: document.getElementById("historic-places").checked
-      ? "visible"
-      : "none",
-  },
-  "source-layer": "national_register-6ohqde",
-  paint: {
-    "circle-color": "#74EC00",
-    "circle-opacity": [
-      "case",
-      ["boolean", ["feature-state", "hover"], false],
-      0.5,
-      1,
-    ],
-    "circle-stroke-width": 2,
-    "circle-stroke-color": "#74EC00",
-    "circle-stroke-opacity": [
-      "case",
-      ["boolean", ["feature-state", "hover"], false],
-      1,
-      0,
-    ],
-  },
-  toggleElement: "historic-places"
-},
-
-
-{
-  id: "historic-places-labels-left",
-  type: "symbol",
-  source: {
-    type: "vector",
-	url: "mapbox://mapny.bo77v2ph",
-  },
-  layout: {
-    visibility: document.getElementById("historic_places_labels").checked
-      ? "visible"
-      : "none",
-    "text-field": "{Label}",
-    "text-offset": [0, 1],
-    "text-size": {
-      stops: [
-        [0, 4],
-        [22, 21],
-      ],
-    },
-  },
-  "source-layer": "national_register-6ohqde",
-
-  paint: {
-    "text-color": "#0b0ee5",
-    "text-halo-color": "#ffffff",
-    "text-halo-width": 5,
-    "text-halo-blur": 1,
-    "text-opacity": {
-      stops: [
-        [10, 0],
-        [11, 1],
-      ],
-    },
-  },
-  toggleElement: "historic_places_labels"
-},
-
-  // -> End    Historic Places Left
-
-  // -> Start  Burials Left
-
-{
-  id: "burials-anemhn-left",
-  type: "circle",
-  source: {
-    type: "vector",
-	url: "mapbox://mapny.1j270qhp",
-  },
-  layout: {
-    visibility: document.getElementById("burials-anemhn").checked
-      ? "visible"
-      : "none",
-  },
-  "source-layer": "burials-anemhn",
-  paint: {
-    "circle-color": "#ff0000",
-    "circle-opacity": [
-      "case",
-      ["boolean", ["feature-state", "hover"], false],
-      0.5,
-      1,
-    ],
-    "circle-stroke-width": 2,
-    "circle-stroke-color": "#ff0000",
-    "circle-stroke-opacity": [
-      "case",
-      ["boolean", ["feature-state", "hover"], false],
-      1,
-      0,
-    ],
-  },
-  toggleElement: "burials-anemhn"
-},
-
-
-{
-  id: "burials-anemhn-labels-left",
-  type: "symbol",
-  source: {
-    type: "vector",
-	url: "mapbox://mapny.1j270qhp",
-  },
-  layout: {
-    visibility: document.getElementById("burials_anemhn_labels").checked
-      ? "visible"
-      : "none",
-    "text-field": "{Label}",
-    "text-offset": [0, 1],
-    "text-size": {
-      stops: [
-        [0, 4],
-        [22, 21],
-      ],
-    },
-  },
-  "source-layer": "burials-anemhn",
-
-  paint: {
-    "text-color": "#0b0ee5",
-    "text-halo-color": "#ffffff",
-    "text-halo-width": 5,
-    "text-halo-blur": 1,
-    "text-opacity": {
-      stops: [
-        [10, 0],
-        [11, 1],
-      ],
-    },
-  },
-  toggleElement: "burials_anemhn_labels"
-},
-
-  // -> End    Burials Left
-
-
-  {
-    id: "settlements-left",
-    type: "circle",
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.98y0pxrl",
-    },
-    layout: {
-      visibility: document.getElementById("settlements_points").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "settlements-1yjzfy",
-    paint: {
-      "circle-color": "#0b0ee5",
-      "circle-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        0.5,
-        1,
-      ],
-      "circle-stroke-width": 2,
-      "circle-stroke-color": "#0b0ee5",
-      "circle-stroke-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        1,
-        0,
-      ],
-    },
-    toggleElement: "settlements_points"
-  },
-  {
-    id: "settlements-labels-left",
-    type: "symbol",
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.98y0pxrl",
-    },
-    layout: {
-      visibility: document.getElementById("settlements_labels").checked
-        ? "visible"
-        : "none",
-      "text-field": "{corr_label}",
-      "text-offset": [0, 1],
-      "text-size": {
-        stops: [
-          [0, 4],
-          [22, 21],
-        ],
-      },
-    },
-
-    "source-layer": "settlements-1yjzfy",
-
-    paint: {
-      "text-color": "#0b0ee5",
-      "text-halo-color": "#ffffff",
-      "text-halo-width": 5,
-      "text-halo-blur": 1,
-      "text-opacity": {
-        stops: [
-          [8, 0],
-          [9, 1],
-        ],
-      },
-    },
-    toggleElement: "settlements_labels"
-  },
-  {
-    id: "places-left",
-    type: "circle",
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.25sxlb0c",
-    },
-    layout: {
-      visibility: document.getElementById("castello_points").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "taxlots-7i9lld",
-    paint: {
-      "circle-color": "#FF0000",
-      "circle-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        0.5,
-        1,
-      ],
-      "circle-stroke-width": 2,
-      "circle-stroke-color": "#FF0000",
-      "circle-stroke-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        1,
-        0,
-      ],
-    },
-    toggleElement: "castello_points"
-  },
-  {
-    id: "curr-lots-high-left",
-    type: "fill",
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.8gy1c1uu",
-    },
-    layout: {
-      visibility: document.getElementById("current_lots").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "current_lots-94syr2",
-    paint: {
-      "fill-color": "#7B68EE",
-      "fill-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        0.5,
-        0,
-      ],
-      "fill-outline-color": "#000000",
-    },
-    toggleElement: "current_lots"
-  },
-  {
-    id: "curr-lots-left",
-    type: "fill",
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.8gy1c1uu",
-    },
-    layout: {
-      visibility: document.getElementById("current_lots").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "current_lots-94syr2",
-    paint: {
-      "fill-color": "#7B68EE",
-      "fill-opacity": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        0.8,
-        0.1,
-      ],
-      "fill-outline-color": "#000000",
-    },
-    toggleElement: "current_lots"
-  },
-  {
-    id: "curr-lots-lines-left",
-    type: "line",
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.6ziby9ed",
-    },
-    layout: {
-      visibility: document.getElementById("current_lots_lines").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "current_lots_lines-41dc4r",
-    paint: {
-      "line-color": "#00ff00",
-      "line-width": 3,
-      "line-opacity": 0.7,
-    },
-    toggleElement: "current_lots_lines"
-  },
-  {
-    id: "curr-builds-lines-left",
-    type: "line",
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.5w8vqpgq",
-    },
-    layout: {
-      visibility: document.getElementById("current_buildings_lines").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "current_buildings_lines-3k97hu",
-    paint: {
-      "line-color": "#0000FF",
+      "line-color": "#A9A9A9",
       "line-width": 2,
-      "line-opacity": 0.7,
+      "line-opacity": 1.0,
     },
-    toggleElement: "current_buildings_lines"
-  },
-  {
-    id: "curr-builds-left",
+    toggleElement: "confirmed-roads"
+   },
+   {
+    id: "sub-roads-left",
+    type: "line",
+    source: {
+      type: "vector",
+      url: "mapbox://nittyjee.5a51yr96",
+    },
+    layout: {
+      visibility: "visible", 
+    },
+    "source-layer": "roads_subd_ames_iowa-apmxo6",
+    paint: {
+      "line-color": "#808080",
+      "line-width": 2,
+      "line-opacity": 1.0,
+    },
+    toggleElement: "sub-roads"
+   },
+   {
+    id: "proxy-roads-left",
+    type: "line",
+    source: {
+      type: "vector",
+      url: "mapbox://nittyjee.proxy-roads",
+    },
+    layout: {
+      visibility: "visible", 
+    },
+    "source-layer": "roads_proximity_ames_iowa-458tl3",
+    paint: {
+      "line-color": "#696969",
+      "line-width": 2,
+      "line-opacity": 1.0,
+    },
+    toggleElement: "proxy-roads"
+   },
+   {
+    id: "lot-lines-left",
+    type: "line",
+    source: {
+      type: "vector",
+      url: "mapbox://nittyjee.95nfth3k",
+    },
+    layout: {
+      visibility: "visible", 
+    },
+    "source-layer": "lots-bv0zn0",
+    paint: {
+      "line-color": "#ffd700",
+      "line-width": 2,
+      "line-opacity": 1.0,
+    },
+    toggleElement: "lot-lines"
+   },
+];
+
+const afterAreaLayers = [
+    {
+    id: "city-limits-right",
     type: "fill",
     source: {
       type: "vector",
-      url: "mapbox://mapny.9bfdcno0",
+      url: "mapbox://nittyjee.aztmvbuc",
     },
     layout: {
-      visibility: document.getElementById("current_buildings").checked
-        ? "visible"
-        : "none",
+      visibility: "visible",
     },
-    "source-layer": "current_buildings-1dzyhp",
+    "source-layer": "city_limits-0cql6y",
+    paint: {
+      "fill-color": "#6495ED",
+      "fill-opacity": 0.2,
+      "fill-outline-color": "#6495ED",
+    },
+    toggleElement: "city-limits"
+    },
+    {
+    id: "prev-builds-right",
+    type: "fill",
+    source: {
+      type: "vector",
+      url: "mapbox://nittyjee.421y21fx",
+    },
+    layout: {
+      visibility: "visible",
+    },
+    "source-layer": "previous_buildings-02rrmr",
     paint: {
       "fill-color": "#FF7F50",
       "fill-opacity": [
         "case",
         ["boolean", ["feature-state", "hover"], false],
-        0.8,
-        0.3,
+        0.5,
+        0.2,
       ],
-      "fill-outline-color": "#000000",
+      "fill-outline-color": "#FF7F50",
     },
-    toggleElement: "current_buildings"
-  },
-  {
-    id: "long-island-left",
-    type: "line",
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.0g0oj4rl",
+    toggleElement: "prev-builds"
     },
-    layout: {
-      visibility: document.getElementById("longisland_coastline").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "long_island_coastline_lines-0bxmn5",
-    paint: {
-      "line-color": "#006400",
-      "line-width": 3,
-      "line-opacity": 1.0,
-    },
-    toggleElement: "longisland_coastline"
-  },
-  {
-    id: "long-island-area-left",
+	{
+    id: "prev-builds-right-highlighted",
     type: "fill",
     source: {
       type: "vector",
-      url: "mapbox://mapny.c64cpp25",
+      url: "mapbox://nittyjee.421y21fx",
     },
     layout: {
-      visibility: document.getElementById("longisland_area").checked
-        ? "visible"
-        : "none",
+      visibility: "visible",
     },
-    "source-layer": "long_island_coastline_area-9vxity",
+    "source-layer": "previous_buildings-02rrmr",
     paint: {
-      "fill-color": "#00FF7F",
+      "fill-color": "#FF7F50",
       "fill-opacity": [
         "case",
         ["boolean", ["feature-state", "hover"], false],
-        0.8,
-        0.2,
+        0.7,
+        0,
       ],
-      "fill-outline-color": "#000000",
+      "fill-outline-color": "#FF7F50",
     },
-    toggleElement: "longisland_area"
-  },
-  {
-    id: "lenape-trails-left",
-    type: "line",
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.3lqznx9l",
+    toggleElement: "prev-builds"
     },
-    layout: {
-      visibility: document.getElementById("lenape_trails").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "lenape_trails-bxaww5",
-    paint: {
-      "line-color": "#FF0000",
-      "line-width": 4,
-      "line-opacity": 1.0,
-    },
-    toggleElement: "lenape_trails"
-  },
-  {
-    id: "manahatta-shoreline-left",
-    type: "line",
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.a0lop49m",
-    },
-    layout: {
-      visibility: document.getElementById("manahatta_shoreline").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "manahatta_shoreline-1xswf8",
-    paint: {
-      "line-color": "#FFD700",
-      "line-width": 4,
-      "line-opacity": 1.0,
-    },
-    toggleElement: "manahatta_shoreline"
-  },
-  {
-    id: "streams-left",
-    type: "line",
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.a9o6nugn",
-    },
-    layout: {
-      visibility: document.getElementById("manahatta_streams").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "manahatta_area_streams-a2x39f",
-    paint: {
-      "line-color": "#0000FF",
-      "line-width": 4,
-      "line-opacity": 1.0,
-    },
-    toggleElement: "manahatta_streams"
-  },
-  {
-    id: "indian-paths-left",
-    type: "line",
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.a39vr1hw",
-    },
-    layout: {
-      visibility: document.getElementById("indian_paths").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "indian_paths_brooklyn-27hu9d",
-    paint: {
-      "line-color": "#FF0000",
-      "line-width": 5,
-      "line-opacity": 1.0,
-    },
-    toggleElement: "indian_paths"
-  },
-  {
-    id: "native-groups-lines-left",
-    type: "line",
-    source: {
-      type: "vector",
-      url: "mapbox://mapny.bwpbasrr",
-    },
-    layout: {
-      visibility: document.getElementById("native_groups_lines").checked
-        ? "visible"
-        : "none",
-    },
-    "source-layer": "indian_borders_simplified_lon-buo3kf",
-    paint: {
-      "line-color": "#ff9900",
-      "line-width": 15,
-      "line-blur": 20,
-      "line-opacity": 1.0,
-    },
-    toggleElement: "native_groups_lines"
-  },
-  {
-    id: "native-groups-area-left",
+    {
+	id: "curr-builds-right",
     type: "fill",
     source: {
       type: "vector",
-      url: "mapbox://mapny.8in6hi37",
+      url: "mapbox://nittyjee.1f6os6ce",
     },
     layout: {
-      visibility: document.getElementById("native_groups_area").checked
-        ? "visible"
-        : "none",
+      visibility: "visible",
     },
-    "source-layer": "indian_areas_long_island-50h2dj",
+    "source-layer": "current_buildings-0dk1i0",
     paint: {
-      "fill-color": "#FF1493",
+      "fill-color": "#35b779",
       "fill-opacity": [
         "case",
         ["boolean", ["feature-state", "hover"], false],
         0.5,
         0.2,
       ],
-      "fill-outline-color": "#FFD700",
+      "fill-outline-color": "#35b779",
     },
-    toggleElement: "native_groups_area"
-  },
-  {
-    id: "native-groups-area-left-highlighted",
+    toggleElement: "curr-builds"
+    },
+	{
+	id: "curr-builds-right-highlighted",
     type: "fill",
     source: {
       type: "vector",
-      url: "mapbox://mapny.8in6hi37",
+      url: "mapbox://nittyjee.1f6os6ce",
     },
     layout: {
-      visibility: document.getElementById("native_groups_area").checked
-        ? "visible"
-        : "none",
+      visibility: "visible",
     },
-    "source-layer": "indian_areas_long_island-50h2dj",
+    "source-layer": "current_buildings-0dk1i0",
     paint: {
-      "fill-color": "#FF1493",
+      "fill-color": "#35b779",
+      "fill-opacity": [
+        "case",
+        ["boolean", ["feature-state", "hover"], false],
+        0.7,
+        0,
+      ],
+      "fill-outline-color": "#35b779",
+    },
+    toggleElement: "curr-builds"
+    },
+	{
+	id: "parcels-parcels-right",
+    type: "fill",
+    source: {
+      type: "vector",
+      url: "mapbox://nittyjee.5eq8mpcd",
+    },
+    layout: {
+      visibility: "visible",
+    },
+    "source-layer": "parcels-136ib8",
+    paint: {
+      "fill-color": "#ff1493",
+      "fill-opacity": [
+        "case",
+        ["boolean", ["feature-state", "hover"], false],
+        0.2,
+        0.1,
+      ],
+      "fill-outline-color": "#FFD700",
+    },
+    toggleElement: "parcels-parcels"
+    },
+	{
+	id: "parcels-parcels-right-highlighted",
+    type: "fill",
+    source: {
+      type: "vector",
+      url: "mapbox://nittyjee.5eq8mpcd",
+    },
+    layout: {
+      visibility: "visible",
+    },
+    "source-layer": "parcels-136ib8",
+    paint: {
+      "fill-color": "#ff1493",
       "fill-opacity": [
         "case",
         ["boolean", ["feature-state", "hover"], false],
@@ -2495,41 +339,477 @@ const beforeLayers = [
       ],
       "fill-outline-color": "#FFD700",
     },
-    toggleElement: "native_groups_area"
-  },
-  {
-    id: "native-groups-labels-left",
-    type: "symbol",
+    toggleElement: "parcels-parcels"
+    },
+    {
+	id: "parcels-subs-right",
+    type: "fill",
     source: {
       type: "vector",
-      url: "mapbox://mapny.5m6t979e",
+      url: "mapbox://nittyjee.4ccvb6kg",
     },
     layout: {
-      visibility: document.getElementById("settlements_labels").checked
-        ? "visible"
-        : "none",
-      "text-field": "{name}",
-      "text-offset": [0, 1],
-      "text-size": {
-        stops: [
-          [0, 4],
-          [22, 34],
-        ],
-      },
+      visibility: "visible",
     },
-    "source-layer": "indian_labels_long_island-247yi6",
+    "source-layer": "subdivisions-67jdnv",
     paint: {
-      "text-color": "#000080",
-      "text-halo-color": "#ffffff",
-      "text-halo-width": 5,
-      "text-halo-blur": 1,
-      "text-opacity": {
-        stops: [
-          [6, 0],
-          [7, 1],
-        ],
-      },
+      "fill-color": "#7b68ee",
+      "fill-opacity": [
+        "case",
+        ["boolean", ["feature-state", "hover"], false],
+        0.4,
+        0.2,
+      ],
+      "fill-outline-color": "#000000",
     },
-    toggleElement: "settlements_labels"
-  }
-]
+    toggleElement: "parcels-subs"
+    },
+	{
+	id: "parcels-subs-right-highlighted",
+    type: "fill",
+    source: {
+      type: "vector",
+      url: "mapbox://nittyjee.4ccvb6kg",
+    },
+    layout: {
+      visibility: "visible",
+    },
+    "source-layer": "subdivisions-67jdnv",
+    paint: {
+      "fill-color": "#7b68ee",
+      "fill-opacity": [
+        "case",
+        ["boolean", ["feature-state", "hover"], false],
+        0.6,
+        0,
+      ],
+      "fill-outline-color": "#000000",
+    },
+	toggleElement: "parcels-subs"
+    },
+	{
+	id: "plss-own-right",
+    type: "fill",
+    source: {
+      type: "vector",
+      url: "mapbox://nittyjee.blb6xx89",
+    },
+    layout: {
+      visibility: "visible",
+    },
+    "source-layer": "plss_ownership_boundaries-7d8k3v",
+    paint: {
+      "fill-color": "#00E5D9",
+      "fill-opacity": [
+        "case",
+        ["boolean", ["feature-state", "hover"], false],
+        0.5,
+        0.2,
+      ],
+      "fill-outline-color": "#000000",
+    },
+    toggleElement: "plss-own"
+    },
+	{
+	id: "plss-own-right-highlighted",
+    type: "fill",
+    source: {
+      type: "vector",
+      url: "mapbox://nittyjee.blb6xx89",
+    },
+    layout: {
+      visibility: "visible",
+    },
+    "source-layer": "plss_ownership_boundaries-7d8k3v",
+    paint: {
+      "fill-color": "#00E5D9",
+      "fill-opacity": [
+        "case",
+        ["boolean", ["feature-state", "hover"], false],
+        0.7,
+        0,
+      ],
+      "fill-outline-color": "#000000",
+    },
+    toggleElement: "plss-own"
+    },
+    {
+	id: "plss-parcels-right",
+    type: "fill",
+    source: {
+      type: "vector",
+      url: "mapbox://nittyjee.6o2n1b1w",
+    },
+    layout: {
+      visibility: "visible",
+    },
+    "source-layer": "plss_parcels_ames_area-cphlvs",
+    paint: {
+      "fill-color": "#00ff7f",
+      "fill-opacity": 0.3,
+      "fill-outline-color": "#000000",
+    },
+    toggleElement: "plss-parcels"
+    },
+    {
+	id: "land-patents-right",
+    type: "fill",
+    source: {
+      type: "vector",
+      url: "mapbox://nittyjee.5ttrrebx",
+    },
+    layout: {
+      visibility: "visible",
+    },
+    "source-layer": "land_patents_story_county-3r2b0g",
+    paint: {
+      "fill-color": "#e3ed58",
+      "fill-opacity": [
+        "case",
+        ["boolean", ["feature-state", "hover"], false],
+        0.5,
+        0.2,
+      ],
+      "fill-outline-color": "#000000",
+    },
+    toggleElement: "land-patents"
+    },
+	{
+	id: "land-patents-right-highlighted",
+    type: "fill",
+    source: {
+      type: "vector",
+      url: "mapbox://nittyjee.5ttrrebx",
+    },
+    layout: {
+      visibility: "visible",
+    },
+    "source-layer": "land_patents_story_county-3r2b0g",
+    paint: {
+      "fill-color": "#e3ed58",
+      "fill-opacity": [
+        "case",
+        ["boolean", ["feature-state", "hover"], false],
+        0.7,
+        0,
+      ],
+      "fill-outline-color": "#000000",
+    },
+    toggleElement: "land-patents"
+    },
+];
+
+const beforeAreaLayers = [
+   {
+    id: "city-limits-left",
+    type: "fill",
+    source: {
+      type: "vector",
+      url: "mapbox://nittyjee.aztmvbuc",
+    },
+    layout: {
+      visibility: "visible",
+    },
+    "source-layer": "city_limits-0cql6y",
+    paint: {
+      "fill-color": "#6495ED",
+      "fill-opacity": 0.2,
+      "fill-outline-color": "#6495ED",
+    },
+    toggleElement: "city-limits"
+    },
+	{
+    id: "prev-builds-left",
+    type: "fill",
+    source: {
+      type: "vector",
+      url: "mapbox://nittyjee.421y21fx",
+    },
+    layout: {
+      visibility: "visible",
+    },
+    "source-layer": "previous_buildings-02rrmr",
+    paint: {
+      "fill-color": "#FF7F50",
+      "fill-opacity": [
+        "case",
+        ["boolean", ["feature-state", "hover"], false],
+        0.5,
+        0.2,
+      ],
+      "fill-outline-color": "#FF7F50",
+    },
+    toggleElement: "prev-builds"
+    },
+    {
+    id: "prev-builds-left-highlighted",
+    type: "fill",
+    source: {
+      type: "vector",
+      url: "mapbox://nittyjee.421y21fx",
+    },
+    layout: {
+      visibility: "visible",
+    },
+    "source-layer": "previous_buildings-02rrmr",
+    paint: {
+      "fill-color": "#FF7F50",
+      "fill-opacity": [
+        "case",
+        ["boolean", ["feature-state", "hover"], false],
+        0.7,
+        0,
+      ],
+      "fill-outline-color": "#FF7F50",
+    },
+    toggleElement: "prev-builds"
+    },
+    {
+	id: "curr-builds-left",
+    type: "fill",
+    source: {
+      type: "vector",
+      url: "mapbox://nittyjee.1f6os6ce",
+    },
+    layout: {
+      visibility: "visible",
+    },
+    "source-layer": "current_buildings-0dk1i0",
+    paint: {
+      "fill-color": "#35b779",
+      "fill-opacity": [
+        "case",
+        ["boolean", ["feature-state", "hover"], false],
+        0.5,
+        0.2,
+      ],
+      "fill-outline-color": "#35b779",
+    },
+    toggleElement: "curr-builds"
+    },
+    {
+	id: "curr-builds-left-highlighted",
+    type: "fill",
+    source: {
+      type: "vector",
+      url: "mapbox://nittyjee.1f6os6ce",
+    },
+    layout: {
+      visibility: "visible",
+    },
+    "source-layer": "current_buildings-0dk1i0",
+    paint: {
+      "fill-color": "#35b779",
+      "fill-opacity": [
+        "case",
+        ["boolean", ["feature-state", "hover"], false],
+        0.7,
+        0,
+      ],
+      "fill-outline-color": "#35b779",
+    },
+    toggleElement: "curr-builds"
+    },
+	{
+	id: "parcels-parcels-left",
+    type: "fill",
+    source: {
+      type: "vector",
+      url: "mapbox://nittyjee.5eq8mpcd",
+    },
+    layout: {
+      visibility: "visible",
+    },
+    "source-layer": "parcels-136ib8",
+    paint: {
+      "fill-color": "#ff1493",
+      "fill-opacity": [
+        "case",
+        ["boolean", ["feature-state", "hover"], false],
+        0.2,
+        0.1,
+      ],
+      "fill-outline-color": "#FFD700",
+    },
+	toggleElement: "parcels-parcels"
+    },
+	{
+	id: "parcels-parcels-left-highlighted",
+    type: "fill",
+    source: {
+      type: "vector",
+      url: "mapbox://nittyjee.5eq8mpcd",
+    },
+    layout: {
+      visibility: "visible",
+    },
+    "source-layer": "parcels-136ib8",
+    paint: {
+      "fill-color": "#ff1493",
+      "fill-opacity": [
+        "case",
+        ["boolean", ["feature-state", "hover"], false],
+        0.3,
+        0,
+      ],
+      "fill-outline-color": "#FFD700",
+    },
+    toggleElement: "parcels-parcels"
+    },
+    {
+	id: "parcels-subs-left",
+    type: "fill",
+    source: {
+      type: "vector",
+      url: "mapbox://nittyjee.4ccvb6kg",
+    },
+    layout: {
+      visibility: "visible",
+    },
+    "source-layer": "subdivisions-67jdnv",
+    paint: {
+      "fill-color": "#7b68ee",
+      "fill-opacity": [
+        "case",
+        ["boolean", ["feature-state", "hover"], false],
+        0.4,
+        0.2,
+      ],
+      "fill-outline-color": "#000000",
+    },
+    toggleElement: "parcels-subs"
+    },
+	{
+	id: "parcels-subs-left-highlighted",
+    type: "fill",
+    source: {
+      type: "vector",
+      url: "mapbox://nittyjee.4ccvb6kg",
+    },
+    layout: {
+      visibility: "visible",
+    },
+    "source-layer": "subdivisions-67jdnv",
+    paint: {
+      "fill-color": "#7b68ee",
+      "fill-opacity": [
+        "case",
+        ["boolean", ["feature-state", "hover"], false],
+        0.6,
+        0,
+      ],
+      "fill-outline-color": "#000000",
+    },
+    toggleElement: "parcels-subs"
+    },
+    {
+	id: "plss-own-left",
+    type: "fill",
+    source: {
+      type: "vector",
+      url: "mapbox://nittyjee.blb6xx89",
+    },
+    layout: {
+      visibility: "visible",
+    },
+    "source-layer": "plss_ownership_boundaries-7d8k3v",
+    paint: {
+      "fill-color": "#00E5D9",
+      "fill-opacity": [
+        "case",
+        ["boolean", ["feature-state", "hover"], false],
+        0.5,
+        0.2,
+      ],
+      "fill-outline-color": "#000000",
+    },
+    toggleElement: "plss-own"
+    },
+	{
+	id: "plss-own-left-highlighted",
+    type: "fill",
+    source: {
+      type: "vector",
+      url: "mapbox://nittyjee.blb6xx89",
+    },
+    layout: {
+      visibility: "visible",
+    },
+    "source-layer": "plss_ownership_boundaries-7d8k3v",
+    paint: {
+      "fill-color": "#00E5D9",
+      "fill-opacity": [
+        "case",
+        ["boolean", ["feature-state", "hover"], false],
+        0.7,
+        0,
+      ],
+      "fill-outline-color": "#000000",
+    },
+	toggleElement: "plss-own"
+    },
+    {
+	id: "plss-parcels-left",
+    type: "fill",
+    source: {
+      type: "vector",
+      url: "mapbox://nittyjee.6o2n1b1w",
+    },
+    layout: {
+      visibility: "visible",
+    },
+    "source-layer": "plss_parcels_ames_area-cphlvs",
+    paint: {
+      "fill-color": "#00ff7f",
+      "fill-opacity": 0.3,
+      "fill-outline-color": "#000000",
+    },
+    toggleElement: "plss-parcels"
+    },
+    {
+	id: "land-patents-left",
+    type: "fill",
+    source: {
+      type: "vector",
+      url: "mapbox://nittyjee.5ttrrebx",
+    },
+    layout: {
+      visibility: "visible",
+    },
+    "source-layer": "land_patents_story_county-3r2b0g",
+    paint: {
+      "fill-color": "#e3ed58",
+      "fill-opacity": [
+        "case",
+        ["boolean", ["feature-state", "hover"], false],
+        0.5,
+        0.2,
+      ],
+      "fill-outline-color": "#000000",
+    },
+    toggleElement: "land-patents"
+    },
+	{
+	id: "land-patents-left-highlighted",
+    type: "fill",
+    source: {
+      type: "vector",
+      url: "mapbox://nittyjee.5ttrrebx",
+    },
+    layout: {
+      visibility: "visible",
+    },
+    "source-layer": "land_patents_story_county-3r2b0g",
+    paint: {
+      "fill-color": "#e3ed58",
+      "fill-opacity": [
+        "case",
+        ["boolean", ["feature-state", "hover"], false],
+        0.7,
+        0,
+      ],
+      "fill-outline-color": "#000000",
+    },
+    toggleElement: "land-patents"
+    },
+];
