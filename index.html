@@ -1,197 +1,505 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f4f4;
-    }
-    .login-container {
-        width: 300px;
-        margin: 100px auto;
-        background-color: #fff;
-        padding: 20px;
-        border-radius: 5px;
-        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    }
-    .login-container h2 {
-        text-align: center;
-        margin-bottom: 20px;
-    }
-    .form-group {
-        margin-bottom: 15px;
-    }
-    .form-group label {
-        display: block;
-        margin-bottom: 5px;
-    }
-    .form-group input {
-        width: 100%;
-        padding: 10px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-        box-sizing: border-box;
-    }
-    .form-group button {
-        width: 100%;
-        padding: 10px;
-        border-radius: 5px;
-        border: none;
-        background-color: #007bff;
-        color: #fff;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-    .form-group button:hover {
-        background-color: #0056b3;
-    }
-    .loader {
-        width: 50px;
-        aspect-ratio: 1;
-        border-radius: 50%;
-        border: 8px solid lightblue;
-        border-right-color: orange;
-        animation: l2 1s infinite linear;
-      }
-      @keyframes l2 {to{transform: rotate(1turn)}}
+<html>
+  <head>
+    <!-- SOURCES-->
 
-      #snackbar {
-        visibility: hidden;
-        min-width: 250px;
-        margin-left: -125px;
-        background-color: #333;
-        color: #fff;
-        text-align: center;
-        border-radius: 2px;
-        padding: 16px;
-        position: fixed;
-        z-index: 1;
-        left: 50%;
-        bottom: 30px;
-        font-size: 17px;
+    <title>AHM - Discover Ames, Iowa History Map</title>
+    <meta
+      name="description"
+      content="Ames Historical Society is engaging to Discover Ames, Iowa History by Our Interactive Timeline Map"
+    />
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <meta name="robots" content="all" />
+
+    <!--  Essential META Tags -->
+    <meta
+      property="og:title"
+      content="AHM - Discover Ames, Iowa History Map"
+    />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:image"
+      content="./icons/AHM.jpg"
+    />
+    <meta property="og:url" content="https://ameshistory.org/" />
+    <meta name="twitter:card" content="ahm_icon" />
+
+    <!--  Non-Essential, But Recommended -->
+    <meta
+      property="og:description"
+      content="Ames Historical Society is engaging to Discover Ames, Iowa History by Our Interactive Timeline Map"
+    />
+    <meta property="og:site_name" content="AHM - Ames, Iowa History Map" />
+    <meta name="twitter:image:alt" content="AHM Icon" />
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="theme-color" content="#00A2E5" />
+    <meta
+      name="apple-mobile-web-app-title"
+      content="AHM - Discover Ames, Iowa History Map"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+
+    <link rel="manifest" href="manifest.json" />
+
+    <link rel="apple-touch-icon" type="image/png" href="./icons/icon.png" />
+    <link
+      rel="apple-touch-icon"
+      type="image/png"
+      sizes="57x57"
+      href="./icons/icon_57x57.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      type="image/png"
+      sizes="60x60"
+      href="./icons/icon_60x60.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      type="image/png"
+      sizes="72x72"
+      href="./icons/icon_72x72.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      type="image/png"
+      sizes="76x76"
+      href="./icons/icon_76x76.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      type="image/png"
+      sizes="114x114"
+      href="./icons/icon_114x114.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      type="image/png"
+      sizes="120x120"
+      href="./icons/icon_120x120.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      type="image/png"
+      sizes="144x144"
+      href="./icons/icon_144x144.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      type="image/png"
+      sizes="152x152"
+      href="./icons/icon_152x152.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      type="image/png"
+      sizes="167x167"
+      href="./icons/icon_167x167.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      type="image/png"
+      sizes="180x180"
+      href="./icons/icon_180x180.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      type="image/png"
+      sizes="192x192"
+      href="./icons/icon_192x192.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      type="image/png"
+      sizes="512x512"
+      href="./icons/icon_512x512.png"
+    />
+
+    <link rel="shortcut icon" href="https://ameshistory.org/sites/all/themes/ameshistoricalsociety/favicon.ico" type="image/vnd.microsoft.icon" />
+
+    <link
+      href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,600italic"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link
+      rel="stylesheet"
+      href="timeline/vendor/jquery-ui-1.10.3.custom/css/ui-darkness/jquery-ui-1.10.3.custom.css"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="timeline/vendor/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js"></script>
+    <script src="timeline/vendor/jquery.ui.touch-punch.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/moment.min.js"></script>
+    
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.js"></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-compare/v0.4.0/mapbox-gl-compare.js"></script>
+
+    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.4.3/mapbox-gl-draw.js"></script>
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.4.3/mapbox-gl-draw.css"
+      type="text/css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-compare/v0.4.0/mapbox-gl-compare.css"
+      type="text/css"
+    />
+    <link href="timeline/index.css" rel="stylesheet" />
+	<!--
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+      integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+	-->
+	
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+	
+    <script src="js/layerSectionData.js"></script>
+    <script src="timeline/js/modalinfo.js"></script>
+    <script src="js/handle-mobile-devices.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/index.js"></script>
+    <script src="./js/google-analytics.js" type="text/javascript"></script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-159545294-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
       }
-      
-      #snackbar.show {
-        visibility: visible;
-        -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
-        animation: fadein 0.5s, fadeout 0.5s 2.5s;
-      }
-      
-      @-webkit-keyframes fadein {
-        from {bottom: 0; opacity: 0;} 
-        to {bottom: 30px; opacity: 1;}
-      }
-      
-      @keyframes fadein {
-        from {bottom: 0; opacity: 0;}
-        to {bottom: 30px; opacity: 1;}
-      }
-      
-      @-webkit-keyframes fadeout {
-        from {bottom: 30px; opacity: 1;} 
-        to {bottom: 0; opacity: 0;}
-      }
-      
-      @keyframes fadeout {
-        from {bottom: 30px; opacity: 1;}
-        to {bottom: 0; opacity: 0;}
-      }
-</style>
-</head>
-<body>
+      gtag("js", new Date());
+
+      gtag("config", "UA-159545294-1");
+    </script>
+    <link rel="stylesheet" href="./css/index.css">
+  </head>
+
+  <body>
     <script type="module" async>
-        // Import the functions you need from the SDKs you need
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-analytics.js";
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js"
-        // TODO: Add SDKs for Firebase products that you want to use
-        // https://firebase.google.com/docs/web/setup#available-libraries
-      
-        // Your web app's Firebase configuration
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-        const firebaseConfig = {
-          apiKey: "AIzaSyC2lueQJPOT2DqZMvGhnXkSHGd1ELXJNYg",
-          authDomain: "meny-firebase.firebaseapp.com",
-          projectId: "meny-firebase",
-          storageBucket: "meny-firebase.appspot.com",
-          messagingSenderId: "426318777741",
-          appId: "1:426318777741:web:52cf7896f3f4ed410a81c4",
-          measurementId: "G-H32RX557FG"
-        };
-      
-        // Initialize Firebase
-        let app = initializeApp(firebaseConfig);
-        let analytics = getAnalytics(app);
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-analytics.js";
+      import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js"
+      // TODO: Add SDKs for Firebase products that you want to use
+      // https://firebase.google.com/docs/web/setup#available-libraries
+    
+      // Your web app's Firebase configuration
+      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+      const firebaseConfig = {
+        apiKey: "AIzaSyC2lueQJPOT2DqZMvGhnXkSHGd1ELXJNYg",
+        authDomain: "meny-firebase.firebaseapp.com",
+        projectId: "meny-firebase",
+        storageBucket: "meny-firebase.appspot.com",
+        messagingSenderId: "426318777741",
+        appId: "1:426318777741:web:52cf7896f3f4ed410a81c4",
+        measurementId: "G-H32RX557FG"
+      };
+    
+      // Initialize Firebase
+      let app = initializeApp(firebaseConfig);
+      let analytics = getAnalytics(app);
+      if (urlParams.get("sketch") === "1"){
         window.auth = getAuth(app)
-        window.signInWithEmailAndPassword = signInWithEmailAndPassword
+      window.auth.onAuthStateChanged(function(user) {
+        if (user) {
+          // User is signed in.
+          console.log("User is authenticated");
+        } else {
+          // No user is signed in.
+          window.location.href = 'login.html'
+        }
+      })
+      window.signOut = signOut
+      }
+    </script>
+    <div id="firebaseui-auth-container"></div>
+    <!-------------------->
+    <!---ADD MODAL DIV---->
+    <!-------------------->
+
+    <input class="checker" type="checkbox" id="o" hidden />
+    <div class="modal">
+      <div class="modal-body">
+        <div class="modal-header">
+          <h1>ABOUT</h1>
+          <label for="o" id="close" title="Close">&times;</label>
+        </div>
+        <div class="modal-content"></div>
+
+      </div>
+    </div>
+<!-- HEADER -->
+    <div class="header">
+	
+      <!--
+      <a href="https://ameshistory.org" class="logo">
+	  -->
+	  
+        <img
+          id="logo-img-wide"
+          src="https://ameshistory.org/sites/all/themes/ameshistoricalsociety/logo.png"
+          align="middle"
+        />
+		
+      <!--
+      </a>
+      ->
+
+      <!--PREVIOUS HEADER-->
+
+
+      <div class="header-right">
+
+     
+
+        <label for="o" id="open-popup" style="display: none">Open PopUp</label>
+        <label id="about" class="trigger-popup" title="Open">ABOUT</label>
+        <i class="fa fa-2x fa-info-circle trigger-popup" id="info"></i>
+      </div>
+    </div>
+
+<!-- LAYER TOGGLE -->
+    <button id="view-hide-layer-panel">
+      <br />
+      <span id="dir-txt">&#9204;</span> <br /><br />
+    </button>
+    <div id="rightInfoBar" class="rightInfoBarBorder">
+   
+	  
+    </div>
+    <div id="studioMenu">
+      <i id="mobi-hide-sidebar" class="fa fa-arrow-circle-left fa-3x"></i>
+      <p class="title">LAYERS</p>
+      <br />
+     
+	 
+	  <div id="roads-section-layers"></div>
+      <div id="rail-roads-cont"></div>
+	  
+	  <div id="buildings-section-layers"></div>
+	  <div id="city-limits-cont"></div>
+	  
+	  <br/>
+	  
+	   <div id="properties-section">
+        <div class="layer-list-row" style="display: flex; justify-content: center; align-items: center;">
+          <i
+            class="fas fa-minus-square compress-expand-icon"
+            id="properties-caret"
+            style="margin-right: 5px;"
+            onclick="sectionCompressExpand('#properties-content', '#properties-caret')"
+          ></i>
+          <label style="font-weight: bold; margin-bottom: 0;">
+            Properties
+          </label>
+        </div>
+        <div id="properties-content">
+          <div id="parcels-section-layers"></div>
+          <div id="plss-parcels-section-layers"></div>
+        </div>
+      </div>
+	 
+      <br />
+      <div>
+        <script src="js/generateLayers.js"></script>
+        <hr />
+        <p class="title">MAPS</p>
         
-      </script>
-<div class="login-container">
-    <h2>Login</h2>
-    <form>
-        <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" required>
-        </div>
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" required onkeypress="handleEnterClickToLogin(event)">
-        </div>
-        <div class="form-group">
-            <button type="button" onclick="handleSubmit(event)">Login</button>
-        </div>
-    </form>
-    <script defer>
-        function handleEnterClickToLogin(e){
-            if (e.key === "Enter"){
-                handleSubmit({
-                    preventDefault(){}
-                })
-            }
-        }
-        function notify(message) {
-            var x = document.getElementById("snackbar");
-            x.className = "show";
-            if (message === "Firebase: Error (auth/invalid-credential)."){
-                x.innerHTML = "<p>Invalid login Credentials</p>"
-            }else{
-                x.innerHTML=`<p>${message}</p>`
-            }
+     
+		<!--No Labels -->
+        <div class="layer-list-row">
+          <input
+            class="cjg705tp9c5xw2rlhsukbq0bs"
+            type="radio"
+            name="ltoggle"
+            value="cjg705tp9c5xw2rlhsukbq0bs"
+            checked="checked"
+          />
+          <input
+            class="cjg705tp9c5xw2rlhsukbq0bs"
+            type="radio"
+            name="rtoggle"
+            value="cjg705tp9c5xw2rlhsukbq0bs"
+            checked="checked"
+          />
+          &nbsp;
+          <label for="cjg705tp9c5xw2rlhsukbq0bs"
+            >No Labels
+            <div class="dummy-label-layer-space"></div
+          ></label>
+          <div class="layer-buttons-block">
+          <div class="layer-buttons-list">
             
-            setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
-          }
+          </div>
+          </div>
+        </div>
 
-        function toggleLoadingElement(showLoading){
-            const loadingElem = document.getElementById("loading")
-            if (!showLoading){
-                loadingElem.style = "display: none;"
-            } else {
-                loadingElem.style = "display: flex; justify-content: center;"
-            }
-        }
+        <div class="layer-list-row">
+          <input
+            class="basic-v9"
+            type="radio"
+            name="ltoggle"
+            value="basic-v9"
+          />
+          <input
+            class="basic-v9"
+            type="radio"
+            name="rtoggle"
+            value="basic-v9"
+          />
+          &nbsp;
+          <label for="basic-v9"
+            >Streets
+            <div class="dummy-label-layer-space"></div
+          ></label>
+          <div class="layer-buttons-block">
+          <div class="layer-buttons-list">
+            
+          </div>
+          </div>
+        </div>
 
-        function handleSubmit(event){
-            event.preventDefault();
-            const emailValue = document.getElementById("email").value;
-            const passwordValue = document.getElementById("password").value;
-            if(!emailValue || !passwordValue){
-                notify("Fill in both username and password field");
-                return;
-            }
-            toggleLoadingElement(true)
-            window.signInWithEmailAndPassword(window.auth, emailValue, passwordValue).then(userCred => {
-                notify("Login successful, redirecting...")
-                window.location.href = 'index.html?sketch=1'
-            }).catch(error => {
-                notify(error.message)
-            }).finally(()=> toggleLoadingElement(false))
-        }
-    </script> 
-    <div style="display: none;" id="loading"><div class="loader"></div></div>
-    <div id="snackbar"></div>
-</div>
-</body>
+        <div class="layer-list-row">
+          <input
+            class="outdoors-v9"
+            type="radio"
+            name="ltoggle"
+            value="outdoors-v9"
+          />
+          <input
+            class="outdoors-v9"
+            type="radio"
+            name="rtoggle"
+            value="outdoors-v9"
+          />
+          &nbsp;
+          <label for="outdoors-v9"
+            >Terrain
+            <div class="dummy-label-layer-space"></div
+          ></label>
+          <div class="layer-buttons-block">
+          <div class="layer-buttons-list">
+            
+          </div>
+          </div>
+        </div>
+		
+        <br />
+
+		
+		
+	
+       
+		
+        <center>
+
+         <button onclick="zoomtobounds('Iowa')" class="zoom-labels">
+            &nbsp; &nbsp; <i class="fa fa-location-crosshairs"></i> &nbsp;
+            <b>Zoom to Iowa</b> &nbsp; &nbsp; &nbsp;
+          </button>
+          <br /><br />
+          <button onclick="zoomtobounds('USA')" class="zoom-labels">
+            &nbsp; &nbsp; <i class="fa fa-flag-usa"></i> &nbsp;
+            <b>Zoom to USA</b> &nbsp; &nbsp; &nbsp;
+          </button>
+          <br /><br />
+          <button onclick="zoomtobounds('World')" class="zoom-labels">
+            &nbsp; &nbsp; <i class="fa fa-globe"></i> &nbsp;
+            <b>Zoom to World</b> &nbsp; &nbsp; &nbsp;
+          </button>
+		  
+        </center>
+        <br/>
+        <div id="sketch-content"></div>
+      </div>
+    </div>
+
+    <!-- MAP DIV-->
+    <div id="comparison-container">
+      <div id="before" class="map"></div>
+      <div id="after" class="map"></div>
+    </div>
+
+    <!-- BASEMAP SWITCHER DIV -->
+    <div id="mobi-view-sidebar"><i class="fa fa-bars fa-2x"></i></div>
+
+    <!-- TIMELINE PANEL DIV -->
+    <div id="datepanel">
+      <b><span id="date"></span></b>
+    </div>
+
+    <div id="footer">
+      <!-- TIMELINE slider DIV -->
+      <div id="slider">
+        <!-- TIMELINE mobile info -->
+        <div id="mobi-year">...</div>
+
+        <!-- TIMELINE ruler DIV -->
+        <div class="timeline">
+          <div class="year">
+            <span id="ruler-date1"> ... </span
+            ><span class="timeline-ruler"></span>
+          </div>
+          <div class="year">
+            <span id="ruler-date2"> ... </span
+            ><span class="timeline-ruler"></span>
+          </div>
+          <div class="year">
+            <span id="ruler-date3"> ... </span
+            ><span class="timeline-ruler"></span>
+          </div>
+          <div class="year">
+            <span id="ruler-date4"> ... </span
+            ><span class="timeline-ruler"></span>
+          </div>
+          <div class="year">
+            <span id="ruler-date5"> ... </span
+            ><span class="timeline-ruler"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="loading">
+      <i class="fa fa-sync fa-10x fa-spin" id="loading-icon"></i>
+    </div>
+
+
+
+
+    <!-- MAP.JS SOURCE -->
+    
+    <script src="js/mapData.js"></script>
+    <script src="js/generateMaps.js"></script>
+    <script src="timeline/js/refreshLayers.js"></script>
+    <script src="timeline/js/addMapLayer.js"></script>
+    <script src="timeline/js/layersList.js"></script>
+    <script src="timeline/js/mapinit.js"></script>
+    <script src="draw/sketchMarkup.js"></script>
+    <script src="draw/controls.js"></script>
+    <script src="timeline/js/beforelayers.js"></script>
+    <script src="timeline/js/afterlayers.js"></script>
+    <script src="timeline/js/sliderpopups.js"></script>
+	<script src="timeline/js/eventsList.js"></script>
+	<script src="timeline/js/eventsHandle.js"></script>
+	<script src="timeline/js/clicksHandle.js"></script>
+  </body>
 </html>
