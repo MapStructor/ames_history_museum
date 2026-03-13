@@ -3,51 +3,104 @@ var modal_content_html = [];
 
 modal_header_text["about"] = "ABOUT";
 modal_content_html["about"] = `
+
 	<p>
-	The Ames Historic Museum Map shows Ames over time.
 
+	With the Ames History Museum Map, anyone can see and explore Ames at any time in
+	its past, from the early 1860s, before the town was founded.
+<br><br>
+	Drag the time slider on the bottom to go to any time, click layers and 
+	maps on the left panel, and move the vertical swipe in the middle to
+	compare the data on different maps.
+<br><br>
+	Here is presented the things you might see on the maps 
+	we've come to use:
+	<br>
+	The streets, railroads, buildings, and city limits, as well
+	as properties, like what you'd see on a city or county website.
+	The intention of this map is to show Ames as one would on Google Maps
+	or Apple Maps, at any time in the past. It will become an indespensible 
+	tool for understanding of the way thing were in the past, and 
+	how they came to be in the present.
+<br><br>
+	The possibilities go much further - Dozens of layers can be added, including 
+	the names of shops, important places, who lived where and owned which properties, 
+	events and landmarks, and historic images, all connected to an encyclopedia. A 
+	major addition will be historic maps, where people can compare the
+	digital map to paper maps, side by side.
+<br><br>
+	Currently we have data from 2026, and have been able to develop the map
+	using the dates properties were sold, and buildings were built, which
+	are made available by the local tax assessors, as well as the county
+	recorder and auditor, with mapping data provided by the GIS departments
+	at the City of Ames and Story County.
+	Future work would involve volunteers taking 
+	historic maps and records, adding precise dates, showing changes of
+	ownership, drawing changes and adding features.
+<br><br>
+	See the following map that was created for the Dutch Period in New
+	York City, that begins to show how much further the work can go:
+<br>
+	<a href = 'https://nahc-mapping.org/mappingNY/' target="_blank">https://nahc-mapping.org/mappingNY/</a>
+<br><br>
 	Developed by Nitin Gadia.
-	nittygrittymapping.org
-
-	Funding provided by Bob Bourne.
-
+<br>
+	<a href = 'https://nittygrittymapping.com' target="_blank">nittygrittymapping.com</a>
+<br><br>
+	Seed funding provided by Bob Bourne.
 	</p>
 `;
 
 modal_header_text["builds-info-layer"] = "Buildings";
 modal_content_html["builds-info-layer"] = `
 	<p>
-		All of the building footprints in Ames.
-		<br><br>
+		These are outlines of buildings in the Ames Area.
 		Building dates come from the City of Ames Assessor's Department.
-		The ages of a buildings are used to assess the property values of parcels.
+		The ages of a buildings are used to assess the property values of parcels, for property tax collection.
 		<br><br>
-		Notes on Accuracy:
-		<br>
-		*Buildings before [] are often guessed, because beyond a certain year, the effect it has
-		on property values does not change significantly.
-		<br>
+		These are existing buildings, not ones that have been demolished in the past, or how they've
+		looked if they changed shape since they were first contructed.
+		<br><br>
+		Only one previous building has so far been drawn to demonstrate: The "Field House" was a building of historic importance,
+		on the Iowa State Central Campus. Zoom into the Iowa State Central Campus by Wallace and Beach Avenue
+		to see it appear in 1920 and be demolished in 1953.
+		The outline of the Field House for example overlaps a building that was expanded since it was demolished, and the
+		surroundings have changed with the roads and paths since.
+
+		<br><br>
+
+		Future work across the map would involve correcting dates, and drawing buildings that existed in the past, and draw
+		the changes that took place with buildings, roads and other features, by georeferencing older maps.
+
+		<br><br>
+		More notes on Accuracy:
+		<br><br>
+		*With Assessor's data, dates of old buildings are often guessed, often to the nearest decade. This is because clear records
+		don't always exist, and beyond a certain age, the effect on property values does not change significantly.
+		<br><br>
 		*Some parcels have more than one building that were built in different years, and
-		the buildings take the earliest year they were built. Future effort would need
+		the buildings take one of the dates. Future effort would need
 		to apply correct build dates using Assessor data and historic records.
 
+		<!--
 		<br><br>
 		Citation:
 		<br>
 		[]
+		-->
 	</p>
 `;
 
 modal_header_text["roads-info-layer"] = "Roads";
 modal_content_html["roads-info-layer"] = `
 	<p>
-		Current roads in Ames, roughly when they were built.
-		<br>
-		1865-2026
+		Dates covered so far: 1865-2026
 		<br><br>
-		Finding the exact dates a road was built in Ames is a multilayered process, involving
-		taking subdivision dates and using maps and other historic records to confirm their
-		times, as well as manually deciding dates.
+		Finding the dates roads were built in Ames is a multilayered process, involving
+		taking subdivision dates and using maps and other historic records for confirmation,
+		as well as manually deciding dates. Existing road lines are used, but their paths
+		may have changed since they were originally constructed, and some roads existed in the
+		past, that would require research and drawing.
 <br><br>
 		"Subdivision Roads":
 		<br>
@@ -61,6 +114,8 @@ modal_content_html["roads-info-layer"] = `
 		fill along the roads.
 		Further work would involve creating another layer
 		where roads are manually chosen based on their earliest buildings.
+		<br>
+		See the layers "Subdivisions" for more information and comparison.
 <br><br>
 		"Confirmed Roads"
 <br>
@@ -73,32 +128,39 @@ modal_content_html["roads-info-layer"] = `
 		Additional records should be searched for that might give the dates roads were
 		created or paved, such as the public works department.
 
+
+		<!--
 		<br><br>
 		Citation:
 		<br>
 		[]
+		-->
 	</p>
 `;
 
 modal_header_text["parcels-info-layer"] = "Parcels";
 modal_content_html["parcels-info-layer"] = `
 	<p>
-		Parcels, or land properties, were created when subdivisions
-		were created, usually by developers, and sold individually
-		to property owners.
-		Sometimes parcels are divided by property owners as well,
-		but it is rare, with zoning laws taht have been in place
-		from the time the subdivisions were created.
-		Parcels before subdivisions were divided between owners,
-		mostly in rural areas from the time of the first land patents.
-		<br>
-		See the "Pre-Subdivisions" layer and
-		"Story County Land Patents" for more information.
+		Parcels, or land properties, were mostly created with subdivisions, 
+		usually by developers, and sold individually
+		to property owners. Outside of subdivisions, parcels were created
+		by the Federal Government and sold as land patents, and were often
+		divided by property owners.
+		<br><br>
+		Future work would involve adding owners to parcels and finding
+		any divisions and merges of properties, mainly using
+		digital data and grantor-grantee indexes from the Story County
+		Recorder and Auditor.
+		<br><br>
+		See the "Subdivisions", "Pre-Subdivisions", and
+		"Story County Land Patents" layers for more information.
 
+		<!--
 		<br><br>
 		Citation:
 		<br>
 		[]
+		-->
 	</p>
 `;
 
@@ -108,22 +170,25 @@ modal_content_html["pre-subdivisions-info-layer"] = `
 		This layer shows rural parcel divisions and ownership transfers
 		that happened after the first land patents,
 		and before subdivisions were created for urban settlements and expansion.
+		<br>Mouse over the properties, and you can see who owned the parcels by
+		hovering over and clicking on them.
+
+		<br><br>
 		Here, only the parcels were focused on in the area of what became Ames,
 		before 1865. You can see the properties owned by John Blair and Cynthia
 		Duff, who were instrumental in the founding of Ames, as their properties
 		were sold to create the first subdivision of Ames.
-
-		Mouse over the properties, and you can see who owned the parcels.
-
-		More work needs to be done on subdividing the rural parcels with the
-		subdivisions. Ultimately, all of the divisions can be done and pieced
-		together like was done here. It may be a good idea to first focus on
-		the owners that sold their land to those who created subdivisions.
-
+		<br>
+		<br>
 		This required finding records from the Story County Recorder, which
 		had Deed Grantor and Grantee Indexes that described the properties
 		according to the PLSS System.
+		Ultimately, all of the divisions and changes of ownership can 
+		be done like they were here, across the area of Ames today, or across
+		Story County.
 
+		
+		<br><br>
 		See "Story County Land Patents" and "Subdivisions" layers to see
 		what came before and after.
 	</p>
@@ -137,14 +202,15 @@ modal_content_html["story-patents-info-layer"] = `
 		Story County was almost entirely bought up and settled between 1850-1865.
 		At the end of the period, the first subdivision was created in Ames,
 		and the town was founded.
-		<br>
-		See the "Pre-Subdivisions" layer and
-		"Story County Land Patents" for more information.
+		<br><br>
+		See the "Pre-Subdivisions" layer for more information on what came after.
 
+		<!--
 		<br><br>
 		Citation:
 		<br>
 		[]
+		-->
 	</p>
 
 	</p>
@@ -154,8 +220,8 @@ modal_header_text["subdivisions-info-layer"] = "Subdivisions";
 modal_content_html["subdivisions-info-layer"] = `
 	<p>
 		Subdivisions are the basis of modern land development. 
-		Land is purchased from landowners, and subdivided into
-		properties that are either built or sold as empty
+		Land is purchased from property owners, and subdivided into
+		parcels that are either built or sold as empty
 		lots. Parcels are created at the time a subdivision is approved
 		by the City or County government.
 <br><br>
@@ -165,10 +231,12 @@ modal_content_html["subdivisions-info-layer"] = `
 		See the "Pre-Subdivisions" layer and "Story County Land Patents"
 		for what came before and after.
 
+		<!--
 		<br><br>
 		Citation:
 		<br>
 		[]
+		-->
 
 
 	</p>
@@ -182,11 +250,12 @@ modal_content_html["rail-roads-info-layer"] = `
 		An additional line was built by 1882 by the Chicago & North Western Railroad, going north from Ames to Albert Lea, on the
 		border with Minnesota.
 
-		
+		<!--
 		<br><br>
 		Citation:
 		<br>
 		[]
+		-->
 
 
 	</p>
@@ -195,13 +264,16 @@ modal_content_html["rail-roads-info-layer"] = `
 modal_header_text["city-limits-info-layer"] = "City limits";
 modal_content_html["city-limits-info-layer"] = `
 	<p>
-		The city limits of Ames, from 1960 onward. Going earlier will require further research.
+		The city limits of Ames, from 1960 onward. Going earlier will require further research,
+		using old maps and land descriptions. Much of the expansion of the town can often be approximated
+		by the "subdivisions" layer as well, which usually come during or after city limits expand,
+		to make was for them.
 
-		
+		<!--
 		<br><br>
 		Citation:
 		<br>
 		[]
-
+		-->
 	</p>
 `;
