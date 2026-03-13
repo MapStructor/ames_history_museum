@@ -25,7 +25,7 @@ mapboxgl.accessToken = newToken;
 
 
 // Initialize maps with the default style
-initMaps("mapbox://styles/nittyjee/cjg705tp9c5xw2rlhsukbq0bs",[-93.61547, 42.0263],15.5);
+initMaps("mapbox://styles/nittyjee/cjg705tp9c5xw2rlhsukbq0bs",[-93.63661, 42.03112],13.63);
 
 var beforeMap;
 var afterMap;
@@ -129,16 +129,18 @@ function zoomtobounds(boundsName) {
       break;
   }
 }
+/*
+
+#13.63/42.03112/-93.63661
+
+
+*/
 
 // Zoom to Layer Function
 function zoomToLayer(groupName) {
   // Simple zoom logic based on Group Name
   switch (groupName) {
-    case "Buildings":
-     beforeMap.flyTo({center: [-93.61547, 42.0263], zoom: 15.5, bearing: 0});
-     afterMap.flyTo({center: [-93.61547, 42.0263], zoom: 15.5, bearing: 0});
-	break;
-	case "Roads","Parcels":
+	case "Roads":
      beforeMap.flyTo({center: [-93.62675, 42.0263], zoom: 13.5, bearing: 0});
      afterMap.flyTo({center: [-93.62675, 42.0263], zoom: 13.5, bearing: 0});
 	break;
@@ -146,13 +148,29 @@ function zoomToLayer(groupName) {
 	 beforeMap.flyTo({center: [-93.5097,42.0309], zoom: 9, bearing: 0});
 	 afterMap.flyTo({center: [-93.5097,42.0309], zoom: 9, bearing: 0});
 	break;
+    case "Buildings":
+     beforeMap.flyTo({center: [-93.61547, 42.0263], zoom: 15.5, bearing: 0});
+     afterMap.flyTo({center: [-93.61547, 42.0263], zoom: 15.5, bearing: 0});
+	break;
 	case "City Limits":
 	 beforeMap.flyTo({center: [-93.61547, 42.0263], zoom: 12, bearing: 0});
 	 afterMap.flyTo({center: [-93.61547, 42.0263], zoom: 12, bearing: 0});
 	break;
-	case "PLSS Parcels":
-     beforeMap.flyTo({center: [-93.62675, 42.0263], zoom: 12.5, bearing: 0});
-     afterMap.flyTo({center: [-93.62675, 42.0263], zoom: 12.5, bearing: 0});
+	case "Pre-Subdivisions":
+	 beforeMap.flyTo({center: [-93.61547, 42.0263], zoom: 12, bearing: 0});
+	 afterMap.flyTo({center: [-93.61547, 42.0263], zoom: 12, bearing: 0});
+	break;
+	case "Parcels":
+     beforeMap.flyTo({center: [-93.62675, 42.0263], zoom: 13.5, bearing: 0});
+     afterMap.flyTo({center: [-93.62675, 42.0263], zoom: 13.5, bearing: 0});
+	break;
+	case "Subdivisions":
+	 beforeMap.flyTo({center: [-93.61547, 42.0263], zoom: 12, bearing: 0});
+	 afterMap.flyTo({center: [-93.61547, 42.0263], zoom: 12, bearing: 0});
+	break;
+	case "Story County Land Patents":
+     beforeMap.flyTo({center: [-93.5116, 42.0363], zoom: 10, bearing: 0});
+     afterMap.flyTo({center: [-93.5116, 42.0363], zoom: 12.5, bearing: 0});
 	break;
   }
 
@@ -167,11 +185,13 @@ function zoomToLayer(groupName) {
 var rightInputs = document.getElementsByName("rtoggle");
 
 function switchRightLayer(layer) {
-  var rightLayerClass = layer.target.className; //*A layer.target.id;
-  afterMap.setStyle("mapbox://styles/" + ( rightLayerClass == "cjg705tp9c5xw2rlhsukbq0bs" ? "nittyjee/" : "mapbox/" ) + rightLayerClass);
+  var rightLayerClass = ( typeof layer.className === "undefined" ) ? layer.target.className : layer.className ; //*A layer.target.id;
+  console.log(rightLayerClass);
+  afterMap.setStyle("mapbox://styles/" + ( rightLayerClass == "outdoors-v9" ? "mapbox/" : "nittyjee/" ) + rightLayerClass);
 }
 
 for (var i = 0; i < rightInputs.length; i++) {
+  if(rightInputs[i].checked) switchRightLayer(rightInputs[i]);
   rightInputs[i].onclick = switchRightLayer;
 }
 
@@ -179,11 +199,12 @@ for (var i = 0; i < rightInputs.length; i++) {
 var leftInputs = document.getElementsByName("ltoggle");
 
 function switchLeftLayer(layer) {
-  var leftLayerClass = layer.target.className; 
-  beforeMap.setStyle("mapbox://styles/" + ( leftLayerClass == "cjg705tp9c5xw2rlhsukbq0bs" ? "nittyjee/" : "mapbox/" ) + leftLayerClass);
+  var leftLayerClass = ( typeof layer.className === "undefined" ) ?  layer.target.className : layer.className; 
+  beforeMap.setStyle("mapbox://styles/" + ( leftLayerClass == "outdoors-v9" ? "mapbox/" : "nittyjee/" ) + leftLayerClass);
 }
 
 for (var i = 0; i < leftInputs.length; i++) {
+  if(leftInputs[i].checked) switchLeftLayer(leftInputs[i]);
   leftInputs[i].onclick = switchLeftLayer;
 }
 
