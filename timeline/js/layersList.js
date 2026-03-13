@@ -401,14 +401,15 @@ const afterAreaLayers = [
     },
     "source-layer": "parcels-136ib8",
     paint: {
-      "fill-color": "#ff1493",
+      "fill-color": "#d1d1d1",
       "fill-opacity": [
         "case",
         ["boolean", ["feature-state", "hover"], false],
         0.2,
         0.1,
       ],
-      "fill-outline-color": "#FFD700",
+      "fill-outline-color": "#000000",
+      "fill-outline-color-opacity": 1,
     },
     toggleElement: "parcels-parcels"
     },

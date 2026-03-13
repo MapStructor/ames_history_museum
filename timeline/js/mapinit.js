@@ -141,32 +141,32 @@ function zoomToLayer(groupName) {
   // Simple zoom logic based on Group Name
   switch (groupName) {
 	case "Roads":
-     beforeMap.flyTo({center: [-93.62675, 42.0263], zoom: 13.5, bearing: 0});
-     afterMap.flyTo({center: [-93.62675, 42.0263], zoom: 13.5, bearing: 0});
+     beforeMap.flyTo({center: [-93.64369, 42.02561], zoom: 12.3, bearing: 0});
+     afterMap.flyTo({center: [-93.64369, 42.02561], zoom: 12.3, bearing: 0});
 	break;
 	case "Railroads":
-	 beforeMap.flyTo({center: [-93.5097,42.0309], zoom: 9, bearing: 0});
-	 afterMap.flyTo({center: [-93.5097,42.0309], zoom: 9, bearing: 0});
+	 beforeMap.flyTo({center: [-93.64029,42.04075], zoom: 12.6, bearing: 0});
+	 afterMap.flyTo({center: [-93.64029,42.04075], zoom: 12.6, bearing: 0});
 	break;
     case "Buildings":
-     beforeMap.flyTo({center: [-93.61547, 42.0263], zoom: 15.5, bearing: 0});
-     afterMap.flyTo({center: [-93.61547, 42.0263], zoom: 15.5, bearing: 0});
+     beforeMap.flyTo({center: [-93.64369, 42.02561], zoom: 12.3, bearing: 0});
+     afterMap.flyTo({center: [-93.64369, 42.02561], zoom: 12.3, bearing: 0});
 	break;
 	case "City Limits":
-	 beforeMap.flyTo({center: [-93.61547, 42.0263], zoom: 12, bearing: 0});
-	 afterMap.flyTo({center: [-93.61547, 42.0263], zoom: 12, bearing: 0});
+	 beforeMap.flyTo({center: [-93.63891, 42.02708], zoom: 11.85, bearing: 0});
+	 afterMap.flyTo({center: [-93.63891, 42.02708], zoom: 11.85, bearing: 0});
 	break;
 	case "Pre-Subdivisions":
-	 beforeMap.flyTo({center: [-93.61547, 42.0263], zoom: 12, bearing: 0});
-	 afterMap.flyTo({center: [-93.61547, 42.0263], zoom: 12, bearing: 0});
+	 beforeMap.flyTo({center: [-93.61106, 42.02711], zoom: 14.27, bearing: 0});
+	 afterMap.flyTo({center: [-93.61106, 42.02711], zoom: 14.27, bearing: 0});
 	break;
 	case "Parcels":
-     beforeMap.flyTo({center: [-93.62675, 42.0263], zoom: 13.5, bearing: 0});
-     afterMap.flyTo({center: [-93.62675, 42.0263], zoom: 13.5, bearing: 0});
+     beforeMap.flyTo({center: [-93.64369, 42.02561], zoom: 12.3, bearing: 0});
+     afterMap.flyTo({center: [-93.64369, 42.02561], zoom: 12.3, bearing: 0});
 	break;
 	case "Subdivisions":
-	 beforeMap.flyTo({center: [-93.61547, 42.0263], zoom: 12, bearing: 0});
-	 afterMap.flyTo({center: [-93.61547, 42.0263], zoom: 12, bearing: 0});
+	 beforeMap.flyTo({center: [-93.64369, 42.02561], zoom: 12.3, bearing: 0});
+	 afterMap.flyTo({center: [-93.64369, 42.02561], zoom: 12.3, bearing: 0});
 	break;
 	case "Story County Land Patents":
      beforeMap.flyTo({center: [-93.5116, 42.0363], zoom: 10, bearing: 0});
