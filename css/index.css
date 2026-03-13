@@ -126,9 +126,9 @@ i.fa-info-circle {
 
 .headerText {
   display: inline-block;
-  margin-top: 19px;
-  text-shadow: #717c9b 0px 1px 3px;
-  font-size: 1.7em;
+  margin-top: 12px;
+  /*text-shadow: #717c9b 0px 1px 3px;*/
+  font-size: 2.7em;
   /*Center*/
   margin-left: 10em;
   margin-left: 10px;

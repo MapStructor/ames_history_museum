@@ -3,9 +3,9 @@ var layer_view_flag = true;
 var timeline_pointer_flag = true;
 var windoWidth = 0;
 
-var sliderStart = moment("01/01/1860").unix();
+var sliderStart = moment("06/01/1852").unix();
 var sliderStartDrag = sliderStart;
-var sliderEnd = moment("12/01/2017").unix(); //01/01/2025
+var sliderEnd = moment("01/01/2017").unix(); //01/01/2025
 var sliderEndDrag = sliderEnd;
 var sliderMiddle = (sliderStart + sliderEnd) / 2;
 var tooltiPos = -100;
@@ -46,8 +46,8 @@ function simple_tooltip(target_items, name) {
 
 $(document).ready(function () {
   // Reset map style toggles to "No Labels" on load to match map initialization
-  $('input[name="ltoggle"][value="cjg705tp9c5xw2rlhsukbq0bs"]').prop('checked', true);
-  $('input[name="rtoggle"][value="cjg705tp9c5xw2rlhsukbq0bs"]').prop('checked', true);
+  $('input[name="ltoggle"][value="cmmdxrf57001901qserwbevvc"]').prop('checked', true);
+  $('input[name="rtoggle"][value="cmmdxrf57001901qserwbevvc"]').prop('checked', true);
 
   if (jQuery.browser.msie)
     alert(

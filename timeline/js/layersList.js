@@ -11,8 +11,16 @@ const afterLineLayers = [
     },
     "source-layer": "railroads-bdj6n3",
     paint: {
-      "line-color": "#FF0000",
-      "line-width": 3,
+      "line-color": "#ea00ff",
+      "line-width": [
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        8, 0.5,
+        12, 1.5,
+        16, 3,
+        20, 6
+      ],
       "line-opacity": 1.0,
     },
     toggleElement: "rail-roads"
@@ -30,7 +38,15 @@ const afterLineLayers = [
     "source-layer": "roads_maps_ames_iowa-4rufgk",
     paint: {
       "line-color": "#A9A9A9",
-      "line-width": 2,
+      "line-width": [
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        8, 0.5,
+        12, 1.5,
+        16, 3,
+        20, 6
+      ],
       "line-opacity": 1.0,
     },
     toggleElement: "confirmed-roads"
@@ -40,16 +56,26 @@ const afterLineLayers = [
     type: "line",
     source: {
       type: "vector",
-      url: "mapbox://nittyjee.5a51yr96",
+      url: "mapbox://nittyjee.4k1su4m3",
     },
     layout: {
       visibility: "visible", 
     },
-    "source-layer": "roads_subd_ames_iowa-apmxo6",
+    "source-layer": "roads_subd_ames_iowa_2026-8t8va0",
     paint: {
-      "line-color": "#808080",
-      "line-width": 2,
-      "line-opacity": 1.0,
+      "line-color": "#00b7ff",
+      "line-width": [
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        8, 0.5,
+        13, 2,
+        15, 3.5,
+        18, 6,
+        19, 26
+      ],
+      "line-opacity": 0.5,
+      "line-blur": 0
     },
     toggleElement: "sub-roads"
    },
@@ -66,7 +92,15 @@ const afterLineLayers = [
     "source-layer": "roads_proximity_ames_iowa-458tl3",
     paint: {
       "line-color": "#696969",
-      "line-width": 2,
+      "line-width": [
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        8, 0.5,
+        12, 1.5,
+        16, 3,
+        20, 6
+      ],
       "line-opacity": 1.0,
     },
     toggleElement: "proxy-roads"
@@ -104,8 +138,16 @@ const beforeLineLayers = [
     },
     "source-layer": "railroads-bdj6n3",
     paint: {
-      "line-color": "#FF0000",
-      "line-width": 3,
+      "line-color": "#ea00ff",
+      "line-width": [
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        8, 0.5,
+        12, 1.5,
+        16, 3,
+        20, 6
+      ],
       "line-opacity": 1.0,
     },
     toggleElement: "rail-roads"
@@ -123,7 +165,15 @@ const beforeLineLayers = [
     "source-layer": "roads_maps_ames_iowa-4rufgk",
     paint: {
       "line-color": "#A9A9A9",
-      "line-width": 2,
+      "line-width": [
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        8, 0.5,
+        12, 1.5,
+        16, 3,
+        20, 6
+      ],
       "line-opacity": 1.0,
     },
     toggleElement: "confirmed-roads"
@@ -133,16 +183,26 @@ const beforeLineLayers = [
     type: "line",
     source: {
       type: "vector",
-      url: "mapbox://nittyjee.5a51yr96",
+      url: "mapbox://nittyjee.4k1su4m3",
     },
     layout: {
       visibility: "visible", 
     },
-    "source-layer": "roads_subd_ames_iowa-apmxo6",
+    "source-layer": "roads_subd_ames_iowa_2026-8t8va0",
     paint: {
-      "line-color": "#808080",
-      "line-width": 2,
-      "line-opacity": 1.0,
+      "line-color": "#00b7ff",
+      "line-width": [
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        8, 0.5,
+        13, 2,
+        15, 3.5,
+        18, 6,
+        19, 26
+      ],
+      "line-opacity": 0.5,
+      "line-blur": 0
     },
     toggleElement: "sub-roads"
    },
@@ -158,9 +218,19 @@ const beforeLineLayers = [
     },
     "source-layer": "roads_proximity_ames_iowa-458tl3",
     paint: {
-      "line-color": "#696969",
-      "line-width": 2,
-      "line-opacity": 1.0,
+      "line-color": "#00b7ff",
+      "line-width": [
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        8, 0.5,
+        13, 2,
+        15, 3.5,
+        18, 6,
+        19, 26
+      ],
+      "line-opacity": 0.5,
+      "line-blur": 0
     },
     toggleElement: "proxy-roads"
    },
@@ -185,17 +255,38 @@ const beforeLineLayers = [
 ];
 
 const afterAreaLayers = [
+
+    {
+    id: "city-limits-right",
+    type: "line",
+    source: {
+      type: "vector",
+      url: "mapbox://nittyjee.41zrmwvc",
+    },
+    layout: {
+      visibility: "visible",
+    },
+    "source-layer": "city_limits_lines_2026-a8hdoi",
+    paint: {
+      "line-color": "#00c610",
+      "line-width": 4,
+      "line-opacity": 1,
+    },
+    toggleElement: "city-limits"
+    },
+
+/*
     {
     id: "city-limits-right",
     type: "fill",
     source: {
       type: "vector",
-      url: "mapbox://nittyjee.aztmvbuc",
+      url: "mapbox://nittyjee.41zrmwvc",
     },
     layout: {
       visibility: "visible",
     },
-    "source-layer": "city_limits-0cql6y",
+    "source-layer": "city_limits_lines_2026-a8hdoi",
     paint: {
       "fill-color": "#6495ED",
       "fill-opacity": 0.2,
@@ -203,6 +294,9 @@ const afterAreaLayers = [
     },
     toggleElement: "city-limits"
     },
+
+*/
+
     {
     id: "prev-builds-right",
     type: "fill",
@@ -220,7 +314,7 @@ const afterAreaLayers = [
         "case",
         ["boolean", ["feature-state", "hover"], false],
         0.5,
-        0.2,
+        1,
       ],
       "fill-outline-color": "#FF7F50",
     },
@@ -254,21 +348,21 @@ const afterAreaLayers = [
     type: "fill",
     source: {
       type: "vector",
-      url: "mapbox://nittyjee.1f6os6ce",
+      url: "mapbox://nittyjee.du0aopr8",
     },
     layout: {
       visibility: "visible",
     },
-    "source-layer": "current_buildings-0dk1i0",
+    "source-layer": "buildings_ames_2026-9v0yur",
     paint: {
-      "fill-color": "#35b779",
+      "fill-color": "#ffb255",
       "fill-opacity": [
         "case",
         ["boolean", ["feature-state", "hover"], false],
         0.5,
-        0.2,
+        1.0,
       ],
-      "fill-outline-color": "#35b779",
+      "fill-outline-color": "#ff0000",
     },
     toggleElement: "curr-builds"
     },
@@ -277,12 +371,12 @@ const afterAreaLayers = [
     type: "fill",
     source: {
       type: "vector",
-      url: "mapbox://nittyjee.1f6os6ce",
+      url: "mapbox://nittyjee.du0aopr8",
     },
     layout: {
       visibility: "visible",
     },
-    "source-layer": "current_buildings-0dk1i0",
+    "source-layer": "buildings_ames_2026-9v0yur",
     paint: {
       "fill-color": "#35b779",
       "fill-opacity": [
@@ -502,19 +596,19 @@ const afterAreaLayers = [
 const beforeAreaLayers = [
    {
     id: "city-limits-left",
-    type: "fill",
+    type: "line",
     source: {
       type: "vector",
-      url: "mapbox://nittyjee.aztmvbuc",
+      url: "mapbox://nittyjee.41zrmwvc",
     },
     layout: {
       visibility: "visible",
     },
-    "source-layer": "city_limits-0cql6y",
+    "source-layer": "city_limits_lines_2026-a8hdoi",
     paint: {
-      "fill-color": "#6495ED",
-      "fill-opacity": 0.2,
-      "fill-outline-color": "#6495ED",
+      "line-color": "#00c610",
+      "line-width": 4,
+      "line-opacity": 1,
     },
     toggleElement: "city-limits"
     },
@@ -535,7 +629,7 @@ const beforeAreaLayers = [
         "case",
         ["boolean", ["feature-state", "hover"], false],
         0.5,
-        0.2,
+        1,
       ],
       "fill-outline-color": "#FF7F50",
     },
@@ -569,21 +663,21 @@ const beforeAreaLayers = [
     type: "fill",
     source: {
       type: "vector",
-      url: "mapbox://nittyjee.1f6os6ce",
+      url: "mapbox://nittyjee.du0aopr8",
     },
     layout: {
       visibility: "visible",
     },
-    "source-layer": "current_buildings-0dk1i0",
+    "source-layer": "buildings_ames_2026-9v0yur",
     paint: {
-      "fill-color": "#35b779",
+      "fill-color": "#ffb255",
       "fill-opacity": [
         "case",
         ["boolean", ["feature-state", "hover"], false],
         0.5,
-        0.2,
+        1.0,
       ],
-      "fill-outline-color": "#35b779",
+      "fill-outline-color": "#ff0000",
     },
     toggleElement: "curr-builds"
     },
@@ -592,12 +686,12 @@ const beforeAreaLayers = [
     type: "fill",
     source: {
       type: "vector",
-      url: "mapbox://nittyjee.1f6os6ce",
+      url: "mapbox://nittyjee.du0aopr8",
     },
     layout: {
       visibility: "visible",
     },
-    "source-layer": "current_buildings-0dk1i0",
+    "source-layer": "buildings_ames_2026-9v0yur",
     paint: {
       "fill-color": "#35b779",
       "fill-opacity": [

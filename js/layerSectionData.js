@@ -8,13 +8,13 @@ const roadsSection = [
     zoomTo: "World",
     infoId: "roads-info-layer",
     type: "group",
-    collapsed: false,
+    collapsed: true,
 	checked: true,
   },
   {
     id: "confirmed-roads",
     name: "confirmed-roads",
-    label: "Confirmed",
+    label: "Confirmed Roads",
     iconColor: "#A9A9A9",
     className: "roads_layer",
     topLayerClass: "roads_layer",
@@ -33,6 +33,8 @@ const roadsSection = [
     iconType: "slash",
     checked: true,
   },
+
+  /*
   {
     id: "proxy-roads",
     name: "proxy-roads",
@@ -44,6 +46,8 @@ const roadsSection = [
     iconType: "slash",
     checked: true,
   }
+    */
+
 ];
 
 
@@ -56,7 +60,7 @@ const buildingsSection = [
     zoomTo: "World", // Update zoom logic if needed
     infoId: "builds-info-layer",
     type: "group",
-    collapsed: false,
+    collapsed: true,
 	checked: true,
   },
   {
@@ -116,17 +120,6 @@ const parcelsSection = [
     isSolid: true,
     iconType: "square",
     checked: false,
-  },
-  {
-    id: "parcels-subs",
-    name: "parcels-subs",
-    label: "Subdivisions",
-    iconColor: "#7b68ee",
-    className: "parcels_layer",
-    topLayerClass: "parcels_layer",
-    isSolid: true,
-    iconType: "square",
-    checked: false,
   }
 ];
 
@@ -145,7 +138,7 @@ const parcelsPLSSsection = [
   {
     id: "plss-own",
     name: "plss-own",
-    label: "PLSS Ownership",
+    label: "Pre-Subdivisions",
     iconColor: "#00E5D9",
 	className: "plss_parcels_layer",
     topLayerClass: "plss_parcels_layer",
@@ -153,6 +146,7 @@ const parcelsPLSSsection = [
     iconType: "square",
     checked: false,
   },
+  /*
   {
     id: "plss-parcels",
     name: "plss-parcels",
@@ -164,6 +158,7 @@ const parcelsPLSSsection = [
     iconType: "square",
     checked: false,
   },
+  */
   {
     id: "land-patents",
     name: "land-patents",
@@ -196,16 +191,81 @@ const singleLayers = [
     id: "city-limits",
     name: "city-limits",
     label: "City Limits",
-    iconColor: "#6495ED",
+    iconColor: "#7ab11b",
     className: "city_limits_layer",
     topLayerClass: "city_limits_layer",
     isSolid: true,
-    iconType: "square",
+    iconType: "slash",
     checked: true,
     containerId: "city-limits-cont",
 	zoomTo: "World",
     infoId: "city-limits-info-layer",
+  },
+  {
+  id: "parcels-subs",
+  name: "parcels-subs",
+  label: "Subdivisions",
+  iconColor: "#7b68ee",
+  className: "subdivisions_layer",
+  topLayerClass: "subdivisions_layer",
+  isSolid: true,
+  iconType: "square",
+  checked: false,
+  containerId: "subdivisions-cont",
+	zoomTo: "World",
+  infoId: "subdivisions-info-layer",
+  },
+
+
+
+  {
+    id: "plss-own",
+    name: "plss-own",
+    label: "Pre-Subdivisions",
+    iconColor: "#00E5D9",
+	    className: "pre_subdivisions",
+      topLayerClass: "pre_subdivisions_layer",
+    isSolid: true,
+    iconType: "square",
+    checked: true,
+
+  containerId: "pre-subdivisions-cont",
+	zoomTo: "World",
+  infoId: "pre-subdivisions-info-layer",
+
+  },
+
+  {
+    id: "land-patents",
+    name: "land-patents",
+    label: "Story County Land Patents",
+    iconColor: "#e3ed58",
+	  className: "story_patents",
+    topLayerClass: "story_patents_layer",
+    isSolid: true,
+    iconType: "square",
+    checked: false,
+
+  containerId: "story-patents-cont",
+	zoomTo: "World",
+  infoId: "story-patents-info-layer",
+
   }
-];
 
 
+  ];
+
+
+  /*
+  {
+    id: "plss-parcels",
+    name: "plss-parcels",
+    label: "PLSS Parcels",
+    iconColor: "#00ff7f",
+	className: "plss_parcels_layer",
+    topLayerClass: "plss_parcels_layer",
+    isSolid: true,
+    iconType: "square",
+    checked: false,
+  },
+  */
