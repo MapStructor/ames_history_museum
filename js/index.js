@@ -47,7 +47,7 @@ function simple_tooltip(target_items, name) {
 $(document).ready(function () {
   // Reset map style toggles to "No Labels" on load to match map initialization
   $('input[name="ltoggle"][value="cmmdxrf57001901qserwbevvc"]').prop('checked', true);
-  $('input[name="rtoggle"][value="cmmdxrf57001901qserwbevvc"]').prop('checked', true);
+  $('input[name="rtoggle"][value="cmmlhhgbj00c701s915u3f0nr"]').prop('checked', true);
 
   if (jQuery.browser.msie)
     alert(
