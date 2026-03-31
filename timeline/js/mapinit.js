@@ -20,7 +20,7 @@ const USAbounds = [
 
 //ACCESS TOKEN
 
-const newToken = "pk.eyJ1Ijoibml0dHlqZWUiLCJhIjoiY21uZHp2MzViMW00OTJwbjV4ZHh2Z3R6dyJ9.R5bfhOTdMxtyh1lR1xQB9Q";
+const newToken = "pk.eyJ1Ijoibml0dHlqZWUiLCJhIjoiY21tcGlyeWt0MHExYzJ5b2VqcGJhdDRieSJ9.Ai9ymb2G5htA_2sUSB2GPg";
 mapboxgl.accessToken = newToken;
 
 
