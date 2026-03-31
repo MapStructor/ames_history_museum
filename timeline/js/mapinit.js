@@ -1,10 +1,26 @@
 
 
+// world bounds
+const WorldBounds = [
+  [-179, -59], // [west, south]
+  [135, 77], // [east, north]
+];
+
+//-96.639704,40.378264,-90.140613,43.500945
+const IowaBounds = [
+  [-96.639704,40.378264], // [west, south]
+  [-90.140613,43.500945] // [east, north]
+];
+
+const USAbounds = [
+  [-125.41992187500001,23.725011735951796], // [west, south]
+  [-66.53320312500001,49.95121990866204]    // [east, north]
+];
 
 
 //ACCESS TOKEN
 
-const newToken = "";
+const newToken = "pk.eyJ1Ijoibml0dHlqZWUiLCJhIjoiY21uZHp2MzViMW00OTJwbjV4ZHh2Z3R6dyJ9.R5bfhOTdMxtyh1lR1xQB9Q";
 mapboxgl.accessToken = newToken;
 
 
@@ -50,12 +66,33 @@ var map;
 	afterMap.addControl(nav_right, "bottom-right");
 	
 
+	//BASEMAP SWITCHING
+	beforeMap.on("style.load", function () {
+		var sliderVal = moment($("#date").text()).unix();
+		var yr = parseInt(moment.unix(sliderVal).format("YYYY"));
+		var date = parseInt(moment.unix(sliderVal).format("YYYYMMDD"));
+		addBeforeLineLayers(date);
+		setTimeout(() => {
+			addBeforeAreaLayers(date);
+			addLeftEvents();
+			// Ensure visibility is sync with checkboxes
+			setTimeout(refreshLayers(), 222); 
+		}, 111);
+	});
+
+	
+	//BASEMAP SWITCHING
 	afterMap.on("style.load", function () {
 		var sliderVal = moment($("#date").text()).unix();
+		var yr = parseInt(moment.unix(sliderVal).format("YYYY"));
 		var date = parseInt(moment.unix(sliderVal).format("YYYYMMDD"));
-		addLayers(date);
-		addEvents();
-		refreshLayers();
+		addAfterLineLayers(date);
+		setTimeout(() => {
+			addAfterAreaLayers(date);
+			addRightEvents();
+			// Ensure visibility is sync with checkboxes
+			setTimeout(refreshLayers(), 333);
+		}, 222);
 	});
 	
 	
@@ -72,10 +109,20 @@ var map;
 
 
 function zoomtobounds(boundsName) {
-  const bounds = boundsList[boundsName];
-  if (!bounds) return;
-  beforeMap.fitBounds(bounds, { bearing: 0 });
-  afterMap.fitBounds(bounds, { bearing: 0 });
+  switch (boundsName) {
+    case "Iowa":
+      beforeMap.fitBounds(IowaBounds, { bearing: 0 });
+      afterMap.fitBounds(IowaBounds, { bearing: 0 });
+      break;
+    case "USA":
+      beforeMap.fitBounds(USAbounds, { bearing: 0 });
+      afterMap.fitBounds(USAbounds, { bearing: 0 });
+      break;
+    case "World":
+      beforeMap.fitBounds(WorldBounds, { bearing: 0 });
+      afterMap.fitBounds(WorldBounds, { bearing: 0 });
+      break;
+  }
 }
 /*
 
@@ -115,11 +162,25 @@ function changeDate(unixDate) {
   
 
   //LAYERS FOR FILTERING
-  layers.forEach(layer => {
-	const leftId = layer.id + "-left";
-	const rightId = layer.id + "-right";
-	if (beforeMap.getLayer(leftId)) beforeMap.setFilter(leftId, dateFilter);
-	if (afterMap.getLayer(rightId)) afterMap.setFilter(rightId, dateFilter);
+  afterLineLayers.forEach(layer => {
+	if (afterMap.getLayer(layer.id)) {
+		afterMap.setFilter(layer.id, dateFilter);
+	}
+  });
+  beforeLineLayers.forEach(layer => {
+	if (beforeMap.getLayer(layer.id)) {
+		beforeMap.setFilter(layer.id, dateFilter);
+	}
+  });
+  afterAreaLayers.forEach(layer => {
+	if (afterMap.getLayer(layer.id)) {
+		afterMap.setFilter(layer.id, dateFilter);
+	}
+  });
+  beforeAreaLayers.forEach(layer => {
+	if (beforeMap.getLayer(layer.id)) {
+		beforeMap.setFilter(layer.id, dateFilter);
+	}
   });
   
  } //end function changeDate

@@ -1,55 +1,110 @@
-// List of layers with hover/popup events
+// List of layers with 
 
 let hoveredID = new Array();
 let hoverPopUp = new Array();
 
-const eventLayers = [
+const afterEventLayers = [
 	{
-		"index": "1",
-		"layerID": "prev-builds",
-		"layerIDhigh": "prev-builds-highlighted",
+		"index": "right_1",
+		"layerID": "prev-builds-right",
+		"layerIDhigh":"prev-builds-right-highlighted",
 		"layerSource": "previous_buildings-02rrmr",
 		"popupParamsList": ["label"],
 		"popupStyle": "infoLayerCoralPopUp",
     },
 	{
-		"index": "2",
-		"layerID": "curr-builds",
-		"layerIDhigh": "curr-builds-highlighted",
+		"index": "right_2",
+		"layerID": "curr-builds-right",
+		"layerIDhigh":"curr-builds-right-highlighted",
 		"layerSource": "buildings_ames_2026-9v0yur",
 		"popupParamsList": [],
 		"popupStyle": "infoLayerGreenPopUp",
     },
 	{
-		"index": "3",
-		"layerID": "parcels-parcels",
-		"layerIDhigh": "parcels-parcels-highlighted",
+		"index": "right_3",
+		"layerID": "parcels-parcels-right",
+		"layerIDhigh":"parcels-parcels-right-highlighted",
 		"layerSource": "parcels-136ib8",
 		"popupParamsList": [],
 		"popupStyle": "infoLayerPinkPopUp",
     },
 	{
-		"index": "4",
-		"layerID": "parcels-subs",
-		"layerIDhigh": "parcels-subs-highlighted",
+		"index": "right_4",
+		"layerID": "parcels-subs-right",
+		"layerIDhigh":"parcels-subs-right-highlighted",
 		"layerSource": "subdivisions-67jdnv",
 		"popupParamsList": ["label"],
 		"popupStyle": "infoLayerSlateBluePopUp",
     },
 	{
-		"index": "5",
-		"layerID": "plss-own",
-		"layerIDhigh": "plss-own-highlighted",
+		"index": "right_5",
+		"layerID": "plss-own-right",
+		"layerIDhigh":"plss-own-right-highlighted",
 		"layerSource": "plss_ownership_boundaries-7d8k3v",
 		"popupParamsList": ["LABEL"],
 		"popupStyle": "infoLayerAquaPopUp",
     },
 	{
-		"index": "6",
-		"layerID": "land-patents",
-		"layerIDhigh": "land-patents-highlighted",
+		"index": "right_6",
+		"layerID": "land-patents-right",
+		"layerIDhigh":"land-patents-right-highlighted",
 		"layerSource": "land_patents_story_county-3r2b0g",
 		"popupParamsList": [],
 		"popupStyle": "infoLayerYellowPopUp",
     },
 ];
+
+
+const beforeEventLayers = [
+	{
+		"index": "left_1",
+		"layerID": "prev-builds-left",
+		"layerIDhigh":"prev-builds-left-highlighted",
+		"layerSource": "previous_buildings-02rrmr",
+		"popupParamsList": ["label"],
+		"popupStyle": "infoLayerCoralPopUp",
+    },
+	{
+		"index": "left_2",
+		"layerID": "curr-builds-left",
+		"layerIDhigh":"curr-builds-left-highlighted",
+		"layerSource": "buildings_ames_2026-9v0yur",
+		"popupParamsList": [],
+		"popupStyle": "infoLayerGreenPopUp",
+    },
+	{
+		"index": "left_3",
+		"layerID": "parcels-parcels-left",
+		"layerIDhigh":"parcels-parcels-left-highlighted",
+		"layerSource": "parcels-136ib8",
+		"popupParamsList": [],
+		"popupStyle": "infoLayerPinkPopUp",
+    },
+	{
+		"index": "left_4",
+		"layerID": "parcels-subs-left",
+		"layerIDhigh":"parcels-subs-left-highlighted",
+		"layerSource": "subdivisions-67jdnv",
+		"popupParamsList": ["label"],
+		"popupStyle": "infoLayerSlateBluePopUp",
+    },
+	{
+		"index": "left_5",
+		"layerID": "plss-own-left",
+		"layerIDhigh":"plss-own-left-highlighted",
+		"layerSource": "plss_ownership_boundaries-7d8k3v",
+		"popupParamsList": ["LABEL"],
+		"popupStyle": "infoLayerAquaPopUp",
+    },
+	{
+		"index": "left_6",
+		"layerID": "land-patents-left",
+		"layerIDhigh":"land-patents-left-highlighted",
+		"layerSource": "land_patents_story_county-3r2b0g",
+		"popupParamsList": [],
+		"popupStyle": "infoLayerYellowPopUp",
+    },
+];
+
+
+
