@@ -20,7 +20,7 @@ const USAbounds = [
 
 //ACCESS TOKEN
 
-const newToken = "pk.eyJ1Ijoibml0dHlqZWUiLCJhIjoiY21tcGlyeWt0MHExYzJ5b2VqcGJhdDRieSJ9.Ai9ymb2G5htA_2sUSB2GPg";
+const newToken = "pk.eyJ1Ijoibml0dHlqZWUiLCJhIjoiY21uZHp2MzViMW00OTJwbjV4ZHh2Z3R6dyJ9.R5bfhOTdMxtyh1lR1xQB9Q";
 mapboxgl.accessToken = newToken;
 
 
@@ -179,34 +179,7 @@ function zoomToLayer(groupName) {
 
 
 
-//BASEMAP MENU SWITCHING FUNCTIONALITY
-
-//RIGHT MENU
-var rightInputs = document.getElementsByName("rtoggle");
-
-function switchRightLayer(layer) {
-  var rightLayerClass = ( typeof layer.className === "undefined" ) ? layer.target.className : layer.className ; //*A layer.target.id;
-  console.log(rightLayerClass);
-  afterMap.setStyle("mapbox://styles/" + ( rightLayerClass == "outdoors-v9" ? "mapbox/" : "nittyjee/" ) + rightLayerClass);
-}
-
-for (var i = 0; i < rightInputs.length; i++) {
-  if(rightInputs[i].checked) switchRightLayer(rightInputs[i]);
-  rightInputs[i].onclick = switchRightLayer;
-}
-
-//LEFT MENU
-var leftInputs = document.getElementsByName("ltoggle");
-
-function switchLeftLayer(layer) {
-  var leftLayerClass = ( typeof layer.className === "undefined" ) ?  layer.target.className : layer.className; 
-  beforeMap.setStyle("mapbox://styles/" + ( leftLayerClass == "outdoors-v9" ? "mapbox/" : "nittyjee/" ) + leftLayerClass);
-}
-
-for (var i = 0; i < leftInputs.length; i++) {
-  if(leftInputs[i].checked) switchLeftLayer(leftInputs[i]);
-  leftInputs[i].onclick = switchLeftLayer;
-}
+setupMapSwitching();
 
 // on Map events
 //var urlHash = window.location.hash;
