@@ -24,30 +24,26 @@ const newToken = "pk.eyJ1Ijoibml0dHlqZWUiLCJhIjoiY21uZHp2MzViMW00OTJwbjV4ZHh2Z3R
 mapboxgl.accessToken = newToken;
 
 
-// Initialize maps with the default style
-initMaps("mapbox://styles/nittyjee/cjg705tp9c5xw2rlhsukbq0bs",[-93.63661, 42.03112],13.63);
-
 var beforeMap;
 var afterMap;
 var map;
 
-function initMaps(mapStyle,mapCenterCoords,mapZoom) {
 
 	const beforeMapConfig = {
 		container: "before",
-		style: mapStyle,
-		center: mapCenterCoords,
+		style: mapConfig.style,
+		center: mapConfig.center,
 		hash: true,
-		zoom: mapZoom,
+		zoom: mapConfig.zoom,
 		attributionControl: true,
 	};
 
 	const afterMapConfig  = {
 		container: "after",
-		style: mapStyle,
-		center: mapCenterCoords,
+		style: mapConfig.style,
+		center: mapConfig.center,
 		hash: true,
-		zoom: mapZoom,
+		zoom: mapConfig.zoom,
 		attributionControl: true,
 	};
 	
@@ -108,7 +104,6 @@ function initMaps(mapStyle,mapCenterCoords,mapZoom) {
     afterMap.on("error", function (e) {
       if (e && e.error !== "Error") console.log(e);
     });
-}
 
 
 
@@ -137,43 +132,14 @@ function zoomtobounds(boundsName) {
 */
 
 // Zoom to Layer Function
-function zoomToLayer(groupName) {
-  // Simple zoom logic based on Group Name
-  switch (groupName) {
-	case "Roads":
-     beforeMap.flyTo({center: [-93.64369, 42.02561], zoom: 12.3, bearing: 0});
-     afterMap.flyTo({center: [-93.64369, 42.02561], zoom: 12.3, bearing: 0});
-	break;
-	case "Railroads":
-	 beforeMap.flyTo({center: [-93.64029,42.04075], zoom: 12.6, bearing: 0});
-	 afterMap.flyTo({center: [-93.64029,42.04075], zoom: 12.6, bearing: 0});
-	break;
-    case "Buildings":
-     beforeMap.flyTo({center: [-93.64369, 42.02561], zoom: 12.3, bearing: 0});
-     afterMap.flyTo({center: [-93.64369, 42.02561], zoom: 12.3, bearing: 0});
-	break;
-	case "City Limits":
-	 beforeMap.flyTo({center: [-93.63891, 42.02708], zoom: 11.85, bearing: 0});
-	 afterMap.flyTo({center: [-93.63891, 42.02708], zoom: 11.85, bearing: 0});
-	break;
-	case "Pre-Subdivisions":
-	 beforeMap.flyTo({center: [-93.61106, 42.02711], zoom: 14.27, bearing: 0});
-	 afterMap.flyTo({center: [-93.61106, 42.02711], zoom: 14.27, bearing: 0});
-	break;
-	case "Parcels":
-     beforeMap.flyTo({center: [-93.64369, 42.02561], zoom: 12.3, bearing: 0});
-     afterMap.flyTo({center: [-93.64369, 42.02561], zoom: 12.3, bearing: 0});
-	break;
-	case "Subdivisions":
-	 beforeMap.flyTo({center: [-93.64369, 42.02561], zoom: 12.3, bearing: 0});
-	 afterMap.flyTo({center: [-93.64369, 42.02561], zoom: 12.3, bearing: 0});
-	break;
-	case "Story County Land Patents":
-     beforeMap.flyTo({center: [-93.5116, 42.0363], zoom: 10, bearing: 0});
-     afterMap.flyTo({center: [-93.5116, 42.0363], zoom: 12.5, bearing: 0});
-	break;
-  }
-
+function zoomToLayer(label) {
+  const allLayers = [...roadsSection, ...buildingsSection, ...parcelsSection, ...parcelsPLSSsection, ...singleLayers];
+  const layer = allLayers.find(l => l.label === label);
+  if (!layer?.zoomCenter) return;
+  const zoomLeft = layer.zoomLevelLeft ?? layer.zoomLevel;
+  const zoomRight = layer.zoomLevelRight ?? layer.zoomLevel;
+  beforeMap.flyTo({center: layer.zoomCenter, zoom: zoomLeft, bearing: 0});
+  afterMap.flyTo({center: layer.zoomCenter, zoom: zoomRight, bearing: 0});
 }
 
 

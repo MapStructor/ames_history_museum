@@ -19,3 +19,9 @@ const baseMaps = [
   //   rChecked: false,
   // },
 ];
+
+const mapConfig = {
+  style: "mapbox://styles/nittyjee/cjg705tp9c5xw2rlhsukbq0bs",
+  center: [-93.63661, 42.03112],
+  zoom: 13.63,
+};

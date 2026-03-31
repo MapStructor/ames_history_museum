@@ -5,7 +5,8 @@ const roadsSection = [
     caretId: "roads-layer-caret",
     label: "Roads",
     itemSelector: ".roads_layer_item",
-    zoomTo: "World",
+    zoomCenter: [-93.64369, 42.02561],
+    zoomLevel: 12.3,
     infoId: "roads-info-layer",
     type: "group",
     collapsed: true,
@@ -57,7 +58,8 @@ const buildingsSection = [
     caretId: "builds-layer-caret",
     label: "Buildings",
     itemSelector: ".builds_layer_item",
-    zoomTo: "World", // Update zoom logic if needed
+    zoomCenter: [-93.64369, 42.02561],
+    zoomLevel: 12.3,
     infoId: "builds-info-layer",
     type: "group",
     collapsed: true,
@@ -93,7 +95,8 @@ const parcelsSection = [
     caretId: "parcels-layer-caret",
     label: "Parcels",
     itemSelector: ".parcels_layer_item",
-    zoomTo: "World",
+    zoomCenter: [-93.64369, 42.02561],
+    zoomLevel: 12.3,
     infoId: "parcels-info-layer",
     type: "group",
     collapsed: true,
@@ -129,7 +132,6 @@ const parcelsPLSSsection = [
     caretId: "plss-parcels-layer-caret",
     label: "PLSS Parcels",
     itemSelector: ".plss_parcels_layer_item",
-    zoomTo: "World",
     infoId: "plss-parcels-info-layer",
     type: "group",
     collapsed: true,
@@ -145,6 +147,8 @@ const parcelsPLSSsection = [
     isSolid: true,
     iconType: "square",
     checked: false,
+    zoomCenter: [-93.61106, 42.02711],
+    zoomLevel: 14.27,
   },
   /*
   {
@@ -169,6 +173,9 @@ const parcelsPLSSsection = [
     isSolid: true,
     iconType: "square",
     checked: false,
+    zoomCenter: [-93.5116, 42.0363],
+    zoomLevelLeft: 10,
+    zoomLevelRight: 12.5,
   }
 ];
 
@@ -184,7 +191,8 @@ const singleLayers = [
     iconType: "slash",
     checked: true,
     containerId: "rail-roads-cont",
-	zoomTo: "World",
+    zoomCenter: [-93.64029, 42.04075],
+    zoomLevel: 12.6,
     infoId: "rail-roads-info-layer",
   },
   {
@@ -198,7 +206,8 @@ const singleLayers = [
     iconType: "slash",
     checked: true,
     containerId: "city-limits-cont",
-	zoomTo: "World",
+    zoomCenter: [-93.63891, 42.02708],
+    zoomLevel: 11.85,
     infoId: "city-limits-info-layer",
   },
   {
@@ -212,7 +221,8 @@ const singleLayers = [
   iconType: "square",
   checked: false,
   containerId: "subdivisions-cont",
-	zoomTo: "World",
+  zoomCenter: [-93.64369, 42.02561],
+  zoomLevel: 12.3,
   infoId: "subdivisions-info-layer",
   },
 
@@ -230,7 +240,8 @@ const singleLayers = [
     checked: true,
 
   containerId: "pre-subdivisions-cont",
-	zoomTo: "World",
+  zoomCenter: [-93.61106, 42.02711],
+  zoomLevel: 14.27,
   infoId: "pre-subdivisions-info-layer",
 
   },
@@ -247,7 +258,9 @@ const singleLayers = [
     checked: false,
 
   containerId: "story-patents-cont",
-	zoomTo: "World",
+  zoomCenter: [-93.5116, 42.0363],
+  zoomLevelLeft: 10,
+  zoomLevelRight: 12.5,
   infoId: "story-patents-info-layer",
 
   }
