@@ -1,5 +1,4 @@
 const layers = [
-    // Railroads
     {
     id: "rail-roads",
     type: "line",
@@ -26,7 +25,6 @@ const layers = [
     },
     toggleElement: "rail-roads"
    },
-   // Confirmed Roads
    {
     id: "confirmed-roads",
     type: "line",
@@ -53,7 +51,6 @@ const layers = [
     },
     toggleElement: "confirmed-roads"
    },
-   // Subdivision Roads
    {
     id: "sub-roads",
     type: "line",
@@ -82,7 +79,6 @@ const layers = [
     },
     toggleElement: "sub-roads"
    },
-   // Proximity Roads
    {
     id: "proxy-roads",
     type: "line",
@@ -116,7 +112,6 @@ const layers = [
     // },
     toggleElement: "proxy-roads"
    },
-   // Lot Lines
    {
     id: "lot-lines",
     type: "line",
@@ -135,7 +130,6 @@ const layers = [
     },
     toggleElement: "lot-lines"
    },
-   // City Limits
    {
     id: "city-limits",
     type: "line",
@@ -154,7 +148,6 @@ const layers = [
     },
     toggleElement: "city-limits"
     },
-    // Previous Buildings
     {
     id: "prev-builds",
     type: "fill",
@@ -178,7 +171,6 @@ const layers = [
     },
     toggleElement: "prev-builds"
     },
-	// Previous Buildings (highlighted)
 	{
     id: "prev-builds-highlighted",
     type: "fill",
@@ -202,7 +194,6 @@ const layers = [
     },
     toggleElement: "prev-builds"
     },
-    // Current Buildings
     {
 	id: "curr-builds",
     type: "fill",
@@ -226,7 +217,6 @@ const layers = [
     },
     toggleElement: "curr-builds"
     },
-	// Current Buildings (highlighted)
 	{
 	id: "curr-builds-highlighted",
     type: "fill",
@@ -250,7 +240,6 @@ const layers = [
     },
     toggleElement: "curr-builds"
     },
-	// Parcels
 	{
 	id: "parcels-parcels",
     type: "fill",
@@ -433,6 +422,44 @@ const layers = [
     },
 	{
 	id: "land-patents-highlighted",
+     url: "mapbox://nittyjee.6o2n1b1w",
+    },
+    layout: {
+      visibility: "visible",
+    },
+    "source-layer": "plss_parcels_ames_area-cphlvs",
+    paint: {
+      "fill-color": "#00ff7f",
+      "fill-opacity": 0.3,
+      "fill-outline-color": "#000000",
+    },
+    toggleElement: "plss-parcels"
+    },
+    {
+	id: "land-patents-left",
+    type: "fill",
+    source: {
+      type: "vector",
+      url: "mapbox://nittyjee.5ttrrebx",
+    },
+    layout: {
+      visibility: "visible",
+    },
+    "source-layer": "land_patents_story_county-3r2b0g",
+    paint: {
+      "fill-color": "#e3ed58",
+      "fill-opacity": [
+        "case",
+        ["boolean", ["feature-state", "hover"], false],
+        0.5,
+        0.2,
+      ],
+      "fill-outline-color": "#000000",
+    },
+    toggleElement: "land-patents"
+    },
+	{
+	id: "land-patents-left-highlighted",
     type: "fill",
     source: {
       type: "vector",
