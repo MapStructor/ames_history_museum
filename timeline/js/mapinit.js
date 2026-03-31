@@ -4,7 +4,7 @@
 
 //ACCESS TOKEN
 
-const newToken = "";
+const newToken = "pk.eyJ1Ijoibml0dHlqZWUiLCJhIjoiY21tcGlyeWt0MHExYzJ5b2VqcGJhdDRieSJ9.Ai9ymb2G5htA_2sUSB2GPg";
 mapboxgl.accessToken = newToken;
 
 
