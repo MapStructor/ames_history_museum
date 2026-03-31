@@ -45,11 +45,7 @@ function simple_tooltip(target_items, name) {
 }
 
 $(document).ready(function () {
-  // Reset map style toggles to "No Labels" on load to match map initialization
-  $('input[name="ltoggle"][value="cmmdxrf57001901qserwbevvc"]').prop('checked', true);
-  $('input[name="rtoggle"][value="cmmlhhgbj00c701s915u3f0nr"]').prop('checked', true);
-
-  if (jQuery.browser.msie)
+if (jQuery.browser.msie)
     alert(
       "Sorry, this application uses state of the art HTML5 techniques which are not (well) supported by Internet Explorer.\nUse Google Chrome or Mozilla Firefox to experience the full power of HTML5 and this application"
     );
