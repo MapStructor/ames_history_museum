@@ -1,6 +1,3 @@
-//delete this line
-
-
 /**
  * @param {{
  *  id: string;
