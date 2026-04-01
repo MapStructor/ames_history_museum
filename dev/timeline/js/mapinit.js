@@ -1,21 +1,5 @@
 
 
-// world bounds
-const WorldBounds = [
-  [-179, -59], // [west, south]
-  [135, 77], // [east, north]
-];
-
-//-96.639704,40.378264,-90.140613,43.500945
-const IowaBounds = [
-  [-96.639704,40.378264], // [west, south]
-  [-90.140613,43.500945] // [east, north]
-];
-
-const USAbounds = [
-  [-125.41992187500001,23.725011735951796], // [west, south]
-  [-66.53320312500001,49.95121990866204]    // [east, north]
-];
 
 
 //ACCESS TOKEN
@@ -67,34 +51,23 @@ var map;
 	afterMap.addControl(nav_right, "bottom-right");
 	
 
-	//BASEMAP SWITCHING
-	beforeMap.on("style.load", function () {
+	let mapsReady = 0;
+	function onStyleLoad() {
+		mapsReady++;
+		if (mapsReady < 2) return;
+		mapsReady = 0;
 		var sliderVal = moment($("#date").text()).unix();
-		var yr = parseInt(moment.unix(sliderVal).format("YYYY"));
 		var date = parseInt(moment.unix(sliderVal).format("YYYYMMDD"));
 		addBeforeLineLayers(date);
-		setTimeout(() => {
-			addBeforeAreaLayers(date);
-			addLeftEvents();
-			// Ensure visibility is sync with checkboxes
-			setTimeout(refreshLayers(), 222); 
-		}, 111);
-	});
-
-	
-	//BASEMAP SWITCHING
-	afterMap.on("style.load", function () {
-		var sliderVal = moment($("#date").text()).unix();
-		var yr = parseInt(moment.unix(sliderVal).format("YYYY"));
-		var date = parseInt(moment.unix(sliderVal).format("YYYYMMDD"));
+		addBeforeAreaLayers(date);
 		addAfterLineLayers(date);
-		setTimeout(() => {
-			addAfterAreaLayers(date);
-			addRightEvents();
-			// Ensure visibility is sync with checkboxes
-			setTimeout(refreshLayers(), 333);
-		}, 222);
-	});
+		addAfterAreaLayers(date);
+		addLeftEvents();
+		addRightEvents();
+		refreshLayers();
+	}
+	beforeMap.on("style.load", onStyleLoad);
+	afterMap.on("style.load", onStyleLoad);
 	
 	
 	// Error Handling
@@ -110,20 +83,10 @@ var map;
 
 
 function zoomtobounds(boundsName) {
-  switch (boundsName) {
-    case "Iowa":
-      beforeMap.fitBounds(IowaBounds, { bearing: 0 });
-      afterMap.fitBounds(IowaBounds, { bearing: 0 });
-      break;
-    case "USA":
-      beforeMap.fitBounds(USAbounds, { bearing: 0 });
-      afterMap.fitBounds(USAbounds, { bearing: 0 });
-      break;
-    case "World":
-      beforeMap.fitBounds(WorldBounds, { bearing: 0 });
-      afterMap.fitBounds(WorldBounds, { bearing: 0 });
-      break;
-  }
+  const bounds = boundsList[boundsName];
+  if (!bounds) return;
+  beforeMap.fitBounds(bounds, { bearing: 0 });
+  afterMap.fitBounds(bounds, { bearing: 0 });
 }
 /*
 
@@ -163,25 +126,11 @@ function changeDate(unixDate) {
   
 
   //LAYERS FOR FILTERING
-  afterLineLayers.forEach(layer => {
-	if (afterMap.getLayer(layer.id)) {
-		afterMap.setFilter(layer.id, dateFilter);
-	}
+  [...afterLineLayers, ...afterAreaLayers].forEach(layer => {
+    if (afterMap.getLayer(layer.id)) afterMap.setFilter(layer.id, dateFilter);
   });
-  beforeLineLayers.forEach(layer => {
-	if (beforeMap.getLayer(layer.id)) {
-		beforeMap.setFilter(layer.id, dateFilter);
-	}
-  });
-  afterAreaLayers.forEach(layer => {
-	if (afterMap.getLayer(layer.id)) {
-		afterMap.setFilter(layer.id, dateFilter);
-	}
-  });
-  beforeAreaLayers.forEach(layer => {
-	if (beforeMap.getLayer(layer.id)) {
-		beforeMap.setFilter(layer.id, dateFilter);
-	}
+  [...beforeLineLayers, ...beforeAreaLayers].forEach(layer => {
+    if (beforeMap.getLayer(layer.id)) beforeMap.setFilter(layer.id, dateFilter);
   });
   
  } //end function changeDate
