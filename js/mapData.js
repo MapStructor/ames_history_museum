@@ -1,7 +1,7 @@
 const baseMaps = [
   {
     id: "cmmdxrf57001901qserwbevvc",
-    name: "Satellite",
+    name: "Satellite.",
     lChecked: true,
     rChecked: false,
   },
