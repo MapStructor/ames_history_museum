@@ -58,12 +58,8 @@ var map;
 		mapsReady = 0;
 		var sliderVal = moment($("#date").text()).unix();
 		var date = parseInt(moment.unix(sliderVal).format("YYYYMMDD"));
-		addBeforeLineLayers(date);
-		addBeforeAreaLayers(date);
-		addAfterLineLayers(date);
-		addAfterAreaLayers(date);
-		addLeftEvents();
-		addRightEvents();
+		addLayers(date);
+		addEvents();
 		refreshLayers();
 	}
 	beforeMap.on("style.load", onStyleLoad);
@@ -126,11 +122,11 @@ function changeDate(unixDate) {
   
 
   //LAYERS FOR FILTERING
-  [...afterLineLayers, ...afterAreaLayers].forEach(layer => {
-    if (afterMap.getLayer(layer.id)) afterMap.setFilter(layer.id, dateFilter);
-  });
-  [...beforeLineLayers, ...beforeAreaLayers].forEach(layer => {
-    if (beforeMap.getLayer(layer.id)) beforeMap.setFilter(layer.id, dateFilter);
+  layers.forEach(layer => {
+    const leftId  = layer.id + "-left";
+    const rightId = layer.id + "-right";
+    if (beforeMap.getLayer(leftId))  beforeMap.setFilter(leftId,  dateFilter);
+    if (afterMap.getLayer(rightId))  afterMap.setFilter(rightId,  dateFilter);
   });
   
  } //end function changeDate
