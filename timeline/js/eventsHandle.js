@@ -1,16 +1,7 @@
-function addRightEvents() {
-  // Loop through all layers in the afterLayers array (which are for the 'after' map)
-  afterEventLayers.forEach(layer => {
-    // Add the layer to the map
-    addHoverEvent(afterMap, layer);
-  });
-}
-
-function addLeftEvents() {
-  // Loop through all layers in the afterLayers array (which are for the 'after' map)
-  beforeEventLayers.forEach(layer => {
-    // Add the layer to the map
-    addHoverEvent(beforeMap, layer);
+function addEvents() {
+  eventLayers.forEach(layer => {
+    addHoverEvent(beforeMap, { ...layer, layerID: layer.layerID + "-left",  layerIDhigh: layer.layerIDhigh + "-left",  index: layer.index + "-left"  });
+    addHoverEvent(afterMap,  { ...layer, layerID: layer.layerID + "-right", layerIDhigh: layer.layerIDhigh + "-right", index: layer.index + "-right" });
   });
 }
 
