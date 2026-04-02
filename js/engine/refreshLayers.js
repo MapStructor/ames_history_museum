@@ -1,6 +1,6 @@
 function refreshLayers() {
     if (typeof layers !== 'undefined') {
-        layers.forEach(layer => {
+        flatLayers(layers).forEach(layer => {
             const checkbox = document.getElementById(layer.toggleElement);
             const leftId  = layer.id + "-left";
             const rightId = layer.id + "-right";

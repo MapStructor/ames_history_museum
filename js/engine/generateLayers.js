@@ -1,63 +1,12 @@
-/**
- * @param {{
- *  id: string;
- * name?: string;
- * caretId?: string;
- * label: string;
- * iconColor?: string;
- * itemSelector?: string;
- * zoomTo?: string;
- * infoId: string;
- * type?: "group" | "lots-events" | "grants-lots" | "castello-points" | "current-buildings";
- * iconType?: "square"
- * }[]} layers
- * @returns {string}
- */
-function renderGroupedLayers(layers) {
+function renderGroupNode(groupNode) {
   let r = "";
-  if (!layers) return r;
-  
-  // We need to know the group name for each item to pass to zoomToLayer.
-  // In the current structure, 'layers' IS the group array.
-  // The first item in 'layers' is usually the group header which has the label.
-  let groupName = "Unknown";
-  let isGroupCollapsed = false;
-  if (layers.length > 0 && layers[0].type === "group") {
-      groupName = layers[0].label;
-      if (layers[0].collapsed) {
-        isGroupCollapsed = true;
-      }
-  }
-
-  layers.forEach((layer) => {
-    if (layer.type === "group") {
-      r += renderLayerRow(layer, groupName);
-    } else {
-      r += renderGroupLayerItem(layer, groupName, isGroupCollapsed);
-    }
+  r += renderLayerRow(groupNode, groupNode.label);
+  groupNode.children.forEach(child => {
+    r += renderGroupLayerItem(child, groupNode.label, groupNode.collapsed);
   });
   return r;
 }
 
-/**
- * 
- * @param {{
-*  id: string;
-* name?: string;
-* caretId?: string;
-* label: string;
-* iconColor?: string;
-* itemSelector?: string;
-* zoomTo?: string;
-* infoId: string;
-* type?: "group" | "lots-events" | "grants-lots" | "castello-points" | "current-buildings";
-* iconType?: "square";
-* isSolid?: boolean;
-* collapsed?: boolean;
-* }} layerData 
- * @param {string} groupName
- * @returns {string}
- */
 function renderLayerRow(layerData, groupName) {
   const iconClass = layerData.collapsed ? "fa-plus-square" : "fa-minus-square";
   const html = `
@@ -72,9 +21,7 @@ function renderLayerRow(layerData, groupName) {
         <i
           class="fas ${iconClass} compress-expand-icon"
           id="${layerData.caretId || "group-layer-caret"}"
-          onclick="itemsCompressExpand('${layerData.itemSelector || ""}','#${
-    layerData.caretId || ""
-  }')"
+          onclick="itemsCompressExpand('${layerData.itemSelector || ""}','#${layerData.caretId || ""}')"
         ></i>
         <label for="${layerData.id || "group_items"}">
           ${layerData.label || ""}
@@ -99,28 +46,7 @@ function renderLayerRow(layerData, groupName) {
   return html;
 }
 
-/**
- * 
- * @param {{
- *  id: string;
-* name?: string;
-* caretId?: string;
-* label: string;
-* iconColor?: string;
-* itemSelector?: string;
-* zoomTo?: string;
-* infoId: string;
-* type?: "group" | "lots-events" | "grants-lots" | "castello-points" | "current-buildings";
-* iconType?: "square";
-* isSolid?: boolean;
-* checked?: boolean;
-* }} layerData 
- * @param {string} groupName
- * @param {boolean} [isGroupCollapsed=false]
- * @returns {string}
- */
-function renderGroupLayerItem(layerData, groupName, isGroupCollapsed = false) {
-  // Removed the zoom button div block entirely
+function renderGroupLayerItem(layerData, groupName, isGroupCollapsed) {
   const style = isGroupCollapsed ? 'style="display: none;"' : '';
   const html = `
       <div class="layer-list-row ${layerData.topLayerClass}_item" ${style}>
@@ -133,70 +59,14 @@ function renderGroupLayerItem(layerData, groupName, isGroupCollapsed = false) {
           ${layerData.checked ? 'checked="checked"' : ""}
         />
         <label for="${layerData.id}">
-          <i class="${layerData.isSolid? "fas" : "far"} fa-${layerData.iconType || "slash"} ${["square", "circle", "comment-dots"].includes(layerData.iconType)? "" : "slash-icon"}" style="color: ${
-            layerData.iconColor || "#ff0000"
-          }"></i>
-          ${layerData.label || "Lenape Trails"}
+          <i class="${layerData.isSolid ? "fas" : "far"} fa-${layerData.iconType || "slash"} ${["square", "circle", "comment-dots"].includes(layerData.iconType) ? "" : "slash-icon"}" style="color: ${layerData.iconColor || "#ff0000"}"></i>
+          ${layerData.label || ""}
         </label>
       </div>
     `;
-
   return html;
 }
 
-/**
- * Sets up the group toggle logic for a given layer section.
- * @param {Array} sectionData - The array of layer data objects.
- */
-function setupLayerGroupListeners(sectionData) {
-    if (!sectionData || sectionData.length < 2) return;
-
-    const groupInfo = sectionData[0];
-    const groupCheckboxId = groupInfo.id;
-    const groupCheckbox = $(`#${groupCheckboxId}`);
-
-    if (groupCheckbox.length === 0) return;
-
-    // Identify child checkboxes. 
-    const childItems = sectionData.slice(1);
-    const childIds = childItems.map(item => `#${item.id}`).join(", ");
-    const $childCheckboxes = $(childIds);
-
-    // 1. Group Checkbox Change Listener
-    groupCheckbox.on('change', function () {
-        const isChecked = $(this).is(':checked');
-        $childCheckboxes.prop('checked', isChecked);
-        
-        // Trigger map update
-        if (typeof refreshLayers === 'function') {
-            refreshLayers();
-        }
-    });
-
-    // 2. Child Checkbox Change Listener (to update Group Checkbox UI)
-    $childCheckboxes.on('change', function () {
-        const total = $childCheckboxes.length;
-        const checked = $childCheckboxes.filter(':checked').length;
-        
-        // If all checked, check group. If not all checked, uncheck group.
-        groupCheckbox.prop('checked', total === checked);
-    });
-}
-
-/**
- * @param {{
-*  id: string;
-* name?: string;
-* label: string;
-* iconColor?: string;
-* iconType?: "square";
-* isSolid?: boolean;
-* checked?: boolean;
-* topLayerClass?: string;
-* className?: string;
-* }} layerData 
- * @returns {string}
- */
 function renderSingleLayer(layerData) {
   const html = `
       <div class="layer-list-row ${layerData.topLayerClass}_item">
@@ -211,7 +81,7 @@ function renderSingleLayer(layerData) {
           <i class="${layerData.isSolid ? "fas" : "far"} fa-${layerData.iconType || "slash"} ${["square", "circle", "comment-dots"].includes(layerData.iconType) ? "" : "slash-icon"}" style="color: ${layerData.iconColor || "#ff0000"}"></i>
           ${layerData.label}
         </label>
-		<div class="layer-buttons-block">
+        <div class="layer-buttons-block">
           <div class="layer-buttons-list">
             <i
               class="fa fa-crosshairs zoom-to-layer"
@@ -230,22 +100,41 @@ function renderSingleLayer(layerData) {
   return html;
 }
 
+function setupGroupListeners(groupNode) {
+  const groupCheckbox = $(`#${groupNode.id}`);
+  if (groupCheckbox.length === 0) return;
+
+  const childIds = groupNode.children.map(c => `#${c.id}`).join(", ");
+  const $childCheckboxes = $(childIds);
+
+  groupCheckbox.on('change', function () {
+    const isChecked = $(this).is(':checked');
+    $childCheckboxes.prop('checked', isChecked);
+    if (typeof refreshLayers === 'function') refreshLayers();
+  });
+
+  $childCheckboxes.on('change', function () {
+    const total = $childCheckboxes.length;
+    const checked = $childCheckboxes.filter(':checked').length;
+    groupCheckbox.prop('checked', total === checked);
+  });
+}
+
+function processNode(node) {
+  if (node.type === "section") {
+    node.children.forEach(child => processNode(child));
+  } else if (node.type === "group") {
+    $(`#${node.containerId}`).html(renderGroupNode(node));
+    setupGroupListeners(node);
+  } else if (node.containerId) {
+    $(`#${node.containerId}`).html(renderSingleLayer(node));
+  }
+}
 
 try {
-
-  if (typeof groupedSections !== 'undefined') {
-    groupedSections.forEach(section => {
-      $(`#${section[0].containerId}`).html(renderGroupedLayers(section));
-      setupLayerGroupListeners(section);
-    });
+  if (typeof layers !== 'undefined') {
+    layers.forEach(node => processNode(node));
   }
-
-  if (typeof singleLayers !== 'undefined') {
-    singleLayers.forEach(layer => {
-      $(`#${layer.containerId}`).html(renderSingleLayer(layer));
-    });
-  }
-
-} catch(error){
-  console.log(error)
+} catch(error) {
+  console.log(error);
 }

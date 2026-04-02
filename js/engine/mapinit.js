@@ -92,8 +92,7 @@ function zoomtobounds(boundsName) {
 
 // Zoom to Layer Function
 function zoomToLayer(label) {
-  const allLayers = [...groupedSections.flat(), ...singleLayers];
-  const layer = allLayers.find(l => l.label === label);
+  const layer = findLayer(layers, label);
   if (!layer?.zoomCenter) return;
   const zoomLeft = layer.zoomLevelLeft ?? layer.zoomLevel;
   const zoomRight = layer.zoomLevelRight ?? layer.zoomLevel;
@@ -121,7 +120,7 @@ function changeDate(unixDate) {
   
 
   //LAYERS FOR FILTERING
-  layers.forEach(layer => {
+  flatLayers(layers).forEach(layer => {
     const leftId  = layer.id + "-left";
     const rightId = layer.id + "-right";
     if (beforeMap.getLayer(leftId))  beforeMap.setFilter(leftId,  dateFilter);

@@ -1,5 +1,5 @@
 function addLayers(date) {
-  layers.forEach(layer => {
+  flatLayers(layers).forEach(layer => {
     addMapLayer(beforeMap, { ...layer, id: layer.id + "-left"  }, date);
     addMapLayer(afterMap,  { ...layer, id: layer.id + "-right" }, date);
     if (layer.highlight) {
