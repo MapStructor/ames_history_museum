@@ -1,14 +1,17 @@
 
-const roadsSection = [
+const groupedSections = [
+
+  [
   {
+    type: "group",
     id: "roads_items",
+    containerId: "roads-section-layers",
     caretId: "roads-layer-caret",
     label: "Roads",
     itemSelector: ".roads_layer_item",
     zoomCenter: [-93.64369, 42.02561],
     zoomLevel: 12.3,
     infoId: "roads-info-layer",
-    type: "group",
     collapsed: true,
 	checked: true,
   },
@@ -49,19 +52,20 @@ const roadsSection = [
   }
     */
 
-];
+  ],
 
 
-const buildingsSection = [
+  [
   {
+    type: "group",
     id: "builds_items",
+    containerId: "buildings-section-layers",
     caretId: "builds-layer-caret",
     label: "Buildings",
     itemSelector: ".builds_layer_item",
     zoomCenter: [-93.64369, 42.02561],
     zoomLevel: 12.3,
     infoId: "builds-info-layer",
-    type: "group",
     collapsed: true,
 	checked: true,
   },
@@ -87,18 +91,20 @@ const buildingsSection = [
     iconType: "square",
     checked: true,
   }
-];
+  ],
 
-const parcelsSection = [
+
+  [
   {
+    type: "group",
     id: "parcels_items",
+    containerId: "parcels-section-layers",
     caretId: "parcels-layer-caret",
     label: "Parcels",
     itemSelector: ".parcels_layer_item",
     zoomCenter: [-93.64369, 42.02561],
     zoomLevel: 12.3,
     infoId: "parcels-info-layer",
-    type: "group",
     collapsed: true,
 	checked: false,
   },
@@ -124,60 +130,10 @@ const parcelsSection = [
     iconType: "square",
     checked: false,
   }
+  ],
+
 ];
 
-const parcelsPLSSsection = [
-  {
-    id: "plss_parcels_items",
-    caretId: "plss-parcels-layer-caret",
-    label: "PLSS Parcels",
-    itemSelector: ".plss_parcels_layer_item",
-    infoId: "plss-parcels-info-layer",
-    type: "group",
-    collapsed: true,
-	checked: false,
-  },
-  {
-    id: "plss-own",
-    name: "plss-own",
-    label: "Pre-Subdivisions",
-    iconColor: "#00E5D9",
-	className: "plss_parcels_layer",
-    topLayerClass: "plss_parcels_layer",
-    isSolid: true,
-    iconType: "square",
-    checked: false,
-    zoomCenter: [-93.61106, 42.02711],
-    zoomLevel: 14.27,
-  },
-  /*
-  {
-    id: "plss-parcels",
-    name: "plss-parcels",
-    label: "PLSS Parcels",
-    iconColor: "#00ff7f",
-	className: "plss_parcels_layer",
-    topLayerClass: "plss_parcels_layer",
-    isSolid: true,
-    iconType: "square",
-    checked: false,
-  },
-  */
-  {
-    id: "land-patents",
-    name: "land-patents",
-    label: "Story County Land Patents",
-    iconColor: "#e3ed58",
-	className: "plss_parcels_layer",
-    topLayerClass: "plss_parcels_layer",
-    isSolid: true,
-    iconType: "square",
-    checked: false,
-    zoomCenter: [-93.5116, 42.0363],
-    zoomLevelLeft: 10,
-    zoomLevelRight: 12.5,
-  }
-];
 
 const singleLayers = [
   {

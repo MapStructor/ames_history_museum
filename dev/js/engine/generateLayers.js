@@ -232,33 +232,20 @@ function renderSingleLayer(layerData) {
 
 
 try {
-	  
-  if (typeof roadsSection !== 'undefined') {
-    $("#roads-section-layers").html(renderGroupedLayers(roadsSection));
-    setupLayerGroupListeners(roadsSection);
+
+  if (typeof groupedSections !== 'undefined') {
+    groupedSections.forEach(section => {
+      $(`#${section[0].containerId}`).html(renderGroupedLayers(section));
+      setupLayerGroupListeners(section);
+    });
   }
-  
-  if (typeof buildingsSection !== 'undefined') {
-    $("#buildings-section-layers").html(renderGroupedLayers(buildingsSection));
-    setupLayerGroupListeners(buildingsSection);
-  }
-  
-  if (typeof parcelsSection !== 'undefined') {
-    $("#parcels-section-layers").html(renderGroupedLayers(parcelsSection));
-    setupLayerGroupListeners(parcelsSection);
-  }
-  
-  if (typeof parcelsPLSSsection !== 'undefined') {
-    $("#plss-parcels-section-layers").html(renderGroupedLayers(parcelsPLSSsection));
-    setupLayerGroupListeners(parcelsPLSSsection);
-  }
-  
+
   if (typeof singleLayers !== 'undefined') {
     singleLayers.forEach(layer => {
       $(`#${layer.containerId}`).html(renderSingleLayer(layer));
     });
   }
-  
+
 } catch(error){
   console.log(error)
 }
