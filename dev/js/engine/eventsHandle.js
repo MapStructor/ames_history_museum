@@ -2,7 +2,7 @@ let hoveredID = new Array();
 let hoverPopUp = new Array();
 
 function setupLayerEvents() {
-  layers.filter(l => l.popupStyle).forEach(config => {
+  flatLayers(layers).filter(l => l.popupStyle).forEach(config => {
     setupLayerEventForMap(beforeMap, config, "left");
     setupLayerEventForMap(afterMap,  config, "right");
   });

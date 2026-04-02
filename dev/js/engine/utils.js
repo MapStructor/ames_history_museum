@@ -1,3 +1,26 @@
+function flatLayers(nodes) {
+  const result = [];
+  nodes.forEach(node => {
+    if (node.children) {
+      result.push(...flatLayers(node.children));
+    } else {
+      result.push(node);
+    }
+  });
+  return result;
+}
+
+function findLayer(nodes, label) {
+  for (const node of nodes) {
+    if (node.label === label) return node;
+    if (node.children) {
+      const found = findLayer(node.children, label);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
 function simple_tooltip(target_items, name) {
     $(target_items).each(function (i) {
       $("body").append(
