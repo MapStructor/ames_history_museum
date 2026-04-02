@@ -83,7 +83,8 @@ body * {
 /* HEADER ELEMENTS STYLES */
 
 .header a.encyclopedia,
-.header label#about {
+.header label#about,
+.header .header-btn {
   float: left;
   color: black;
   text-align: center;
@@ -566,7 +567,8 @@ img#logo-img {
 /*438*/
 @media (max-width: 503px) {
   .header a.encyclopedia,
-  .header label#about {
+  .header label#about,
+  .header .header-btn {
     display: none;
   }
   .header i#info {
@@ -651,7 +653,8 @@ img#logo-img {
   }
 
   .header a.encyclopedia,
-  .header label#about {
+  .header label#about,
+  .header .header-btn {
     color: black;
     text-align: center;
     padding: 3px;
