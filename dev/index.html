@@ -169,6 +169,7 @@
 	
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 	
+    <script src="js/lists/header.js"></script>
     <script src="js/lists/sliderDates.js"></script>
     <script src="js/lists/layersList.js"></script>
     <script src="js/lists/modalinfo.js"></script>
@@ -254,22 +255,16 @@
       <a href="https://ameshistory.org" class="logo">
 	  -->
 	  
-      <a href="https://ameshistory.org/" target="_blank">
+      <a id="logo-link" href="" target="_blank">
         <img
           id="logo-img-wide"
-          src="./icons/banner_thumbnail.png"
+          src=""
           align="middle"
         />
       </a>
-		
-      <!--
-      </a>
-      ->
-
-      <!--PREVIOUS HEADER-->
 
       <div id="header_text" class="headerText">
-        <span id="headerTextSuffix">|</span> Map
+        <span id="headerTextSuffix">|</span> <span id="header-text-value"></span>
       </div>
 
       <div class="header-right">
@@ -277,7 +272,7 @@
      
 
         <label for="o" id="open-popup" style="display: none">Open PopUp</label>
-        <label id="about" class="trigger-popup" title="Open">ABOUT</label>
+        <div id="header-right-buttons"></div>
         <i class="fa fa-2x fa-info-circle trigger-popup" id="info"></i>
       </div>
     </div>

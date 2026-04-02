@@ -45,6 +45,21 @@ function simple_tooltip(target_items, name) {
 }
 
 $(document).ready(function () {
+  $("#logo-link").attr("href", siteLogoLink);
+  $("#logo-img-wide").attr("src", siteLogoImage);
+  $("#header-text-value").text(siteHeaderText);
+
+  headerButtons.forEach(btn => {
+    let el;
+    if (btn.type === "modal") {
+      el = $(`<label class="trigger-popup header-btn" id="${btn.id}">${btn.label}</label>`);
+    } else {
+      const target = btn.newTab === false ? "_self" : "_blank";
+      el = $(`<a href="${btn.url}" target="${target}" class="header-btn">${btn.label}</a>`);
+    }
+    $("#header-right-buttons").append(el);
+  });
+
 if (jQuery.browser.msie)
     alert(
       "Sorry, this application uses state of the art HTML5 techniques which are not (well) supported by Internet Explorer.\nUse Google Chrome or Mozilla Firefox to experience the full power of HTML5 and this application"
