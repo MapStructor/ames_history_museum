@@ -2,7 +2,7 @@ let hoveredID = new Array();
 let hoverPopUp = new Array();
 
 function setupLayerEvents() {
-  layerEvents.forEach(config => {
+  layers.filter(l => l.popupStyle).forEach(config => {
     setupLayerEventForMap(beforeMap, config, "left");
     setupLayerEventForMap(afterMap,  config, "right");
   });
@@ -11,46 +11,43 @@ function setupLayerEvents() {
 function setupLayerEventForMap(map, config, side) {
   const layerID = config.id + "-" + side;
   const index   = config.id + "-" + side;
+  const sourceLayer = config["source-layer"];
 
   // HOVER
-  if (config.hover) {
-    hoveredID[index] = null;
-    hoverPopUp[index] = new mapboxgl.Popup({ closeButton: false, closeOnClick: false });
+  hoveredID[index] = null;
+  hoverPopUp[index] = new mapboxgl.Popup({ closeButton: false, closeOnClick: false });
 
-    map.on("mouseenter", layerID, function (e) {
-      map.getCanvas().style.cursor = "pointer";
-      hoverPopUp[index].setLngLat(e.lngLat).addTo(map);
-    });
+  map.on("mouseenter", layerID, function (e) {
+    map.getCanvas().style.cursor = "pointer";
+    hoverPopUp[index].setLngLat(e.lngLat).addTo(map);
+  });
 
-    map.on("mousemove", layerID, function (e) {
-      map.getCanvas().style.cursor = "pointer";
-      if (e.features.length > 0) {
-        if (hoveredID[index]) {
-          map.setFeatureState({ source: layerID, sourceLayer: config.sourceLayer, id: hoveredID[index] }, { hover: false });
-        }
-        hoveredID[index] = e.features[0].id;
-        map.setFeatureState({ source: layerID, sourceLayer: config.sourceLayer, id: hoveredID[index] }, { hover: true });
-
-        const popup_view_list = config.hover.params
-          .filter(p => typeof e.features[0].properties[p] !== 'undefined')
-          .map(p => e.features[0].properties[p]);
-
-        if (popup_view_list.length > 0) {
-          const html = "<div class='" + config.hover.popupStyle + "'>" + popup_view_list.join("<br/>") + "</div>";
-          hoverPopUp[index].setLngLat(e.lngLat).setHTML(html);
-        }
-      }
-    });
-
-    map.on("mouseleave", layerID, function () {
-      map.getCanvas().style.cursor = "";
+  map.on("mousemove", layerID, function (e) {
+    map.getCanvas().style.cursor = "pointer";
+    if (e.features.length > 0) {
       if (hoveredID[index]) {
-        map.setFeatureState({ source: layerID, sourceLayer: config.sourceLayer, id: hoveredID[index] }, { hover: false });
+        map.setFeatureState({ source: layerID, sourceLayer: sourceLayer, id: hoveredID[index] }, { hover: false });
       }
-      hoveredID[index] = null;
-      if (hoverPopUp[index].isOpen()) hoverPopUp[index].remove();
-    });
-  }
+      hoveredID[index] = e.features[0].id;
+      map.setFeatureState({ source: layerID, sourceLayer: sourceLayer, id: hoveredID[index] }, { hover: true });
+
+      if (config.prop) {
+        const val = e.features[0].properties[config.prop];
+        if (typeof val !== 'undefined') {
+          hoverPopUp[index].setLngLat(e.lngLat).setHTML("<div class='" + config.popupStyle + "'>" + val + "</div>");
+        }
+      }
+    }
+  });
+
+  map.on("mouseleave", layerID, function () {
+    map.getCanvas().style.cursor = "";
+    if (hoveredID[index]) {
+      map.setFeatureState({ source: layerID, sourceLayer: sourceLayer, id: hoveredID[index] }, { hover: false });
+    }
+    hoveredID[index] = null;
+    if (hoverPopUp[index].isOpen()) hoverPopUp[index].remove();
+  });
 
   // CLICK
   if (config.click) {
@@ -63,12 +60,12 @@ function setupLayerEventForMap(map, config, side) {
 
     function setHighlight(m, source, featureId, isHovered) {
       if (featureId == null) return;
-      m.setFeatureState({ source, sourceLayer: config.sourceLayer, id: featureId }, { hover: isHovered });
+      m.setFeatureState({ source, sourceLayer: sourceLayer, id: featureId }, { hover: isHovered });
     }
 
     function buildPopupHTML(event) {
-      const val = event.features?.[0]?.properties?.[config.click.prop] ?? "";
-      return "<div class='" + config.click.popupStyle + "'>" + val + "</div>";
+      const val = event.features?.[0]?.properties?.[config.prop] ?? "";
+      return "<div class='" + config.popupStyle + "'>" + val + "</div>";
     }
 
     function closeInfo() {
