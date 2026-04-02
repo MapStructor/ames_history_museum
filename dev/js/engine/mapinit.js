@@ -4,8 +4,7 @@
 
 //ACCESS TOKEN
 
-//Restricted Token
-const restrictedToken = "pk.eyJ1Ijoibml0dHlqZWUiLCJhIjoiY21tcGlyeWt0MHExYzJ5b2VqcGJhdDRieSJ9.Ai9ymb2G5htA_2sUSB2GPg";
+//Restricted Token (defined in js/lists/restrictedToken.js)
 mapboxgl.accessToken = (typeof mapboxToken !== 'undefined') ? mapboxToken : restrictedToken;
 
 
