@@ -93,7 +93,7 @@ function zoomtobounds(boundsName) {
 
 // Zoom to Layer Function
 function zoomToLayer(label) {
-  const allLayers = [...roadsSection, ...buildingsSection, ...parcelsSection, ...parcelsPLSSsection, ...singleLayers];
+  const allLayers = [...groupedSections.flat(), ...singleLayers];
   const layer = allLayers.find(l => l.label === label);
   if (!layer?.zoomCenter) return;
   const zoomLeft = layer.zoomLevelLeft ?? layer.zoomLevel;
