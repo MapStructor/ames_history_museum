@@ -1,6 +1,7 @@
 
 const groupedSections = [
 
+//Roads
   [
   {
     type: "group",
@@ -54,7 +55,7 @@ const groupedSections = [
 
   ],
 
-
+//Buildings
   [
   {
     type: "group",
@@ -93,7 +94,7 @@ const groupedSections = [
   }
   ],
 
-
+//Parcels
   [
   {
     type: "group",
@@ -136,6 +137,8 @@ const groupedSections = [
 
 
 const singleLayers = [
+
+//Railroads
   {
     id: "rail-roads",
     name: "rail-roads",
@@ -151,6 +154,7 @@ const singleLayers = [
     zoomLevel: 12.6,
     infoId: "rail-roads-info-layer",
   },
+//City Limits
   {
     id: "city-limits",
     name: "city-limits",
@@ -166,6 +170,7 @@ const singleLayers = [
     zoomLevel: 11.85,
     infoId: "city-limits-info-layer",
   },
+//Subdivisions
   {
   id: "parcels-subs",
   name: "parcels-subs",
@@ -181,9 +186,7 @@ const singleLayers = [
   zoomLevel: 12.3,
   infoId: "subdivisions-info-layer",
   },
-
-
-
+//Pre-Subdivisions
   {
     id: "plss-own",
     name: "plss-own",
@@ -201,7 +204,7 @@ const singleLayers = [
   infoId: "pre-subdivisions-info-layer",
 
   },
-
+//Story County Land Patents
   {
     id: "land-patents",
     name: "land-patents",

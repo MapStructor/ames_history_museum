@@ -1,4 +1,5 @@
 const layerEvents = [
+  //Previous Buildings
   {
     id: "prev-builds",
     sourceLayer: "previous_buildings-02rrmr",
@@ -12,6 +13,7 @@ const layerEvents = [
       prop: "label",
     },
   },
+  //Current Buildings
   {
     id: "curr-builds",
     sourceLayer: "buildings_ames_2026-9v0yur",
@@ -22,6 +24,7 @@ const layerEvents = [
     },
     click: null,
   },
+  //Parcels
   {
     id: "parcels-parcels",
     sourceLayer: "parcels-136ib8",
@@ -32,6 +35,7 @@ const layerEvents = [
     },
     click: null,
   },
+  //Subdivisions
   {
     id: "parcels-subs",
     sourceLayer: "subdivisions-67jdnv",
@@ -42,6 +46,7 @@ const layerEvents = [
     },
     click: null,
   },
+  //Pre-Subdivisions
   {
     id: "plss-own",
     sourceLayer: "plss_ownership_boundaries-7d8k3v",
@@ -55,6 +60,7 @@ const layerEvents = [
       prop: "LABEL",
     },
   },
+  //Story County Land Patents
   {
     id: "land-patents",
     sourceLayer: "land_patents_story_county-3r2b0g",

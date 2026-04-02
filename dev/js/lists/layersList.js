@@ -1,4 +1,5 @@
 const layers = [
+//Railroads
     {
     id: "rail-roads",
     type: "line",
@@ -25,6 +26,7 @@ const layers = [
     },
     toggleElement: "rail-roads"
    },
+//Confirmed Roads
    {
     id: "confirmed-roads",
     type: "line",
@@ -51,6 +53,7 @@ const layers = [
     },
     toggleElement: "confirmed-roads"
    },
+//Subdivions Roads
    {
     id: "sub-roads",
     type: "line",
@@ -79,6 +82,7 @@ const layers = [
     },
     toggleElement: "sub-roads"
    },
+//Proximity Roads
    {
     id: "proxy-roads",
     type: "line",
@@ -105,6 +109,7 @@ const layers = [
     },
     toggleElement: "proxy-roads"
    },
+//Lot Lines
    {
     id: "lot-lines",
     type: "line",
@@ -123,6 +128,7 @@ const layers = [
     },
     toggleElement: "lot-lines"
    },
+//City Limits
    {
     id: "city-limits",
     type: "line",
@@ -141,6 +147,7 @@ const layers = [
     },
     toggleElement: "city-limits"
     },
+//Previous Buildings
     {
     id: "prev-builds",
     type: "fill",
@@ -162,20 +169,7 @@ const layers = [
       ],
       "fill-outline-color": "#FF7F50",
     },
-    toggleElement: "prev-builds"
-    },
-    {
-    id: "prev-builds-highlighted",
-    type: "fill",
-    source: {
-      type: "vector",
-      url: "mapbox://nittyjee.421y21fx",
-    },
-    layout: {
-      visibility: "visible",
-    },
-    "source-layer": "previous_buildings-02rrmr",
-    paint: {
+    highlight: {
       "fill-color": "#FF7F50",
       "fill-opacity": [
         "case",
@@ -185,8 +179,13 @@ const layers = [
       ],
       "fill-outline-color": "#FF7F50",
     },
+    groupId: "builds_items",
+    popupStyle: "infoLayerCoralPopUp",
+    prop: "label",
+    click: true,
     toggleElement: "prev-builds"
     },
+//Current Buildings
     {
     id: "curr-builds",
     type: "fill",
@@ -208,20 +207,7 @@ const layers = [
       ],
       "fill-outline-color": "#ff0000",
     },
-    toggleElement: "curr-builds"
-    },
-    {
-    id: "curr-builds-highlighted",
-    type: "fill",
-    source: {
-      type: "vector",
-      url: "mapbox://nittyjee.du0aopr8",
-    },
-    layout: {
-      visibility: "visible",
-    },
-    "source-layer": "buildings_ames_2026-9v0yur",
-    paint: {
+    highlight: {
       "fill-color": "#35b779",
       "fill-opacity": [
         "case",
@@ -231,8 +217,11 @@ const layers = [
       ],
       "fill-outline-color": "#35b779",
     },
+    groupId: "builds_items",
+    popupStyle: "infoLayerGreenPopUp",
     toggleElement: "curr-builds"
     },
+//Parcels
     {
     id: "parcels-parcels",
     type: "fill",
@@ -255,20 +244,7 @@ const layers = [
       "fill-outline-color": "#000000",
       "fill-outline-color-opacity": 1,
     },
-    toggleElement: "parcels-parcels"
-    },
-    {
-    id: "parcels-parcels-highlighted",
-    type: "fill",
-    source: {
-      type: "vector",
-      url: "mapbox://nittyjee.5eq8mpcd",
-    },
-    layout: {
-      visibility: "visible",
-    },
-    "source-layer": "parcels-136ib8",
-    paint: {
+    highlight: {
       "fill-color": "#ff1493",
       "fill-opacity": [
         "case",
@@ -278,8 +254,11 @@ const layers = [
       ],
       "fill-outline-color": "#FFD700",
     },
+    groupId: "parcels_items",
+    popupStyle: "infoLayerPinkPopUp",
     toggleElement: "parcels-parcels"
     },
+//Subdivision Parcels
     {
     id: "parcels-subs",
     type: "fill",
@@ -301,20 +280,7 @@ const layers = [
       ],
       "fill-outline-color": "#000000",
     },
-    toggleElement: "parcels-subs"
-    },
-    {
-    id: "parcels-subs-highlighted",
-    type: "fill",
-    source: {
-      type: "vector",
-      url: "mapbox://nittyjee.4ccvb6kg",
-    },
-    layout: {
-      visibility: "visible",
-    },
-    "source-layer": "subdivisions-67jdnv",
-    paint: {
+    highlight: {
       "fill-color": "#7b68ee",
       "fill-opacity": [
         "case",
@@ -324,8 +290,11 @@ const layers = [
       ],
       "fill-outline-color": "#000000",
     },
+    popupStyle: "infoLayerSlateBluePopUp",
+    prop: "label",
     toggleElement: "parcels-subs"
     },
+//Pre-Subdivisions
     {
     id: "plss-own",
     type: "fill",
@@ -347,20 +316,7 @@ const layers = [
       ],
       "fill-outline-color": "#000000",
     },
-    toggleElement: "plss-own"
-    },
-    {
-    id: "plss-own-highlighted",
-    type: "fill",
-    source: {
-      type: "vector",
-      url: "mapbox://nittyjee.blb6xx89",
-    },
-    layout: {
-      visibility: "visible",
-    },
-    "source-layer": "plss_ownership_boundaries-7d8k3v",
-    paint: {
+    highlight: {
       "fill-color": "#00E5D9",
       "fill-opacity": [
         "case",
@@ -370,8 +326,13 @@ const layers = [
       ],
       "fill-outline-color": "#000000",
     },
+    groupId: "plss_parcels_items",
+    popupStyle: "infoLayerAquaPopUp",
+    prop: "LABEL",
+    click: true,
     toggleElement: "plss-own"
     },
+//PLSS Parcels
     {
     id: "plss-parcels",
     type: "fill",
@@ -390,6 +351,7 @@ const layers = [
     },
     toggleElement: "plss-parcels"
     },
+//Story County Land Patents
     {
     id: "land-patents",
     type: "fill",
@@ -411,20 +373,7 @@ const layers = [
       ],
       "fill-outline-color": "#000000",
     },
-    toggleElement: "land-patents"
-    },
-    {
-    id: "land-patents-highlighted",
-    type: "fill",
-    source: {
-      type: "vector",
-      url: "mapbox://nittyjee.5ttrrebx",
-    },
-    layout: {
-      visibility: "visible",
-    },
-    "source-layer": "land_patents_story_county-3r2b0g",
-    paint: {
+    highlight: {
       "fill-color": "#e3ed58",
       "fill-opacity": [
         "case",
@@ -434,6 +383,7 @@ const layers = [
       ],
       "fill-outline-color": "#000000",
     },
+    popupStyle: "infoLayerYellowPopUp",
     toggleElement: "land-patents"
     },
 ];
