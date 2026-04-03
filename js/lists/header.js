@@ -14,8 +14,9 @@ const siteAnalytics = {
 };
 
 const siteConfig = {
-  mapboxUsername: "nittyjee",
-  mobileRedirect: "./mobile.html",
+  mapboxUsername:  "nittyjee",
+  mobileRedirect:  "./mobile.html",
+  desktopRedirect: "./index.html",
 };
 
 const siteMeta = {
