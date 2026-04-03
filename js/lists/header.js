@@ -30,8 +30,7 @@ const siteMeta = {
   twitterImageAlt:  "AHM Icon",
 };
 
-const siteLogoLink  = "https://ameshistory.org/";
-const siteLogoImage = "./icons/banner_thumbnail.png";
+const siteLogoLink   = "https://ameshistory.org/";
 const siteHeaderText = "Map";
 
 const zoomButtons = [
