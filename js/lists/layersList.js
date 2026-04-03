@@ -501,6 +501,194 @@ const layers = [
     ],
   },
 
+
+/*
+//TESTING INFO PANEL WITH DUTCH GRANTS
+
+  // Dutch Grants (Manhattan historical, connected to NAHC encyclopedia)
+  {
+    id: "dutch-grants",
+    name: "dutch-grants",
+    label: "Dutch Grants",
+    iconColor: "#FFD700",
+    className: "dutch_grants_layer",
+    topLayerClass: "dutch_grants_layer",
+    isSolid: true,
+    iconType: "square",
+    checked: false,
+    containerId: "dutch-grants-cont",
+    zoomCenter: [-74.0116, 40.7063],
+    zoomLevel: 15,
+    infoId: "dutch-grants-info-layer",
+    type: "fill",
+    source: {
+      type: "vector",
+      url: "mapbox://nittyjee.8gj92p8f",
+    },
+    layout: { visibility: "none" },
+    "source-layer": "dutch_grants-4p18ol",
+    paint: {
+      "fill-color": "#FFD700",
+      "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], false],
+        0.6,  // hover
+        0.3,  // default
+      ],
+      "fill-outline-color": "#B8860B",
+    },
+    highlight: {
+      "fill-color": "#FFD700",
+      "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], false],
+        0.7,  // hover
+        0,    // default
+      ],
+      "fill-outline-color": "#FFD700",
+    },
+    toggleElement: "dutch-grants",
+    panel: {
+      encyclopediaBase: "https://encyclopedia.nahc-mapping.org",
+      nidProp: "nid",
+      popupLabel: "Dutch Grant Lot",
+      popupProp: "Lot",
+      color: "#ffff00",
+      render: function(_props, f) {
+        return `
+          <h3>Dutch Grant</h3>
+          <hr/>
+
+          <p>
+            <a href="${f("node-url")}" target="_blank">
+              ${f("field-old-title")}
+            </a>
+          </p>
+
+          <p>
+            <b>Start:</b><br>
+            ${f("field-date-start-text-")}
+          </p>
+
+          <p>
+            <b>Date End:</b><br>
+            ${f("field-date-end-text-")}
+          </p>
+
+          <p>
+            <b>To Party 1:</b><br>
+            ${f("field-to-party-1222", "html")}
+          </p>
+
+          <p>
+            <b>To Party 1 (text):</b><br>
+            ${f("field-to-party-1-text-")}
+          </p>
+
+          <p>
+            <b>From Party:</b><br>
+            ${f("field-from-party", "html")}
+          </p>
+
+          <p>
+            <b>From Party (text):</b><br>
+            ${f("field-from-party-text-")}
+          </p>
+
+          ${f("all-images") ? `<p><b>Images:</b></p>${f("all-images")}` : ""}
+        `;
+      },
+    },
+  },
+
+  // Dutch Grants 2 (same data, totally different panel style — for comparison testing)
+  {
+    id: "dutch-grants-2",
+    name: "dutch-grants-2",
+    label: "Dutch Grants 2",
+    iconColor: "#ff4500",
+    className: "dutch_grants_2_layer",
+    topLayerClass: "dutch_grants_2_layer",
+    isSolid: true,
+    iconType: "square",
+    checked: false,
+    containerId: "dutch-grants-2-cont",
+    zoomCenter: [-74.0116, 40.7063],
+    zoomLevel: 15,
+    infoId: "dutch-grants-2-info-layer",
+    type: "fill",
+    source: {
+      type: "vector",
+      url: "mapbox://nittyjee.8gj92p8f",
+    },
+    layout: { visibility: "none" },
+    "source-layer": "dutch_grants-4p18ol",
+    paint: {
+      "fill-color": "#ff4500",
+      "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], false],
+        0.7,  // hover
+        0.2,  // default
+      ],
+      "fill-outline-color": "#ff0000",
+    },
+    highlight: {
+      "fill-color": "#ff4500",
+      "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], false],
+        0.9,  // hover
+        0,    // default
+      ],
+      "fill-outline-color": "#ff0000",
+    },
+    toggleElement: "dutch-grants-2",
+    panel: {
+      encyclopediaBase: "https://encyclopedia.nahc-mapping.org",
+      nidProp: "nid",
+      popupLabel: "Lot",
+      popupProp: "Lot",
+      color: "#ff4500",
+      render: function(props, f) {
+        return `
+          <div style="background:#ff4500; color:#fff; padding:6px 8px; font-size:1.1em; font-weight:bold; margin-bottom:8px;">
+            <a href="${f("node-url")}" target="_blank" style="color:#fff; text-decoration:none;">
+              ${f("field-old-title") || props.Lot}
+            </a>
+          </div>
+
+          <div style="font-size:0.8em; background:#222; color:#fff; display:inline-block; padding:2px 6px; margin-bottom:8px;">
+            ${f("field-date-start-text-")} → ${f("field-date-end-text-")}
+          </div>
+
+          <div style="font-size:0.75em; color:#888; margin:6px 0 2px; letter-spacing:1px;">PARTIES INVOLVED</div>
+
+          <table style="width:100%; font-size:0.9em; border-collapse:collapse; margin-bottom:8px;">
+            <tr>
+              <td style="padding:3px 0; color:#aaa; width:40%;">To</td>
+              <td style="padding:3px 0;">
+                ${f("field-to-party-1222", "html")}
+                <em style="color:#aaa;">${f("field-to-party-1-text-")}</em>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:3px 0; color:#aaa;">From</td>
+              <td style="padding:3px 0;">
+                ${f("field-from-party", "html")}
+                <em style="color:#aaa;">${f("field-from-party-text-")}</em>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:3px 0; color:#aaa;">Lot</td>
+              <td style="padding:3px 0; font-weight:bold;">${props.Lot}</td>
+            </tr>
+          </table>
+
+          ${f("all-images")}
+
+          <div style="margin-top:10px; padding:4px 6px; background:#ff4500; color:#fff; font-size:0.7em; text-align:center; letter-spacing:1px;">
+            NAHC ENCYCLOPEDIA
+          </div>
+        `;
+      },
+    },
+  },
+
+  */
+
   /*
   // PLSS Parcels
   {
