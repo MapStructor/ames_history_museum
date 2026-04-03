@@ -17,6 +17,15 @@ function generateMapHTML(map) {
 
 document.getElementById('base-maps-section').innerHTML = baseMaps.map(generateMapHTML).join('');
 
+document.getElementById('zoom-buttons-section').innerHTML =
+  '<center>' +
+  zoomButtons.map(function(b) {
+    return '<button onclick="zoomtobounds(\'' + b.target + '\')" class="zoom-labels">' +
+      '&nbsp; &nbsp; <i class="fa ' + b.icon + '"></i> &nbsp; <b>' + b.label + '</b> &nbsp; &nbsp; &nbsp;' +
+      '</button>';
+  }).join('<br /><br />') +
+  '</center>';
+
 // Called from mapinit.js after maps are initialized
 function setupMapSwitching() {
   var rightInputs = document.getElementsByName("rtoggle");
