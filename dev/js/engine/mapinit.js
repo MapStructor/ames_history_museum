@@ -48,6 +48,8 @@ var map;
 	beforeMap.addControl(nav_left, "bottom-right");
 	var nav_right = new mapboxgl.NavigationControl();
 	afterMap.addControl(nav_right, "bottom-right");
+
+	setupInfoPanels();
 	
 
 	let mapsReady = 0;
@@ -60,6 +62,7 @@ var map;
 		addLayers(date);
 		addEvents();
 		refreshLayers();
+		registerInfoPanelClicks();
 	}
 	beforeMap.on("style.load", onStyleLoad);
 	afterMap.on("style.load", onStyleLoad);

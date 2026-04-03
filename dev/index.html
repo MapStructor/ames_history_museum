@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <!-- SOURCES-->
@@ -121,7 +121,11 @@
       href="./icons/icon_512x512.png"
     />
 
-    <link rel="shortcut icon" href="https://ameshistory.org/sites/all/themes/ameshistoricalsociety/favicon.ico" type="image/vnd.microsoft.icon" />
+    <link
+      rel="shortcut icon"
+      href="https://ameshistory.org/sites/all/themes/ameshistoricalsociety/favicon.ico"
+      type="image/vnd.microsoft.icon"
+    />
 
     <link
       href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,600italic"
@@ -136,7 +140,7 @@
     <script src="timeline/vendor/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js"></script>
     <script src="timeline/vendor/jquery.ui.touch-punch.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/moment.min.js"></script>
-    
+
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.js"></script>
     <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-compare/v0.4.0/mapbox-gl-compare.js"></script>
 
@@ -157,7 +161,7 @@
       type="text/css"
     />
     <link href="timeline/index.css" rel="stylesheet" />
-	<!--
+    <!--
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
@@ -166,9 +170,15 @@
       referrerpolicy="no-referrer"
     />
 	-->
-	
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-	
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+      integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+
     <script src="js/lists/header.js"></script>
     <script src="js/lists/sliderDates.js"></script>
     <script src="js/lists/layersList.js"></script>
@@ -191,7 +201,7 @@
 
       gtag("config", "UA-159545294-1");
     </script>
-    <link rel="stylesheet" href="./css/index.css">
+    <link rel="stylesheet" href="./css/index.css" />
   </head>
 
   <body>
@@ -199,10 +209,14 @@
       // Import the functions you need from the SDKs you need
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
       import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-analytics.js";
-      import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js"
+      import {
+        getAuth,
+        signInWithEmailAndPassword,
+        signOut,
+      } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
       // TODO: Add SDKs for Firebase products that you want to use
       // https://firebase.google.com/docs/web/setup#available-libraries
-    
+
       // Your web app's Firebase configuration
       // For Firebase JS SDK v7.20.0 and later, measurementId is optional
       const firebaseConfig = {
@@ -212,24 +226,24 @@
         storageBucket: "meny-firebase.appspot.com",
         messagingSenderId: "426318777741",
         appId: "1:426318777741:web:52cf7896f3f4ed410a81c4",
-        measurementId: "G-H32RX557FG"
+        measurementId: "G-H32RX557FG",
       };
-    
+
       // Initialize Firebase
       let app = initializeApp(firebaseConfig);
       let analytics = getAnalytics(app);
-      if (urlParams.get("sketch") === "1"){
-        window.auth = getAuth(app)
-      window.auth.onAuthStateChanged(function(user) {
-        if (user) {
-          // User is signed in.
-          console.log("User is authenticated");
-        } else {
-          // No user is signed in.
-          window.location.href = 'login.html'
-        }
-      })
-      window.signOut = signOut
+      if (urlParams.get("sketch") === "1") {
+        window.auth = getAuth(app);
+        window.auth.onAuthStateChanged(function (user) {
+          if (user) {
+            // User is signed in.
+            console.log("User is authenticated");
+          } else {
+            // No user is signed in.
+            window.location.href = "login.html";
+          }
+        });
+        window.signOut = signOut;
       }
     </script>
     <div id="firebaseui-auth-container"></div>
@@ -245,120 +259,55 @@
           <label for="o" id="close" title="Close">&times;</label>
         </div>
         <div class="modal-content"></div>
-
       </div>
     </div>
-<!-- HEADER -->
+    <!-- HEADER -->
     <div class="header">
-	
       <!--
       <a href="https://ameshistory.org" class="logo">
 	  -->
-	  
+
       <a id="logo-link" href="" target="_blank">
-        <img
-          id="logo-img-wide"
-          src=""
-          align="middle"
-        />
+        <img id="logo-img-wide" src="" align="middle" />
       </a>
 
       <div id="header_text" class="headerText">
-        <span id="headerTextSuffix">|</span> <span id="header-text-value"></span>
+        <span id="headerTextSuffix">|</span>
+        <span id="header-text-value"></span>
       </div>
 
       <div class="header-right">
-
-     
-
         <label for="o" id="open-popup" style="display: none">Open PopUp</label>
         <div id="header-right-buttons"></div>
         <i class="fa fa-2x fa-info-circle trigger-popup" id="info"></i>
       </div>
     </div>
 
-<!-- LAYER TOGGLE -->
+    <!-- LAYER TOGGLE -->
     <button id="view-hide-layer-panel">
       <br />
       <span id="dir-txt">&#9204;</span> <br /><br />
     </button>
-    <div id="rightInfoBar" class="rightInfoBarBorder">
-   
-	  
-    </div>
+    <div id="rightInfoBar" class="rightInfoBarBorder"></div>
     <div id="studioMenu">
       <i id="mobi-hide-sidebar" class="fa fa-arrow-circle-left fa-3x"></i>
       <p class="title">LAYERS</p>
       <br />
-     
-	 
-	  <div id="roads-section-layers"></div>
-    <div id="rail-roads-cont"></div>
-	  <div id="buildings-section-layers"></div>
-	  <div id="city-limits-cont"></div>
-	  
-	  <br/>
-	  
-	   <div id="properties-section">
-        <div class="layer-list-row" style="display: flex; justify-content: center; align-items: center;">
-          <i
-            class="fas fa-minus-square compress-expand-icon"
-            id="properties-caret"
-            style="margin-right: 5px;"
-            onclick="sectionCompressExpand('#properties-content', '#properties-caret')"
-          ></i>
-          <label style="font-weight: bold; margin-bottom: 0;">
-            Properties
-          </label>
-        </div>
 
+      <div id="layers-panel-content"></div>
 
-        <div id="properties-content">
-          <div id="pre-subdivisions-cont"></div>
-          <div id="parcels-section-layers"></div>
-          <!-- <div id="plss-parcels-section-layers"></div> -->
-          <div id="subdivisions-cont"></div>
-          <div id="story-patents-cont"></div>
-        </div>
-
-
-      </div>
-	 
       <br />
       <div>
         <script src="js/engine/generateLayers.js"></script>
         <hr />
         <p class="title">MAPS</p>
-        
-     
+
         <div id="base-maps-section"></div>
-		
+
         <br />
 
-		
-		
-	
-       
-		
-        <center>
-
-         <button onclick="zoomtobounds('Iowa')" class="zoom-labels">
-            &nbsp; &nbsp; <i class="fa fa-location-crosshairs"></i> &nbsp;
-            <b>Zoom to Iowa</b> &nbsp; &nbsp; &nbsp;
-          </button>
-          <br /><br />
-          <button onclick="zoomtobounds('USA')" class="zoom-labels">
-            &nbsp; &nbsp; <i class="fa fa-flag-usa"></i> &nbsp;
-            <b>Zoom to USA</b> &nbsp; &nbsp; &nbsp;
-          </button>
-          <br /><br />
-          <button onclick="zoomtobounds('World')" class="zoom-labels">
-            &nbsp; &nbsp; <i class="fa fa-globe"></i> &nbsp;
-            <b>Zoom to World</b> &nbsp; &nbsp; &nbsp;
-          </button>
-		  
-        </center>
-        <br/>
+        <div id="zoom-buttons-section"></div>
+        <br />
         <div id="sketch-content"></div>
       </div>
     </div>
@@ -413,13 +362,8 @@
       <i class="fa fa-sync fa-10x fa-spin" id="loading-icon"></i>
     </div>
 
-
-
-
-
-
     <!-- MAP.JS SOURCE -->
-    
+
     <script src="js/lists/bounds.js"></script>
     <script src="js/lists/mapData.js"></script>
     <script src="js/engine/generateMaps.js"></script>
@@ -429,6 +373,7 @@
     <script src="js/engine/addLayers.js"></script>
     <script src="js/lists/restrictedToken.js"></script>
     <script src="js/mapbox-token.js"></script>
+    <script src="js/engine/infoPanel.js"></script>
     <script src="js/engine/mapinit.js"></script>
     <script src="draw/sketchMarkup.js"></script>
     <script src="draw/controls.js"></script>
