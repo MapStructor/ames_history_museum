@@ -1,6 +1,6 @@
 // Google Analytics
 var _gaq = _gaq || [];
-_gaq.push(["_setAccount", "UA-28801666-1"]);
+_gaq.push(["_setAccount", siteAnalytics.legacyTrackingId]);
 _gaq.push(["_trackPageview"]);
 
 (function () {
