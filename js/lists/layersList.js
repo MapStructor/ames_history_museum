@@ -281,6 +281,10 @@ const layers = [
   // Properties
   {
     type: "section",
+    id: "properties-section",
+    label: "Properties",
+    caretId: "properties-caret",
+    containerId: "properties-content",
     children: [
 
       // Pre-Subdivisions
