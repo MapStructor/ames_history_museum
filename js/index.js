@@ -5,7 +5,7 @@ var windoWidth = 0;
 
 var sliderStart = moment("06/01/1852").unix();
 var sliderStartDrag = sliderStart;
-var sliderEnd = moment("01/01/2017").unix(); //01/01/2025
+var sliderEnd = moment("01/01/2025").unix(); //01/01/2025
 var sliderEndDrag = sliderEnd;
 var sliderMiddle = (sliderStart + sliderEnd) / 2;
 var tooltiPos = -100;
