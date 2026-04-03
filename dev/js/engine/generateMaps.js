@@ -33,12 +33,12 @@ function setupMapSwitching() {
 
   function switchRightLayer(layer) {
     var id = (typeof layer.className === "undefined") ? layer.target.className : layer.className;
-    afterMap.setStyle("mapbox://styles/nittyjee/" + id);
+    afterMap.setStyle("mapbox://styles/" + siteConfig.mapboxUsername + "/" + id);
   }
 
   function switchLeftLayer(layer) {
     var id = (typeof layer.className === "undefined") ? layer.target.className : layer.className;
-    beforeMap.setStyle("mapbox://styles/nittyjee/" + id);
+    beforeMap.setStyle("mapbox://styles/" + siteConfig.mapboxUsername + "/" + id);
   }
 
   for (var i = 0; i < rightInputs.length; i++) {

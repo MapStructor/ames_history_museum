@@ -46,7 +46,6 @@ function simple_tooltip(target_items, name) {
 
 $(document).ready(function () {
   $("#logo-link").attr("href", siteLogoLink);
-  $("#logo-img-wide").attr("src", siteLogoImage);
   $("#header-text-value").text(siteHeaderText);
 
   headerButtons.forEach(btn => {
