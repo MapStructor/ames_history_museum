@@ -43,11 +43,11 @@ function setupMapSwitching() {
 
   for (var i = 0; i < rightInputs.length; i++) {
     if (rightInputs[i].checked) switchRightLayer(rightInputs[i]);
-    rightInputs[i].onclick = switchRightLayer;
+    rightInputs[i].onchange = switchRightLayer;
   }
 
   for (var i = 0; i < leftInputs.length; i++) {
     if (leftInputs[i].checked) switchLeftLayer(leftInputs[i]);
-    leftInputs[i].onclick = switchLeftLayer;
+    leftInputs[i].onchange = switchLeftLayer;
   }
 }
