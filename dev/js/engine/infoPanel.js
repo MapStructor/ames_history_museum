@@ -51,8 +51,17 @@ function setupInfoPanels() {
 }
 
 function registerInfoPanelClicks() {
-  // Background click — close sidebar if no panel layer was hit
-  beforeMap.on("click", function() { infoPanelDefaultHandle(); });
+  // Background click — toggle sidebar if no panel layer was hit
+  // Debounced to avoid firing on double-click (which should zoom, not toggle)
+  var clickTimer = null;
+  function scheduleToggle() {
+    clearTimeout(clickTimer);
+    clickTimer = setTimeout(function() { infoPanelDefaultHandle(); }, 250);
+  }
+  beforeMap.on("click",    scheduleToggle);
+  beforeMap.on("dblclick", function() { clearTimeout(clickTimer); });
+  afterMap.on("click",     scheduleToggle);
+  afterMap.on("dblclick",  function() { clearTimeout(clickTimer); });
 
   flatLayers(layers).forEach(function(layer) {
     if (!layer.panel) return;
@@ -102,7 +111,7 @@ function infoPanelDefaultHandle() {
     return infoPanelClickFired[id];
   });
   if (!anyFired) {
-    if ($("#view-hide-layer-panel").length > 0 && layer_view_flag)
+    if ($("#view-hide-layer-panel").length > 0)
       $("#view-hide-layer-panel").trigger("click");
   }
 }

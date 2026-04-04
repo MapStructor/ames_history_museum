@@ -52,20 +52,27 @@ var map;
 	setupInfoPanels();
 	
 
-	let mapsReady = 0;
-	function onStyleLoad() {
-		mapsReady++;
-		if (mapsReady < 2) return;
-		mapsReady = 0;
+	function getDate() {
 		var sliderVal = moment($("#date").text()).unix();
-		var date = parseInt(moment.unix(sliderVal).format("YYYYMMDD"));
-		addLayers(date);
-		addEvents();
-		refreshLayers();
-		registerInfoPanelClicks();
+		return parseInt(moment.unix(sliderVal).format("YYYYMMDD"));
 	}
-	beforeMap.on("style.load", onStyleLoad);
-	afterMap.on("style.load", onStyleLoad);
+
+	var initialLoadDone = false;
+
+	beforeMap.on("style.load", function() {
+		addLayersToMap(beforeMap, "left", getDate());
+		refreshLayers();
+	});
+
+	afterMap.on("style.load", function() {
+		addLayersToMap(afterMap, "right", getDate());
+		refreshLayers();
+		if (!initialLoadDone) {
+			initialLoadDone = true;
+			addEvents();
+			registerInfoPanelClicks();
+		}
+	});
 	
 	
 	// Error Handling
