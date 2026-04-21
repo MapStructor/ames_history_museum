@@ -1,34 +1,42 @@
-## An important note for development
+# Ames History Museum — Map
 
-- The key is set to only work on one domain. Whenever you work locally or on another domain, the map will not show, along with features like attributions.
-- You will need to swap the token to see the map. Make sure you only use the swapped token temporarily, and do not push any token changes, or leave it online anywhere.
+A config-driven web map built for the Ames History Museum. Also the proving ground for [Mapstructor](https://github.com/MapStructor), a universal web mapping platform.
 
-# How to run
+---
 
-## Run with NodeJS
+## Running locally
 
-- You need to have node installed, if you haven't, follow the steps [here](https://nodejs.org/en/download)
-- You also need to have [`http-server`](https://www.npmjs.com/package/http-server) installed. If you haven't, follow the following steps below.
-- - If you're in vsCode, open the terminal (`CTRL` + `)
-- - type in the command and press enter
+Copy `js/mapbox-token.js` from a safe location and set your Mapbox token there (gitignored — never commit it).
+
+The token in the repo is domain-locked to the production URL. The map won't render locally without swapping it.
+
+---
+
+## Branches and deploy
+
+| Branch | Deploys to | URL |
+|--------|-----------|-----|
+| `main` | gh-pages root | production site |
+| `dev` | gh-pages `/dev/` subfolder | preview |
+
+Both branches deploy automatically via GitHub Actions on push (see [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)).
+
+**`main` is branch-protected** — changes go through a pull request from `dev`. Merge the PR → deploy fires automatically.
+
+---
+
+## Repo structure
+
 ```
-npm install -g http-server
+js/engine/     ← map engine (addLayers, eventsHandle, infoPanel, etc.)
+js/lists/      ← config files (layersList, bounds, header, etc.)
+css/           ← styles
+legacy/        ← reference builds (read-only): first_students, second_students, victor
+docs/          ← dev plan and Claude briefing (gitignored, local only)
 ```
-- Start the app any time by opening the terminal(CTRL+`) and enter the command:
-```
-http-server
-```
-Then visit http://localhost:8080 to view the site
 
-## Run without NodeJS
+---
 
-- Make sure to have live server vscode extension installed. Click the extensions marketplace icon and search "live server". Click install when you find the right extension in the preview image below
+## Mapstructor dev plan
 
-<img src="https://res.cloudinary.com/djaqusrpx/image/upload/v1712839723/Screenshot_from_2024-04-11_13-47-13_yzcdke.png">
-
-- Once installed, left click either index.html or login.html in the vscode file explorer and select open with live server
-
-<img src="https://res.cloudinary.com/djaqusrpx/image/upload/v1712839883/Screenshot_from_2024-04-11_13-50-59_ueiqhq.png">
-
-
-PS: read the preview version of this `README` file so it all makes sense. Right click :)
+Full architecture and implementation plan lives in `docs/mapstructor_dev_plan.md` (gitignored — local only, never pushed).
