@@ -12,6 +12,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Remove files that should not be deployed
+        run: |
+          rm -rf legacy
+          rm -f CLAUDE.md
+
       - name: Deploy production (main → root)
         if: github.ref == 'refs/heads/main'
         uses: JamesIves/github-pages-deploy-action@v4
@@ -20,7 +25,6 @@ jobs:
           branch: gh-pages
           folder: .
           clean-exclude: dev/
-          exclude: legacy CLAUDE.md
 
       - name: Deploy dev (dev → /dev subfolder)
         if: github.ref == 'refs/heads/dev'
@@ -31,4 +35,3 @@ jobs:
           folder: .
           target-folder: dev
           clean: false
-          exclude: legacy CLAUDE.md
