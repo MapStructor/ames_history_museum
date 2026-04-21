@@ -283,6 +283,20 @@ label[for="current_buildings"] {
   border: solid #ffffff 3px;
 }
 
+.panel-hero {
+  margin: -5px -5px 10px -5px;
+}
+
+.panel-hero img {
+  width: 100%;
+  display: block;
+}
+
+.infoLayerElem figure {
+  width: 100%;
+  margin: 0;
+}
+
 .infoLayerElem img {
   max-width: 100%;
   height: auto;

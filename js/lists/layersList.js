@@ -179,10 +179,10 @@ const layers = [
         type: "fill",
         source: {
           type: "vector",
-          url: "mapbox://nittyjee.421y21fx",
+          url: "mapbox://nittyjee.1394txes",
         },
         layout: { visibility: "visible" },
-        "source-layer": "previous_buildings-02rrmr",
+        "source-layer": "previous_buildings-1q9xnn",
         paint: {
           "fill-color": "#FF7F50",
           "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], false],
@@ -204,6 +204,19 @@ const layers = [
         prop: "label",
         click: true,
         toggleElement: "prev-builds",
+        panel: {
+          encyclopediaBase: "https://mapstructor.com/ames/encyclopedia",
+          nidProp: "nid",
+          color: "#FF7F50",
+          render: function(_props, f) {
+            return `
+              <div class="panel-hero">${f("field-main-image", "hero")}</div>
+              <h3><a href="${f("node-url")}" target="_blank">${f("node-title") || "Building"}</a></h3>
+              <hr/>
+              ${f()}
+            `;
+          },
+        },
       },
 
       // Current Buildings
@@ -243,6 +256,19 @@ const layers = [
         groupId: "builds_items",
         popupStyle: "infoLayerGreenPopUp",
         toggleElement: "curr-builds",
+        panel: {
+          encyclopediaBase: "https://mapstructor.com/ames/encyclopedia",
+          nidProp: "nid",
+          color: "#35b779",
+          render: function(_props, f) {
+            return `
+              <div class="panel-hero">${f("field-main-image", "hero")}</div>
+              <h3><a href="${f("node-url")}" target="_blank">${f("node-title") || "Building"}</a></h3>
+              <hr/>
+              ${f()}
+            `;
+          },
+        },
       },
 
     ],
