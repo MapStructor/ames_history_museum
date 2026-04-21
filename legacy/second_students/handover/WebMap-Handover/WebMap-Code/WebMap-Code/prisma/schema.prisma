@@ -1,0 +1,156 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+type LayerDataHoverContent {
+  label String
+  type  String
+}
+
+model ButtonLink {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  label String
+  url   String
+}
+
+model LayerData {
+  id                        String                  @id @default(auto()) @map("_id") @db.ObjectId
+  bearing                   Float?
+  /// Could not determine type: the field only had null or empty values in the sample set.
+  bottomRightBoundLatitude  Json?
+  /// Could not determine type: the field only had null or empty values in the sample set.
+  bottomRightBoundLongitude Json?
+  click                     Boolean
+  clickHeader               String
+  clickStyle                String
+  enableByDefault           Boolean?
+  hover                     Boolean
+  hoverContent              LayerDataHoverContent[]
+  hoverStyle                String
+  iconColor                 String
+  iconType                  String
+  infoId                    String
+  label                     String
+  latitude                  Float?
+  layout                    String
+  longitude                 Float?
+  name                      String                  @unique
+  order                     BigInt
+  paint                     String
+  sourceId                  String
+  sourceLayer               String
+  sourceType                String
+  sourceUrl                 String
+  standalone                Boolean?
+  time                      Boolean
+  topLayerClass             String                  @db.ObjectId
+  /// Could not determine type: the field only had null or empty values in the sample set.
+  topLeftBoundLatitude      Json?
+  /// Could not determine type: the field only had null or empty values in the sample set.
+  topLeftBoundLongitude     Json?
+  type                      String
+  viewOrder                 BigInt
+  zoom                      Float?
+  zoomToBounds              Boolean?
+}
+
+model LayerGroup {
+  id                        String   @id @default(auto()) @map("_id") @db.ObjectId
+  /// Multiple data types found: Float: 41.7%, Int: 58.3% out of 12 sampled entries
+  bearing                   Json
+  /// Could not determine type: the field only had null or empty values in the sample set.
+  bottomRightBoundLatitude  Json?
+  /// Could not determine type: the field only had null or empty values in the sample set.
+  bottomRightBoundLongitude Json?
+  infoId                    String
+  latitude                  String
+  layerSectionId            String   @db.ObjectId
+  longitude                 String
+  name                      String   @unique
+  order                     BigInt
+  /// Could not determine type: the field only had null or empty values in the sample set.
+  topLeftBoundLatitude      Json?
+  /// Could not determine type: the field only had null or empty values in the sample set.
+  topLeftBoundLongitude     Json?
+  /// Multiple data types found: Float: 41.7%, Int: 58.3% out of 12 sampled entries
+  zoom                      Json
+  zoomToBounds              Boolean?
+}
+
+model LayerSection {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  name  String @unique
+  order BigInt
+}
+
+model Map {
+  id                        String   @id @default(auto()) @map("_id") @db.ObjectId
+  /// Multiple data types found: Float: 91.3%, Int: 8.7% out of 23 sampled entries
+  bearing                   Json
+  /// Could not determine type: the field only had null or empty values in the sample set.
+  bottomRightBoundLatitude  Json?
+  /// Could not determine type: the field only had null or empty values in the sample set.
+  bottomRightBoundLongitude Json?
+  /// Multiple data types found: String: 8.7%, String (ObjectId): 91.3% out of 23 sampled entries
+  groupId                   Json
+  infoId                    String?
+  /// Multiple data types found: Float: 75%, Int: 25% out of 4 sampled entries
+  latitude                  Json?
+  /// Multiple data types found: Float: 75%, Int: 25% out of 4 sampled entries
+  longitude                 Json?
+  mapId                     String   @unique
+  mapName                   String
+  styleId                   String
+  /// Could not determine type: the field only had null or empty values in the sample set.
+  topLeftBoundLatitude      Json?
+  /// Could not determine type: the field only had null or empty values in the sample set.
+  topLeftBoundLongitude     Json?
+  /// Multiple data types found: Float: 91.3%, Int: 8.7% out of 23 sampled entries
+  zoom                      Json
+  zoomToBounds              Boolean?
+}
+
+model MapFilterGroup {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  groupId   String
+  groupName String
+  label     String
+}
+
+model MapFilterItem {
+  id                         String  @id @default(auto()) @map("_id") @db.ObjectId
+  defaultCheckedForAfterMap  Boolean
+  defaultCheckedForBeforeMap Boolean
+  groupId                    String
+  itemId                     String
+  itemName                   String
+  label                      String
+  showInfoButton             Boolean
+  showZoomButton             Boolean
+}
+
+model MapGroup {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  groupName String
+  label     String
+  order     Int
+}
+
+model User {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  password String
+  username String @unique
+}
+
+model ViewOrderCounter {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+}
+
+model ZoomLabel {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+}

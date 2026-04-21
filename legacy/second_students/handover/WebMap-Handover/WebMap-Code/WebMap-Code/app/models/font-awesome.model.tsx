@@ -1,0 +1,23 @@
+export enum FontAwesomeLayerIcons {
+    PLUS_SQUARE,
+    MINUS_SQUARE,
+    SQUARE,
+    PLAY_CIRCLE,
+    INFO_CIRCLE,
+    CROSSHAIRS,
+    LINE,
+    COMMENT_DOTS,
+    GLOBE,
+    PEN_TO_SQUARE,
+    CHECKMARK,
+    NOTES_MEDICAL,
+    XMARK,
+    TRASHCAN,
+    UP_ARROW,
+    DOWN_ARROW,
+    LINK,
+    CIRCLE,
+    SOLID_PLAY_CIRCLE,
+    SOLID_SQUARE,
+    SOLID_LABELS
+}
