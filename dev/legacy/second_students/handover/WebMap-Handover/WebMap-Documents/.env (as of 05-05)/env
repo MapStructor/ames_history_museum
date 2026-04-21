@@ -1,0 +1,8 @@
+MONGODB_URI="mongodb+srv://vercel-admin-user-6758a9e2c4f9552f5a8f744b:0ASiKUusqfn9jjRo@mapstructor.zodx5.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+JWT_SECRET = "9f75a07bdf87248ac8221fa8fa04df527dc927192e82defa422a33ec2faaada74d9a547172b798299f5f8db9e8189fac5117ea1d83de601b9e2fb058516277d0" #hash key
+ALGORITHM = "aes-256-cbc" #algorithm for encryt and decryt
+DATABASE_URL="mongodb+srv://vercel-admin-user-6758a9e2c4f9552f5a8f744b:0ASiKUusqfn9jjRo@mapstructor.zodx5.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+MYFIRSTDATABASE_DATABASE_URL="mongodb+srv://vercel-admin-user-6758a9e2c4f9552f5a8f744b:0ASiKUusqfn9jjRo@mapstructor.zodx5.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+NORTHAMERICALANDOWNERS_DATABASE_URL="mongodb+srv://vercel-admin-user-6758a9e2c4f9552f5a8f744b:0ASiKUusqfn9jjRo@mapstructor.zodx5.mongodb.net/NorthAmericaLandowners?retryWrites=true&w=majority"
+DRAWING_DATABASE_URL="mongodb+srv://vercel-admin-user-6758a9e2c4f9552f5a8f744b:0ASiKUusqfn9jjRo@mapstructor.zodx5.mongodb.net/Drawing?retryWrites=true&w=majority"
+CHRONMAPS_DATABASE_URL="mongodb+srv://vercel-admin-user-6758a9e2c4f9552f5a8f744b:0ASiKUusqfn9jjRo@mapstructor.zodx5.mongodb.net/chronmaps?retryWrites=true&w=majority"

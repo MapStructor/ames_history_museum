@@ -1,0 +1,268 @@
+/* ------------------------------ Date Panel CSS ------------------------------  */
+
+
+
+/* Date panel styling -- blue box in the bottom right */
+#datepanel {
+  position: absolute;
+  float: right;
+  bottom: 80px;
+  right: 20px;
+  border: solid 3px #000000;
+  border-radius: 8px;
+  background: #3989c1;
+  /* background: #ffd2d2; */
+  /* background: #e0ecf5; */
+  padding: 0px 17px;
+  /* font-size: 21px; */
+  /* color: #000000; */
+  color: #ffffff;
+  z-index: 500;
+  word-spacing: 5px;
+  min-width: 210px;
+  text-align: right;
+  height: 50px;
+  text-align: center;
+}
+
+/* Date text -- inside the blue box */
+#date {
+  font-size: 34px;
+  font-weight: bold;
+  color: #ffffff;
+  word-spacing: 5px;
+  text-align: center;
+}
+
+/* Active adjustments for a smaller screen */
+@media (max-width: 930px) {
+  #datepanel {
+    height: 37px;
+    width: 153px;
+
+    border: solid 2px #000000;
+  }
+
+  #date {
+    font-size: 21px;
+  }
+}
+
+
+
+/* ------------------------------ Timeline CSS ------------------------------  */
+
+
+
+/* Footer styling -- parent div for the timeline */
+#footer {
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
+  min-width: 100px;
+  height: 72px;
+  
+  border-top: 2px solid #b0691d;
+  background: #f5f6f7;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+/* Slider styling -- the whole timeline */
+#slider {
+  /* block is necessary for the onMouseEnter events to trigger */
+  display: block;
+  margin-top: 10px;
+
+  border: 1px solid #666666;
+  border-radius: 6px; 
+  /* background-color: rgb(209, 236, 255); */
+}
+
+/* Timeline styling -- the ticks, dates, etc (exclding the button) */
+.timeline {
+  display: flex;
+  position: relative;
+  bottom: 0px;
+  width: 100%;
+  height: 45px;
+
+  border-bottom: 2px solid darkorange;
+  padding: 10px 0;
+}
+
+/* Not sure what styling this accomplishes, but it is necessary */
+.year {
+  position: relative;
+  width: 20%;
+
+  text-align: center;
+}
+
+/* Tick styling (before means the 5 ticks to the left of the year labels) */
+.year:before {
+  position: absolute;
+  display: block;
+  bottom: -10px;
+  left: 0px;
+  width: 50%;
+  height: 5px;
+
+  /* To get the orange ticks (otherwise orange spans all 5 ticks) */
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0) 90%,
+    darkorange 95%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  /* Standard */
+  background-size: calc(100% / 5) calc(100% / 5);
+  /* Opera */
+  background-size: -o-calc(100% / 5) -o-calc(100% / 5);
+  /* Firefox */
+  background-size: -moz-calc(100% / 5) -moz-calc(100% / 5);
+  /* WebKit */
+  background-size: -webkit-calc(100% / 5) -webkit-calc(100% / 5);
+
+  content: "";
+}
+
+/* Tick styling (after means the 5 ticks to the right of the year labels) */
+.year:after {
+  position: absolute;
+  display: block;
+  bottom: -10px;
+  right: 0px;
+  width: 50%;
+  height: 5px;
+
+  /* To get the orange ticks (otherwise orange spans all 5 ticks) */
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0) 90%,
+    darkorange 95%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  /* Standard */
+  background-size: calc(100% / 5) calc(100% / 5);
+  /* Opera */
+  background-size: -o-calc(100% / 5) -o-calc(100% / 5);
+  /* Firefox */
+  background-size: -moz-calc(100% / 5) -moz-calc(100% / 5);
+  /* WebKit */
+  background-size: -webkit-calc(100% / 5) -webkit-calc(100% / 5);
+
+  content: "";
+}
+
+/* Tick styling for the year labels */
+.year > span.timeline-ruler:before {
+  position: absolute;
+  display: block;
+  bottom: -10px;
+  left: 0px;
+  width: 50%;
+  height: 10px;
+
+  /* To get the slightly different orange tick for the special marker */
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0) 95%,
+    darkorange 100%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  background-size: 100% 100%;
+
+  content: "";
+}
+
+/* Individual year labels styling */
+.year span {
+  display: block;
+  margin-top: -5px;
+
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 17px;
+  font-weight: bold;
+  color: black;
+}
+
+
+
+/* ------------------------------ Slider Button CSS ------------------------------ */
+
+
+
+/* Container for the slider button */
+.slider-container-horizontal {
+  position: relative;
+  top: -25px;
+  transform: translateY(-50%);
+  height: 50px; 
+  width: 98.5%;
+  margin: 0 auto;
+
+  background-color: transparent;
+}
+
+/* Horizontal Slider handle */
+.slider-handle-horizontal {
+  position: absolute;
+  top: 50%;
+  transform: translate(-40%, -50%);
+  width: 25px; 
+  height: 60px; 
+
+  border: 1px solid #666666;
+  border-radius: 6px; 
+
+  cursor: pointer;
+  transition: left 0.05s ease, background-color 0.05s ease; 
+}
+
+
+
+/* ------------------------------ Unused CSS ------------------------------ */
+
+
+
+/* Horizontal Slider track */
+/* .slider-track-horizontal {
+  height: 0px; 
+  width: 100%;
+  background-color: #ccc; 
+  border-radius: 5px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+} */
+
+/* Hover and active states */
+/* .slider-handle-horizontal:hover {
+  background-color: #005bb5; 
+}
+
+.slider-container-horizontal:active .slider-handle-horizontal {
+  background-color: #004999; 
+} */
+
+/* Initial state (gray) */
+/* .slider-handle-initial {
+  background-color: gray; 
+  border-radius: 8px; 
+  width: 25px;
+  height: 50px;
+  transition: background-color 0.3s ease; 
+}*/
+
+/*.slider-handle-initial:hover {
+  background-color: #007aff;
+} */
+
+/* Active state (gold) */
+/* .slider-handle-active {
+  background-color: darkorange; 
+  border-radius: 8px;
+  width: 25px;
+  height: 50px;
+} */
