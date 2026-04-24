@@ -1,4 +1,4 @@
-var layers = [
+const layers = [
 
   // Roads
   {
@@ -179,10 +179,10 @@ var layers = [
         type: "fill",
         source: {
           type: "vector",
-          url: "mapbox://nittyjee.46jvm3a8",
+          url: "mapbox://nittyjee.1394txes",
         },
         layout: { visibility: "visible" },
-        "source-layer": "previous_buildings-4tt9tr",
+        "source-layer": "previous_buildings-1q9xnn",
         paint: {
           "fill-color": "#FF7F50",
           "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], false],
@@ -255,8 +255,6 @@ var layers = [
         },
         groupId: "builds_items",
         popupStyle: "infoLayerGreenPopUp",
-        prop: "label",
-        click: true,
         toggleElement: "curr-builds",
         panel: {
           encyclopediaBase: "https://mapstructor.com/ames/encyclopedia",
