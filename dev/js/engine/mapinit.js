@@ -50,7 +50,6 @@ var map;
 	afterMap.addControl(nav_right, "bottom-right");
 
 	setupInfoPanels();
-	
 
 	function getDate() {
 		var sliderVal = moment($("#date").text()).unix();

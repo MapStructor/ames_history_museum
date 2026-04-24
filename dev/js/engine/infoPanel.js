@@ -218,7 +218,9 @@ function fetchAndRender(layer, props) {
         $el.html(rendered.innerHTML);
       });
   } else {
-    $el.html(panel.render(props, null));
+    var f = function() { return ""; };
+    $el.html(panel.render(props, f));
+    $el.slideDown();
   }
 }
 
