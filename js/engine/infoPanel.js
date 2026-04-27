@@ -159,67 +159,98 @@ function handlePanelClick(layer, event) {
 
 function fetchAndRender(layer, props) {
   var panel = layer.panel;
-  var state = infoPanelState[layer.id];
-  var $el = $("#" + state.divId);
+  var state  = infoPanelState[layer.id];
+  var $el    = $("#" + state.divId);
+  var nid    = props[panel.nidProp];
 
-  if (panel.encyclopediaBase && props[panel.nidProp]) {
-    // Show loading placeholder immediately so slideDown has real height
-    $el.html("<p style='padding:5px;'>Loading...</p>");
+  // Fast path: no async fetching needed
+  if (!panel.supabaseLookup && !(panel.encyclopediaBase && nid)) {
+    var f = function() { return ""; };
+    $el.html(panel.render(props, f));
     $el.slideDown();
-    var nid = props[panel.nidProp];
-    fetch(panel.encyclopediaBase + "/rendered-export-single?nid=" + nid)
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        var docEl = document.createElement("div");
-        docEl.innerHTML = processEncyclopediaHtml(data[0].rendered_entity, panel.encyclopediaBase);
-        var $doc = $(docEl);
-
-        // Hide the node title heading; capture its href for f("node-url")
-        var $titleLink = $doc.find("h2.node__title a");
-        var titleHref  = $titleLink.attr("href") || "";
-        var titleText  = $titleLink.text().trim() || "";
-        $titleLink.closest("h2").hide();
-
-        // f()                     → full processed doc HTML (raw Drupal, like MENY)
-        // f("node-url")           → href from the node title link
-        // f("node-title")         → plain text of the node title
-        // f("field-name", "hero")  → first <img> from that field, removes it from doc (no duplication)
-        // f("field-name")         → plain text of that field's first item
-        // f("field-name", "html") → inner HTML of that field (for linked entity fields)
-        // f("field-name", "imgs") → all <img> tags in that field joined
-        var f = function(name, mode) {
-          if (!name)                 return $doc.html();
-          if (name === "node-url")   return titleHref;
-          if (name === "node-title") return titleText;
-          if (name === "all-images") return $doc.find("img").map(function() { return this.outerHTML; }).get().join("");
-          if (mode === "hero") {
-            var $field = $doc.find(".field--name-" + name);
-            var img = $field.find("img").first().prop("outerHTML") || "";
-            $field.remove();
-            return img;
-          }
-          var $items = $doc.find(".field--name-" + name + " .field__item");
-          if (!$items.length) $items = $doc.find(".field--name-" + name + ".field__item");
-          if (mode === "html") return $items.first().html() || "";
-          if (mode === "imgs") return $items.find("img").map(function() { return this.outerHTML; }).get().join("");
-          return $items.first().text().trim();
-        };
-        var rendered = document.createElement("div");
-        rendered.innerHTML = panel.render(props, f);
-        // Auto-remove <p> blocks that have a <b> label but empty content
-        $(rendered).find("p").each(function() {
-          var $p = $(this);
-          if ($p.find("b").length) {
-            var clone = $p.clone();
-            clone.find("b, br").remove();
-            if (!clone.text().trim()) $p.remove();
-          }
-        });
-        $el.html(rendered.innerHTML);
-      });
-  } else {
-    $el.html(panel.render(props, null));
+    return;
   }
+
+  $el.html("<p style='padding:5px;'>Loading...</p>");
+  $el.slideDown();
+
+  // Step 1: fetch live fields from Supabase (label, description, dates, live NID)
+  var supabasePromise = (panel.supabaseLookup && window.supabaseClient && nid)
+    ? window.supabaseClient
+        .from("features")
+        .select("label,description,DayStart,DayEnd,nid")
+        .eq("nid", String(nid))
+        .limit(1)
+        .then(function(r) { return (!r.error && r.data && r.data.length) ? r.data[0] : null; })
+        .catch(function() { return null; })
+    : Promise.resolve(null);
+
+  supabasePromise.then(function(live) {
+    if (live) {
+      props = Object.assign({}, props);
+      if (live.label)       props.label    = live.label;
+      if (live.description) props.description = live.description;
+      if (live.DayStart)    props.DayStart = live.DayStart;
+      if (live.DayEnd)      props.DayEnd   = live.DayEnd;
+    }
+
+    // Step 2: fetch Drupal content, or render with empty f()
+    if (panel.encyclopediaBase && nid) {
+      fetch(panel.encyclopediaBase + "/rendered-export-single?nid=" + nid)
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          var docEl = document.createElement("div");
+          docEl.innerHTML = processEncyclopediaHtml(data[0].rendered_entity, panel.encyclopediaBase);
+          var $doc = $(docEl);
+
+          var $titleLink = $doc.find("h2.node__title a");
+          var titleHref  = $titleLink.attr("href") || "";
+          var titleText  = $titleLink.text().trim() || "";
+          $titleLink.closest("h2").hide();
+
+          // f()                      → full processed doc HTML
+          // f("node-url")            → href from node title link
+          // f("node-title")          → plain text of node title
+          // f("field-name", "hero")  → first <img> from that field, removes it from doc
+          // f("field-name")          → plain text of field's first item
+          // f("field-name", "html")  → inner HTML of field (for linked entity fields)
+          // f("field-name", "imgs")  → all <img> tags in field joined
+          var f = function(name, mode) {
+            if (!name)                 return $doc.html();
+            if (name === "node-url")   return titleHref;
+            if (name === "node-title") return titleText;
+            if (name === "all-images") return $doc.find("img").map(function() { return this.outerHTML; }).get().join("");
+            if (mode === "hero") {
+              var $field = $doc.find(".field--name-" + name);
+              var img = $field.find("img").first().prop("outerHTML") || "";
+              $field.remove();
+              return img;
+            }
+            var $items = $doc.find(".field--name-" + name + " .field__item");
+            if (!$items.length) $items = $doc.find(".field--name-" + name + ".field__item");
+            if (mode === "html") return $items.first().html() || "";
+            if (mode === "imgs") return $items.find("img").map(function() { return this.outerHTML; }).get().join("");
+            return $items.first().text().trim();
+          };
+
+          var rendered = document.createElement("div");
+          rendered.innerHTML = panel.render(props, f);
+          // Auto-remove <p> blocks that have a <b> label but empty content
+          $(rendered).find("p").each(function() {
+            var $p = $(this);
+            if ($p.find("b").length) {
+              var clone = $p.clone();
+              clone.find("b, br").remove();
+              if (!clone.text().trim()) $p.remove();
+            }
+          });
+          $el.html(rendered.innerHTML);
+        });
+    } else {
+      var f = function() { return ""; };
+      $el.html(panel.render(props, f));
+    }
+  });
 }
 
 function closePanelInfo(layer) {
