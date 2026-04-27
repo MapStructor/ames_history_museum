@@ -49,8 +49,10 @@
     });
   }
 
+  var db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  window.supabaseClient = db;
+
   try {
-    var db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     /* Each row in the `layers` table has a `config` jsonb column holding the full
        layer object (groups, children, paint, source URLs, etc.). order_index controls
