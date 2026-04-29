@@ -1,0 +1,5 @@
+name: AHM Supabase Sync
+type: module
+description: Syncs buildings node changes (title, dates) back to Supabase features table.
+package: Custom
+core_version_requirement: ^9 || ^10 || ^11

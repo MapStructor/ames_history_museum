@@ -1,0 +1,99 @@
+<?php
+
+/**
+ * @file
+ * Syncs Drupal buildings node changes back to Supabase features table.
+ *
+ * When title, field_start_date_date_type, or field_end_date_date_type change
+ * on a buildings node, patches the matching row in Supabase features (by nid).
+ * QGIS sees the update immediately via its live PostGIS connection.
+ *
+ * Loop prevention: only fires when values actually changed — so when the
+ * Supabase→Drupal webhook patches Drupal with the same values already in
+ * Supabase, this hook detects no change and does nothing.
+ *
+ * Credentials: set via Drupal admin at /admin/config/ahm-supabase-sync.
+ */
+
+use Drupal\node\NodeInterface;
+
+/**
+ * Implements hook_node_update().
+ */
+function ahm_supabase_sync_node_update(NodeInterface $node) {
+  if ($node->bundle() !== 'buildings') {
+    return;
+  }
+
+  $original = $node->original;
+
+  $new_title = $node->getTitle();
+  $old_title = $original->getTitle();
+  $title_changed = $new_title !== $old_title;
+
+  $new_start = _ahm_get_date($node, 'field_start_date_date_type');
+  $old_start = _ahm_get_date($original, 'field_start_date_date_type');
+  $start_changed = $new_start !== $old_start;
+
+  $new_end = _ahm_get_date($node, 'field_end_date_date_type');
+  $old_end = _ahm_get_date($original, 'field_end_date_date_type');
+  $end_changed = $new_end !== $old_end;
+
+  if (!$title_changed && !$start_changed && !$end_changed) {
+    return;
+  }
+
+  $payload = [];
+  if ($title_changed) $payload['label']    = $new_title;
+  if ($start_changed) $payload['DayStart'] = _ahm_to_yyyymmdd($new_start);
+  if ($end_changed)   $payload['DayEnd']   = _ahm_to_yyyymmdd($new_end);
+
+  $config       = \Drupal::config('ahm_supabase_sync.settings');
+  $supabase_url = $config->get('supabase_url');
+  $key          = $config->get('supabase_service_role_key');
+  $nid          = $node->id();
+
+  if (!$supabase_url || !$key) {
+    \Drupal::logger('ahm_supabase_sync')->error('Supabase credentials not configured. Visit /admin/config/ahm-supabase-sync.');
+    return;
+  }
+
+  try {
+    \Drupal::httpClient()->patch(
+      $supabase_url . '/rest/v1/features?nid=eq.' . $nid,
+      [
+        'headers' => [
+          'Authorization' => 'Bearer ' . $key,
+          'apikey'        => $key,
+          'Content-Type'  => 'application/json',
+          'Prefer'        => 'return=minimal',
+        ],
+        'json' => $payload,
+      ]
+    );
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('ahm_supabase_sync')->error('Supabase sync failed for nid @nid: @msg', [
+      '@nid' => $nid,
+      '@msg' => $e->getMessage(),
+    ]);
+  }
+}
+
+/**
+ * Returns the date value string from a date field, or null if empty.
+ */
+function _ahm_get_date(NodeInterface $node, string $field): ?string {
+  if (!$node->hasField($field) || $node->get($field)->isEmpty()) {
+    return NULL;
+  }
+  return $node->get($field)->value;
+}
+
+/**
+ * Converts YYYY-MM-DD to YYYYMMDD integer, or null.
+ */
+function _ahm_to_yyyymmdd(?string $iso): ?int {
+  if (!$iso) return NULL;
+  return (int) str_replace('-', '', $iso);
+}
