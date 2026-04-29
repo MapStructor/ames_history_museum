@@ -1,0 +1,7 @@
+ahm_supabase_sync.settings:
+  path: '/admin/config/ahm-supabase-sync'
+  defaults:
+    _form: '\Drupal\ahm_supabase_sync\Form\SettingsForm'
+    _title: 'AHM Supabase Sync Settings'
+  requirements:
+    _permission: 'administer site configuration'
