@@ -60,12 +60,16 @@ var map;
 	var initialLoadDone = false;
 
 	beforeMap.on("style.load", function() {
-		addLayersToMap(beforeMap, "left", getDate());
+		var date = getDate();
+		addLayersToMap(beforeMap, "left", date);
+		initPromotedLayers("left", beforeMap, date);
 		refreshLayers();
 	});
 
 	afterMap.on("style.load", function() {
-		addLayersToMap(afterMap, "right", getDate());
+		var date = getDate();
+		addLayersToMap(afterMap, "right", date);
+		initPromotedLayers("right", afterMap, date);
 		refreshLayers();
 		if (!initialLoadDone) {
 			initialLoadDone = true;
@@ -125,19 +129,25 @@ setupMapSwitching();
 // TIME LAYER FILTERING
 
 function changeDate(unixDate) {
-  var date = parseInt(moment.unix(unixDate).format("YYYYMMDD"));
+  var date       = parseInt(moment.unix(unixDate).format("YYYYMMDD"));
   var dateFilter = ["all", ["<=", "DayStart", date], [">=", "DayEnd", date]];
-  
 
-  //LAYERS FOR FILTERING
   flatLayers(layers).forEach(layer => {
     const leftId  = layer.id + "-left";
     const rightId = layer.id + "-right";
-    if (beforeMap.getLayer(leftId))  beforeMap.setFilter(leftId,  dateFilter);
-    if (afterMap.getLayer(rightId))  afterMap.setFilter(rightId,  dateFilter);
+    // Use buildLayerFilter so promoted NIDs are excluded from the tileset
+    var filter = buildLayerFilter(layer.id, date);
+    if (beforeMap.getLayer(leftId))  beforeMap.setFilter(leftId,  filter);
+    if (afterMap.getLayer(rightId))  afterMap.setFilter(rightId,  filter);
+
+    // Also update the promoted GeoJSON layer's date filter
+    var promLeft  = layer.id + "-promoted-left";
+    var promRight = layer.id + "-promoted-right";
+    if (beforeMap.getLayer(promLeft))  beforeMap.setFilter(promLeft,  dateFilter);
+    if (afterMap.getLayer(promRight))  afterMap.setFilter(promRight,  dateFilter);
   });
-  
- } //end function changeDate
+
+} //end function changeDate
 
 /////////////////////////////
 //   ZOOM LABELS

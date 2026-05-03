@@ -121,10 +121,11 @@ function handlePanelClick(layer, event) {
   infoPanelClickFired[layer.id] = true;
   setTimeout(function() { infoPanelClickFired[layer.id] = false; }, 300);
 
-  var state = infoPanelState[layer.id];
-  var panel = layer.panel;
-  var props = event.features[0].properties;
+  var state     = infoPanelState[layer.id];
+  var panel     = layer.panel;
+  var props     = event.features[0].properties;
   var clickedId = event.features[0].id;
+  var geometry  = event.features[0].geometry;
 
   var popupHTML =
     "<div class='" + state.popupClass + "'>" +
@@ -136,7 +137,8 @@ function handlePanelClick(layer, event) {
     if (state.isOpen) {
       closePanelInfo(layer);
     } else {
-      fetchAndRender(layer, props);
+      state.geometry = geometry;
+      fetchAndRender(layer, props, geometry);
       floatPanelToTop(state.divId);
       openSidebarIfHidden();
       state.isOpen = true;
@@ -145,8 +147,9 @@ function handlePanelClick(layer, event) {
     }
   } else {
     setPanelHighlight(layer, state.viewId, false);
-    state.viewId = clickedId;
-    fetchAndRender(layer, props);
+    state.viewId  = clickedId;
+    state.geometry = geometry;
+    fetchAndRender(layer, props, geometry);
     floatPanelToTop(state.divId);
     openSidebarIfHidden();
     state.isOpen = true;
@@ -157,16 +160,20 @@ function handlePanelClick(layer, event) {
   state.viewId = clickedId;
 }
 
-function fetchAndRender(layer, props) {
-  var panel = layer.panel;
-  var state  = infoPanelState[layer.id];
-  var $el    = $("#" + state.divId);
-  var nid    = props[panel.nidProp];
+function fetchAndRender(layer, props, geometry) {
+  if (typeof clearDrawnFeatureEditing === 'function') clearDrawnFeatureEditing(false);
+
+  var panel   = layer.panel;
+  var state   = infoPanelState[layer.id];
+  var $el     = $("#" + state.divId);
+  var drawKey = props._drawKey != null ? String(props._drawKey) : null;
+  var nid     = props[panel.nidProp];
 
   // Fast path: no async fetching needed
   if (!panel.supabaseLookup && !(panel.encyclopediaBase && nid)) {
     var f = function() { return ""; };
     $el.html(panel.render(props, f));
+    appendEditSection($el, drawKey || null, props, layer, geometry);
     $el.slideDown();
     return;
   }
@@ -174,24 +181,39 @@ function fetchAndRender(layer, props) {
   $el.html("<p style='padding:5px;'>Loading...</p>");
   $el.slideDown();
 
-  // Step 1: fetch live fields from Supabase (label, description, dates, live NID)
-  var supabasePromise = (panel.supabaseLookup && window.supabaseClient && nid)
-    ? window.supabaseClient
-        .from("features")
-        .select("label,description,DayStart,DayEnd,nid")
-        .eq("nid", String(nid))
-        .limit(1)
-        .then(function(r) { return (!r.error && r.data && r.data.length) ? r.data[0] : null; })
-        .catch(function() { return null; })
-    : Promise.resolve(null);
+  // Step 1: fetch live fields from Supabase.
+  // Drawn features (have _drawKey): look up by feature_id.
+  // Tileset features: look up by NID.
+  var supabasePromise;
+  if (panel.supabaseLookup && window.supabaseClient && drawKey) {
+    supabasePromise = window.supabaseClient
+      .from("features")
+      .select("feature_id,label,description,DayStart,DayEnd,nid")
+      .eq("feature_id", drawKey)
+      .limit(1)
+      .then(function(r) { return (!r.error && r.data && r.data.length) ? r.data[0] : null; })
+      .catch(function() { return null; });
+  } else if (panel.supabaseLookup && window.supabaseClient && nid) {
+    supabasePromise = window.supabaseClient
+      .from("features")
+      .select("feature_id,label,description,DayStart,DayEnd,nid")
+      .eq("nid", String(nid))
+      .limit(1)
+      .then(function(r) { return (!r.error && r.data && r.data.length) ? r.data[0] : null; })
+      .catch(function() { return null; });
+  } else {
+    supabasePromise = Promise.resolve(null);
+  }
 
   supabasePromise.then(function(live) {
+    var featureId = drawKey || null;  // drawn features always have a featureId
     if (live) {
       props = Object.assign({}, props);
-      if (live.label)       props.label    = live.label;
+      featureId            = live.feature_id  || featureId;
+      if (live.label)       props.label       = live.label;
       if (live.description) props.description = live.description;
-      if (live.DayStart)    props.DayStart = live.DayStart;
-      if (live.DayEnd)      props.DayEnd   = live.DayEnd;
+      if (live.DayStart)    props.DayStart    = live.DayStart;
+      if (live.DayEnd)      props.DayEnd      = live.DayEnd;
     }
 
     // Step 2: fetch Drupal content, or render with empty f()
@@ -245,10 +267,12 @@ function fetchAndRender(layer, props) {
             }
           });
           $el.html(rendered.innerHTML);
+          appendEditSection($el, featureId, props, layer, geometry);
         });
     } else {
       var f = function() { return ""; };
       $el.html(panel.render(props, f));
+      appendEditSection($el, featureId, props, layer, geometry);
     }
   });
 }
@@ -260,6 +284,7 @@ function closePanelInfo(layer) {
   setPanelHighlight(layer, state.viewId, false);
   if (state.afterPopup.isOpen()) state.afterPopup.remove();
   if (state.beforePopup.isOpen()) state.beforePopup.remove();
+  if (typeof clearDrawnFeatureEditing === 'function') clearDrawnFeatureEditing(false);
 }
 
 function setPanelHighlight(layer, featureId, hover) {
@@ -306,6 +331,121 @@ function processEncyclopediaHtml(html, base) {
       if (p2.slice(0, 4) === "http") return p1 + p2 + p3;
       return p1 + origin + p2 + p3;
     });
+}
+
+function appendEditSection($el, featureId, props, layer, geometry) {
+  if (!window.editMode || !featureId) return;
+
+  function toDateInput(yyyymmdd) {
+    if (!yyyymmdd) return '';
+    var s = String(yyyymmdd).padStart(8, '0');
+    return s.slice(0, 4) + '-' + s.slice(4, 6) + '-' + s.slice(6, 8);
+  }
+
+  function fromDateInput(val) {
+    if (!val) return null;
+    return parseInt(val.replace(/-/g, ''), 10) || null;
+  }
+
+  var editId = 'edit-section-' + featureId;
+  var html = [
+    '<div class="edit-section" id="' + editId + '">',
+      '<hr/>',
+      '<p class="edit-section-title">Edit</p>',
+      '<label class="edit-label">Label</label>',
+      '<input type="text"  class="edit-input" id="ei-label"    value="' + (props.label || '') + '"/>',
+      '<label class="edit-label">Start Date</label>',
+      '<input type="date"  class="edit-input" id="ei-daystart" value="' + toDateInput(props.DayStart) + '"/>',
+      '<label class="edit-label">End Date</label>',
+      '<input type="date"  class="edit-input" id="ei-dayend"   value="' + toDateInput(props.DayEnd) + '"/>',
+      '<button class="edit-save-btn" id="ei-save">Save</button>',
+      '<p class="edit-status" id="ei-status"></p>',
+    '</div>',
+  ].join('');
+
+  $el.append(html);
+
+  // Drawn features: load geometry into the draw overlay for editing
+  var isDrawn = !!props._drawKey;
+  if (isDrawn && typeof loadDrawnFeatureForEditing === 'function' && geometry) {
+    loadDrawnFeatureForEditing(layer, String(props._drawKey), geometry);
+  }
+
+  document.getElementById('ei-save').addEventListener('click', async function () {
+    var labelVal    = document.getElementById('ei-label').value.trim() || null;
+    var dayStartVal = fromDateInput(document.getElementById('ei-daystart').value);
+    var dayEndVal   = fromDateInput(document.getElementById('ei-dayend').value);
+
+    // For drawn features, capture updated geometry from the overlay
+    var savedGeom = geometry;
+    if (isDrawn && typeof drawOverlayDraw !== 'undefined' && drawOverlayDraw) {
+      var all = drawOverlayDraw.getAll();
+      if (all.features.length > 0) savedGeom = all.features[0].geometry;
+    }
+
+    var payload = {
+      label:     labelVal,
+      DayStart:  dayStartVal,
+      DayEnd:    dayEndVal,
+      source:    isDrawn ? 'drawn' : 'edited',
+      geom_json: savedGeom || null,
+    };
+    var statusEl = document.getElementById('ei-status');
+    var btn      = document.getElementById('ei-save');
+
+    btn.disabled         = true;
+    statusEl.textContent = 'Saving...';
+
+    var result = await window.supabaseClient
+      .from('features')
+      .update(payload)
+      .eq('feature_id', featureId);
+
+    if (result.error) {
+      statusEl.textContent = 'Error: ' + result.error.message;
+    } else {
+      statusEl.textContent = 'Saved.';
+      if (isDrawn) {
+        var _dk  = String(props._drawKey);
+        var _fid = parseInt(String(featureId), 10);
+        var _prevProps = { nid: props.nid, label: props.label || null, DayStart: props.DayStart || null, DayEnd: props.DayEnd || null };
+        var _nextProps = { nid: props.nid, label: labelVal, DayStart: dayStartVal, DayEnd: dayEndVal };
+        var _prevGeom  = geometry;
+        var _nextGeom  = savedGeom;
+        pushUndo(
+          async function() {
+            await window.supabaseClient.from('features').update({ label: _prevProps.label, DayStart: _prevProps.DayStart, DayEnd: _prevProps.DayEnd, geom_json: _prevGeom }).eq('feature_id', _fid);
+            addDrawnFeature(layer, _dk, _prevGeom, _prevProps);
+          },
+          async function() {
+            await window.supabaseClient.from('features').update({ label: _nextProps.label, DayStart: _nextProps.DayStart, DayEnd: _nextProps.DayEnd, geom_json: _nextGeom }).eq('feature_id', _fid);
+            addDrawnFeature(layer, _dk, _nextGeom, _nextProps);
+          }
+        );
+        addDrawnFeature(layer, _dk, savedGeom, _nextProps);
+        if (typeof clearDrawnFeatureEditing === 'function') clearDrawnFeatureEditing(true);
+      } else if (layer && layer.panel && layer.panel.supabaseLookup && geometry) {
+        var nidVal = props[layer.panel.nidProp];
+        if (nidVal != null) {
+          var _fid2      = parseInt(String(featureId), 10);
+          var _prevP     = Object.assign({}, props);
+          var _nextP     = Object.assign({}, props, { label: labelVal, DayStart: dayStartVal, DayEnd: dayEndVal });
+          pushUndo(
+            async function() {
+              if (window.supabaseClient && _fid2) await window.supabaseClient.from('features').update({ label: _prevP.label || null, DayStart: _prevP.DayStart || null, DayEnd: _prevP.DayEnd || null }).eq('feature_id', _fid2);
+              promoteFeature(layer, nidVal, geometry, Object.assign({}, _prevP));
+            },
+            async function() {
+              if (window.supabaseClient && _fid2) await window.supabaseClient.from('features').update({ label: _nextP.label || null, DayStart: _nextP.DayStart || null, DayEnd: _nextP.DayEnd || null }).eq('feature_id', _fid2);
+              promoteFeature(layer, nidVal, geometry, Object.assign({}, _nextP));
+            }
+          );
+          promoteFeature(layer, nidVal, geometry, Object.assign({}, _nextP));
+        }
+      }
+    }
+    btn.disabled = false;
+  });
 }
 
 function hexToRgba(hex, alpha) {

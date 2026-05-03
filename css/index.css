@@ -1,4 +1,153 @@
-/* MAP STYLE */
+/* ── Edit mode login modal ───────────────────────────────────────────────── */
+
+#edit-login-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+}
+
+#edit-login-card {
+  background: #fff;
+  border-radius: 6px;
+  padding: 36px 40px;
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+
+#edit-login-card h2 {
+  margin: 0 0 4px;
+  font-size: 20px;
+  font-family: 'Source Sans Pro', sans-serif;
+  color: #222;
+}
+
+#edit-login-card input {
+  padding: 9px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 15px;
+  font-family: 'Source Sans Pro', sans-serif;
+  outline: none;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+#edit-login-card input:focus {
+  border-color: #b0691d;
+}
+
+#edit-login-btn {
+  padding: 10px;
+  background: #b0691d;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 15px;
+  font-family: 'Source Sans Pro', sans-serif;
+  cursor: pointer;
+  margin-top: 4px;
+}
+
+#edit-login-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+#edit-login-error {
+  color: #c0392b;
+  font-size: 13px;
+  margin: 0;
+  min-height: 18px;
+  font-family: 'Source Sans Pro', sans-serif;
+}
+
+/* ── Edit section (inside info panel) ───────────────────────────────────── */
+
+.edit-section {
+  padding: 4px 8px 10px;
+}
+
+.edit-section-title {
+  font-weight: 700;
+  font-size: 13px;
+  margin: 4px 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #555;
+}
+
+.edit-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #444;
+  margin: 6px 0 2px;
+}
+
+.edit-input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-size: 13px;
+  font-family: 'Source Sans Pro', sans-serif;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.edit-input:focus {
+  border-color: #b0691d;
+  outline: none;
+}
+
+.edit-save-btn {
+  margin-top: 10px;
+  padding: 7px 18px;
+  background: #b0691d;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  font-size: 13px;
+  font-family: 'Source Sans Pro', sans-serif;
+  cursor: pointer;
+}
+
+.edit-save-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.edit-status {
+  font-size: 12px;
+  color: #555;
+  margin: 5px 0 0;
+  min-height: 16px;
+}
+
+#draw-toolbar-wrap {
+  position: fixed;
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 500;
+}
+
+#draw-toolbar-wrap .mapboxgl-ctrl-group {
+  transform: scale(1.6);
+  transform-origin: top center;
+}
+
+
+/* ── MAP STYLE ───────────────────────────────────────────────────────────── */
 
 .map {
   position: absolute;
@@ -35,6 +184,7 @@ body * {
 .mapboxgl-ctrl-bottom-right {
   bottom: 17px;
   right: 275px;
+  z-index: 200;
 }
 
 .mapboxgl-ctrl-group {
@@ -67,13 +217,10 @@ body * {
   font-size: 1.4em;
 }
 
-/*
 .header {
-  position: absolute;
-  top: 0;
-  z-index: 2;
+  position: relative;
+  z-index: 200;
 }
-*/
 
 #link {
   color: #000000c2;
@@ -181,8 +328,8 @@ button.active {
   font-size: 15px;
   padding-left: 10px;
   padding-right: 10px;
-  
-  z-index: 2;
+
+  z-index: 200;
 }
 
 /* BASEMAP MENU STYLE */
@@ -276,7 +423,7 @@ label[for="current_buildings"] {
   overflow: auto;
   /* background-color: transparent !important; */
   background-color: #fff !important;
-  z-index: 100;
+  z-index: 200;
 }
 
 .rightInfoBarBorder {
@@ -345,7 +492,7 @@ label[for="current_buildings"] {
   background-color: #fff !important;
   padding: 10px 2px 10px 10px;
   /* border-top: 2px solid #b0691d; */
-  z-index: 100;
+  z-index: 200;
 }
 
 /* width */
@@ -542,6 +689,7 @@ div#mobi-view-sidebar {
   float: right;
   bottom: 128px;
   right: 20px;
+  z-index: 200;
   height: 50px;
   width: 50px;
   text-align: center;
@@ -597,6 +745,7 @@ img#logo-img {
   .mapboxgl-ctrl-bottom-right {
     bottom: 7px;
     right: 170px;
+    z-index: 200;
   }
 }
 
@@ -805,8 +954,6 @@ div[class="field field--name-field-party-role3 field--type-entity-reference fiel
   color: #000;
   font-weight: 300;
 }
-
-
 
 /*REMOVE FIELD NAMES*/
 div[class*="field--name-field-party-role-in-transaction- field--type-entity-reference field--label-above"].field--label-above .field__label,
