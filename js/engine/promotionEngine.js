@@ -106,7 +106,10 @@ function initPromotedLayers(side, map, date) {
       type:   layer.type,
       source: srcId,
       paint:  layer.paint,
-      filter: ['all', ['<=', 'DayStart', d], ['>=', 'DayEnd', d]],
+      filter: ['all',
+        ['<=', ['coalesce', ['get', 'DayStart'], 0], d],
+        ['>=', ['coalesce', ['get', 'DayEnd'], 99999999], d],
+      ],
     });
 
     map.on('mouseenter', srcId, function() { map.getCanvas().style.cursor = 'pointer'; });
@@ -140,7 +143,10 @@ function promoteFeature(layer, nidVal, geometry, props) {
   window.promotedData[lid] = { type: 'FeatureCollection', features: features };
 
   var date       = getCurrentSliderDate();
-  var dateFilter = ['all', ['<=', 'DayStart', date], ['>=', 'DayEnd', date]];
+  var dateFilter = ['all',
+    ['<=', ['coalesce', ['get', 'DayStart'], 0], date],
+    ['>=', ['coalesce', ['get', 'DayEnd'], 99999999], date],
+  ];
 
   [['left', beforeMap], ['right', afterMap]].forEach(function(pair) {
     var side = pair[0], map = pair[1];

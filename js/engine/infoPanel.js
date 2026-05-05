@@ -169,6 +169,17 @@ function fetchAndRender(layer, props, geometry) {
   var drawKey = props._drawKey != null ? String(props._drawKey) : null;
   var nid     = props[panel.nidProp];
 
+  // For UUID-keyed drawn features, resolve the actual Supabase feature_id via _drawKeyToDbId
+  var lookupId = drawKey;
+  if (drawKey && typeof _drawKeyToDbId !== 'undefined' && _drawKeyToDbId[drawKey] !== undefined) {
+    lookupId = String(_drawKeyToDbId[drawKey]);
+  }
+
+  // Enter draw edit mode immediately — don't wait for the Supabase fetch
+  if (drawKey && typeof loadDrawnFeatureForEditing === 'function' && geometry) {
+    loadDrawnFeatureForEditing(layer, drawKey, geometry);
+  }
+
   // Fast path: no async fetching needed
   if (!panel.supabaseLookup && !(panel.encyclopediaBase && nid)) {
     var f = function() { return ""; };
@@ -189,7 +200,7 @@ function fetchAndRender(layer, props, geometry) {
     supabasePromise = window.supabaseClient
       .from("features")
       .select("feature_id,label,description,DayStart,DayEnd,nid")
-      .eq("feature_id", drawKey)
+      .eq("feature_id", lookupId)
       .limit(1)
       .then(function(r) { return (!r.error && r.data && r.data.length) ? r.data[0] : null; })
       .catch(function() { return null; });
@@ -365,11 +376,7 @@ function appendEditSection($el, featureId, props, layer, geometry) {
 
   $el.append(html);
 
-  // Drawn features: load geometry into the draw overlay for editing
   var isDrawn = !!props._drawKey;
-  if (isDrawn && typeof loadDrawnFeatureForEditing === 'function' && geometry) {
-    loadDrawnFeatureForEditing(layer, String(props._drawKey), geometry);
-  }
 
   document.getElementById('ei-save').addEventListener('click', async function () {
     var labelVal    = document.getElementById('ei-label').value.trim() || null;
@@ -396,10 +403,17 @@ function appendEditSection($el, featureId, props, layer, geometry) {
     btn.disabled         = true;
     statusEl.textContent = 'Saving...';
 
+    // Resolve effective DB ID at save time — UUID-keyed drawn features need _drawKeyToDbId lookup
+    var _saveId = featureId;
+    if (isDrawn && props._drawKey && typeof _drawKeyToDbId !== 'undefined') {
+      var _dk0 = String(props._drawKey);
+      if (_drawKeyToDbId[_dk0] !== undefined) _saveId = _drawKeyToDbId[_dk0];
+    }
+
     var result = await window.supabaseClient
       .from('features')
       .update(payload)
-      .eq('feature_id', featureId);
+      .eq('feature_id', _saveId);
 
     if (result.error) {
       statusEl.textContent = 'Error: ' + result.error.message;
@@ -407,7 +421,8 @@ function appendEditSection($el, featureId, props, layer, geometry) {
       statusEl.textContent = 'Saved.';
       if (isDrawn) {
         var _dk  = String(props._drawKey);
-        var _fid = parseInt(String(featureId), 10);
+        var _dbLookup = typeof _drawKeyToDbId !== 'undefined' && _drawKeyToDbId[_dk];
+        var _fid = _dbLookup || parseInt(String(featureId), 10);
         var _prevProps = { nid: props.nid, label: props.label || null, DayStart: props.DayStart || null, DayEnd: props.DayEnd || null };
         var _nextProps = { nid: props.nid, label: labelVal, DayStart: dayStartVal, DayEnd: dayEndVal };
         var _prevGeom  = geometry;

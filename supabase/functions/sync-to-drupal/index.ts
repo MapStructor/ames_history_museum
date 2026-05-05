@@ -1,9 +1,11 @@
 // sync-to-drupal — Supabase Edge Function
 //
-// Two modes:
+// Three modes:
 //   1. Manual CREATE — called directly with { label, content_type, feature_id }
 //      Creates a Drupal node and writes the NID back to features.nid.
-//   2. Webhook UPDATE — called by Supabase DB webhook on features UPDATE.
+//   2. Webhook INSERT — called by Supabase DB webhook on features INSERT.
+//      Creates a Drupal node for a newly drawn feature, writes NID back.
+//   3. Webhook UPDATE — called by Supabase DB webhook on features UPDATE.
 //      Patches the Drupal node when label, DayStart, or DayEnd change.
 //      Skips if none of those fields changed (prevents write-back loops).
 //
@@ -43,6 +45,14 @@ Deno.serve(async (req) => {
 
   if (body.type === "UPDATE" && body.table === "features") {
     return handleUpdate(body.record, body.old_record);
+  }
+
+  if (body.type === "INSERT" && body.table === "features") {
+    return handleCreate({
+      label:        body.record.label,
+      content_type: CONTENT_TYPE,
+      feature_id:   body.record.feature_id,
+    });
   }
 
   return handleCreate(body);

@@ -1,10 +1,11 @@
 // drawTool.js — MapboxDraw-based building creation for edit mode.
 // initDrawTool() is called from activateEditMode() in editMode.js.
 //
-// Auto-save behaviour:
-//   New feature  — saved to Supabase when the user clicks off (deselects).
-//   Geometry edit — saved to Supabase on every draw.update (vertex / move),
-//                   so Ctrl+Z works immediately without clicking off.
+// Undo/redo design:
+//   All undo/redo closures operate purely on in-memory state (promotedData + draw canvas).
+//   Supabase persistence is fire-and-forget — visual correctness never depends on it.
+//   Each feature gets a stable local key (UUID) at creation time. The Supabase feature_id
+//   is tracked separately in _drawKeyToDbId and used only for DB sync.
 
 var drawOverlayMap          = null;
 var drawOverlayDraw         = null;
@@ -14,8 +15,34 @@ var _geometryEditMode       = false;
 var _editingLayer           = null;
 var _editingDrawKey         = null;
 var _editingOriginalFeature = null;
-var _editingCurrentGeom     = null;   // tracks latest auto-saved geometry for restore
+var _editingCurrentGeom     = null;   // tracks latest geometry for restore on close
 var _suppressDrawDelete     = false;  // prevents deleteAll() re-triggering draw.delete
+var _drawKeyToDbId          = {};     // localKey → Supabase feature_id (DB sync only)
+
+// ─── key / DB-ID helpers ──────────────────────────────────────────────────────
+
+function _newKey() {
+  return (typeof crypto !== 'undefined' && crypto.randomUUID)
+    ? crypto.randomUUID()
+    : 'dk-' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+}
+
+// Returns the Supabase feature_id for a local key.
+// Falls back to parseInt for features loaded from DB whose localKey IS the feature_id string.
+function _getDbId(localKey) {
+  if (_drawKeyToDbId[localKey] !== undefined) return _drawKeyToDbId[localKey];
+  var n = parseInt(localKey, 10);
+  return isNaN(n) ? null : n;
+}
+
+// ─── source update helper ─────────────────────────────────────────────────────
+
+function _updateSources(lid) {
+  [['left', beforeMap], ['right', afterMap]].forEach(function(pair) {
+    var src = pair[1].getSource(lid + '-promoted-' + pair[0]);
+    if (src) src.setData(window.promotedData[lid]);
+  });
+}
 
 // ─── geometry-edit helpers ────────────────────────────────────────────────────
 
@@ -38,10 +65,7 @@ function loadDrawnFeatureForEditing(layer, drawKey, geometry) {
       }
     });
     window.promotedData[lid] = { type: 'FeatureCollection', features: kept };
-    [['left', beforeMap], ['right', afterMap]].forEach(function(pair) {
-      var src = pair[1].getSource(lid + '-promoted-' + pair[0]);
-      if (src) src.setData(window.promotedData[lid]);
-    });
+    _updateSources(lid);
   }
 
   _suppressDrawDelete = true;
@@ -59,7 +83,7 @@ function loadDrawnFeatureForEditing(layer, drawKey, geometry) {
 }
 
 // Close geometry-edit state.
-// saved=true  → do not restore to promoted layer (feature was deleted or we handle it externally).
+// saved=true  → feature was deleted or handled externally; do not restore to promoted layer.
 // saved=false → restore to promoted layer using latest auto-saved geometry.
 function clearDrawnFeatureEditing(saved) {
   if (!_geometryEditMode) return;
@@ -72,10 +96,7 @@ function clearDrawnFeatureEditing(saved) {
     if (!window.promotedData[lid])
       window.promotedData[lid] = { type: 'FeatureCollection', features: [] };
     window.promotedData[lid].features.push(feat);
-    [['left', beforeMap], ['right', afterMap]].forEach(function(pair) {
-      var src = pair[1].getSource(lid + '-promoted-' + pair[0]);
-      if (src) src.setData(window.promotedData[lid]);
-    });
+    _updateSources(lid);
   }
 
   _editingLayer           = null;
@@ -100,87 +121,98 @@ function lowerSlider() {
 
 // ─── auto-save helpers ────────────────────────────────────────────────────────
 
-// Called when a new polygon is deselected for the first time.
-async function _autoSaveNewFeature(feature, layer) {
-  var geom = feature.geometry;
+// Called when a new polygon is completed.
+// Adds to map immediately with a stable UUID key; Supabase insert is fire-and-forget.
+function _autoSaveNewFeature(feature, layer) {
+  var geom     = feature.geometry;
+  var localKey = _newKey();
+  var props    = { nid: null, label: null, DayStart: null, DayEnd: null };
 
-  var result = await window.supabaseClient.from('features').insert({
-    layer_id:  LIVE_LAYER_ID,
-    source:    'drawn',
-    geom_json: geom,
-  }).select('feature_id, nid');
+  addDrawnFeature(layer, localKey, geom, props);
 
-  if (result.error) { console.error('[autosave new]', result.error); return; }
+  var _state = window.infoPanelState && window.infoPanelState[layer.id];
+  if (_state && typeof fetchAndRender === 'function') {
+    _state.viewId   = localKey;
+    _state.geometry = geom;
+    _state.isOpen   = true;
+    fetchAndRender(layer, Object.assign({}, props, { _drawKey: localKey }), geom);
+    if (typeof floatPanelToTop     === 'function') floatPanelToTop(_state.divId);
+    if (typeof openSidebarIfHidden === 'function') openSidebarIfHidden();
+  }
 
-  var saved      = result.data && result.data[0];
-  var featureKey = saved ? String(saved.feature_id) : ('tmp-' + Date.now());
-  var featureId  = parseInt(featureKey, 10);
-  var props      = { nid: saved && saved.nid, label: null, DayStart: null, DayEnd: null };
-
-  addDrawnFeature(layer, featureKey, geom, props);
+  if (window.supabaseClient) {
+    window.supabaseClient.from('features').insert({
+      layer_id:  LIVE_LAYER_ID,
+      source:    'drawn',
+      geom_json: geom,
+    }).select('feature_id, nid').then(function(result) {
+      if (result.error) { console.error('[autosave new]', result.error); return; }
+      var saved = result.data && result.data[0];
+      if (saved) _drawKeyToDbId[localKey] = saved.feature_id;
+    });
+  }
 
   pushUndo(
-    async function() {
-      // undo: remove from map + delete from Supabase
+    function() {
+      // undo create — remove from map; close panel if open for this feature
+      if (_geometryEditMode && _editingDrawKey === localKey) {
+        clearDrawnFeatureEditing(true);
+        if (typeof closePanelInfo === 'function') closePanelInfo(layer);
+      }
       var lid = layer.id;
       if (window.promotedData[lid]) {
         window.promotedData[lid].features = window.promotedData[lid].features.filter(function(f) {
-          return String(f.properties._drawKey) !== featureKey;
+          return String(f.properties._drawKey) !== localKey;
         });
-        [['left', beforeMap], ['right', afterMap]].forEach(function(pair) {
-          var src = pair[1].getSource(lid + '-promoted-' + pair[0]);
-          if (src) src.setData(window.promotedData[lid]);
-        });
+        _updateSources(lid);
       }
-      if (window.supabaseClient && !isNaN(featureId)) {
-        var r = await window.supabaseClient.from('features').delete().eq('feature_id', featureId);
-        if (r.error) console.error('[undo new feature]', r.error);
+      var dbId = _getDbId(localKey);
+      if (window.supabaseClient && dbId) {
+        window.supabaseClient.from('features').delete().eq('feature_id', dbId)
+          .then(function(r) {
+            if (r.error) console.error('[undo new]', r.error);
+            else if (_drawKeyToDbId[localKey] === dbId) delete _drawKeyToDbId[localKey];
+          });
       }
     },
-    async function() {
-      // redo: re-insert and add to map
-      var r2 = await window.supabaseClient.from('features').insert({
-        layer_id: LIVE_LAYER_ID, source: 'drawn', geom_json: geom,
-      }).select('feature_id, nid');
-      if (r2.error) { console.error('[redo new feature]', r2.error); return; }
-      var s2  = r2.data && r2.data[0];
-      var k2  = s2 ? String(s2.feature_id) : ('tmp-' + Date.now());
-      addDrawnFeature(layer, k2, geom, { nid: s2 && s2.nid, label: null, DayStart: null, DayEnd: null });
+    function() {
+      // redo create — add back to map with same local key
+      addDrawnFeature(layer, localKey, geom, props);
+      if (window.supabaseClient) {
+        window.supabaseClient.from('features').insert({
+          layer_id: LIVE_LAYER_ID, source: 'drawn', geom_json: geom,
+        }).select('feature_id').then(function(result) {
+          if (result.error) { console.error('[redo new]', result.error); return; }
+          var saved = result.data && result.data[0];
+          if (saved) _drawKeyToDbId[localKey] = saved.feature_id;
+        });
+      }
     }
   );
 }
 
 // Called on every draw.update while in geometry-edit mode.
-// Saves immediately so Ctrl+Z works without clicking off.
-async function _autoSaveGeometryUpdate(newGeom) {
-  var prevGeom  = _editingCurrentGeom;
-  var drawKey   = _editingDrawKey;
-  var layer     = _editingLayer;
-  var featureId = parseInt(drawKey, 10);
+// All state updates are synchronous; Supabase persistence is fire-and-forget.
+function _autoSaveGeometryUpdate(newGeom) {
+  var prevGeom = _editingCurrentGeom;
+  var layer    = _editingLayer;
+  var localKey = _editingDrawKey;
 
-  if (!window.supabaseClient || isNaN(featureId)) return;
-
-  var r = await window.supabaseClient.from('features')
-    .update({ geom_json: newGeom })
-    .eq('feature_id', featureId);
-  if (r.error) { console.error('[autosave geom]', r.error); return; }
-
-  // Advance the "current" pointer so the next undo-prev is this state
   _editingCurrentGeom = newGeom;
   if (_editingOriginalFeature)
     _editingOriginalFeature = Object.assign({}, _editingOriginalFeature, { geometry: newGeom });
 
-  var capturedPrev = prevGeom;
-  var capturedNext = newGeom;
+  var dbId = _getDbId(localKey);
+  if (window.supabaseClient && dbId) {
+    window.supabaseClient.from('features')
+      .update({ geom_json: newGeom }).eq('feature_id', dbId)
+      .then(function(r) { if (r.error) console.error('[autosave geom]', r.error); });
+  }
 
   function applyGeom(geom) {
-    // Update Supabase + draw canvas (if still editing) or promoted layer (if closed)
-    return async function() {
-      var r2 = await window.supabaseClient.from('features')
-        .update({ geom_json: geom }).eq('feature_id', featureId);
-      if (r2.error) { console.error('[undo/redo geom]', r2.error); return; }
-
-      if (_geometryEditMode && _editingDrawKey === drawKey) {
+    return function() {
+      if (_geometryEditMode && _editingDrawKey === localKey) {
+        // Feature is currently in the draw canvas — update it there
         _editingCurrentGeom = geom;
         if (_editingOriginalFeature)
           _editingOriginalFeature = Object.assign({}, _editingOriginalFeature, { geometry: geom });
@@ -191,24 +223,94 @@ async function _autoSaveGeometryUpdate(newGeom) {
         try { drawOverlayDraw.changeMode('direct_select', { featureId: ids[0] }); }
         catch(e) { drawOverlayDraw.changeMode('simple_select', { featureIds: [ids[0]] }); }
       } else {
-        // Feature panel is closed — update in promoted layer
+        // Feature is in promotedData (closed or after undo-delete restored it)
         var lid = layer.id;
         if (window.promotedData[lid]) {
           window.promotedData[lid].features = window.promotedData[lid].features.map(function(f) {
-            return String(f.properties._drawKey) === drawKey
+            return String(f.properties._drawKey) === localKey
               ? Object.assign({}, f, { geometry: geom })
               : f;
           });
-          [['left', beforeMap], ['right', afterMap]].forEach(function(pair) {
-            var src = pair[1].getSource(lid + '-promoted-' + pair[0]);
-            if (src) src.setData(window.promotedData[lid]);
-          });
+          _updateSources(lid);
         }
+      }
+      // DB sync using whatever ID is current at execution time
+      var currentDbId = _getDbId(localKey);
+      if (window.supabaseClient && currentDbId) {
+        window.supabaseClient.from('features')
+          .update({ geom_json: geom }).eq('feature_id', currentDbId)
+          .then(function(r) { if (r.error) console.error('[undo/redo geom]', r.error); });
       }
     };
   }
 
-  pushUndo(applyGeom(capturedPrev), applyGeom(capturedNext));
+  pushUndo(applyGeom(prevGeom), applyGeom(newGeom));
+}
+
+// ─── delete helper ───────────────────────────────────────────────────────────
+
+function _deleteEditingFeature() {
+  if (!_geometryEditMode || !_editingLayer || !_editingDrawKey) return;
+
+  var layer        = _editingLayer;
+  var localKey     = _editingDrawKey;
+  var origFeat     = _editingOriginalFeature;
+  var deletedGeom  = _editingCurrentGeom || (origFeat && origFeat.geometry);
+  var deletedProps = origFeat ? origFeat.properties : {};
+
+  // Clear edit state immediately — no awaiting
+  clearDrawnFeatureEditing(true);
+  if (typeof closePanelInfo === 'function') closePanelInfo(layer);
+
+  // Fire-and-forget DB delete
+  var dbId = _getDbId(localKey);
+  if (window.supabaseClient && dbId) {
+    window.supabaseClient.from('features').delete().eq('feature_id', dbId)
+      .then(function(r) {
+        if (r.error) console.error('[draw delete]', r.error);
+        else if (_drawKeyToDbId[localKey] === dbId) delete _drawKeyToDbId[localKey];
+      });
+  }
+
+  if (!deletedGeom) return;
+
+  pushUndo(
+    function() {
+      // undo delete — restore to map with the same local key
+      addDrawnFeature(layer, localKey, deletedGeom, Object.assign({}, deletedProps, { _drawKey: localKey }));
+      // Fire-and-forget re-insert; update DB ID mapping when it resolves
+      if (window.supabaseClient) {
+        var insertData = { layer_id: LIVE_LAYER_ID, source: 'drawn', geom_json: deletedGeom };
+        if (deletedProps.label)    insertData.label    = deletedProps.label;
+        if (deletedProps.DayStart) insertData.DayStart = deletedProps.DayStart;
+        if (deletedProps.DayEnd)   insertData.DayEnd   = deletedProps.DayEnd;
+        window.supabaseClient.from('features').insert(insertData).select('feature_id')
+          .then(function(result) {
+            if (result.error) { console.error('[undo delete]', result.error); return; }
+            var saved = result.data && result.data[0];
+            if (saved) _drawKeyToDbId[localKey] = saved.feature_id;
+          });
+      }
+    },
+    function() {
+      // redo delete — remove from map
+      var lid = layer.id;
+      if (window.promotedData[lid]) {
+        window.promotedData[lid].features = window.promotedData[lid].features.filter(function(f) {
+          return String(f.properties._drawKey) !== localKey;
+        });
+        _updateSources(lid);
+      }
+      var currentDbId = _getDbId(localKey);
+      if (window.supabaseClient && currentDbId) {
+        window.supabaseClient.from('features').delete().eq('feature_id', currentDbId)
+          .then(function(r) {
+            if (r.error) console.error('[redo delete]', r.error);
+            else if (_drawKeyToDbId[localKey] === currentDbId) delete _drawKeyToDbId[localKey];
+          });
+      }
+    }
+  );
 }
 
 // ─── main init ────────────────────────────────────────────────────────────────
@@ -222,8 +324,20 @@ function initDrawTool() {
 
   var div = document.createElement('div');
   div.id = 'draw-overlay-map';
-  div.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:10;pointer-events:none;';
   document.body.appendChild(div);
+
+  function positionOverlay() {
+    var r = afterMap.getContainer().getBoundingClientRect();
+    div.style.cssText = 'position:fixed;' +
+      'top:'    + r.top                           + 'px;' +
+      'bottom:' + (window.innerHeight - r.bottom) + 'px;' +
+      'left:'   + r.left                          + 'px;' +
+      'right:'  + (window.innerWidth  - r.right)  + 'px;' +
+      'z-index:10;pointer-events:none;';
+    if (drawOverlayMap) drawOverlayMap.resize();
+  }
+  positionOverlay();
+  window.addEventListener('resize', positionOverlay);
 
   drawOverlayMap = new mapboxgl.Map({
     container: 'draw-overlay-map',
@@ -266,22 +380,46 @@ function initDrawTool() {
     wrapper.appendChild(drawEl);
     document.body.appendChild(wrapper);
 
-    // draw_polygon active → open canvas; escape before completing → close
+    // Intercept trash button in capture phase — in direct_select mode MapboxDraw's
+    // built-in trash only removes vertices, never the whole feature, so we handle
+    // deletion ourselves before MapboxDraw sees the click.
+    wrapper.addEventListener('click', function(e) {
+      if (!e.target.closest('.mapbox-gl-draw_trash')) return;
+      if (!_geometryEditMode) return;
+      e.stopPropagation();
+      e.preventDefault();
+      _deleteEditingFeature();
+    }, true);
+
     drawOverlayMap.on('draw.modechange', function(e) {
       if (e.mode === 'draw_polygon') {
         drawOverlayMap.getCanvas().style.pointerEvents = 'auto';
         raiseSlider();
-      } else if (e.mode === 'simple_select' && !editDrawPending && !_geometryEditMode) {
+      } else if (e.mode === 'simple_select' && _geometryEditMode && !_suppressDrawDelete) {
+        // Trash fires draw.modechange before draw.delete — if canvas is already empty,
+        // deletion is in progress; skip. If features remain, user clicked off — close panel.
+        if (drawOverlayDraw.getAll().features.length === 0) return;
+        var layerToClose = _editingLayer;
+        if (layerToClose && typeof closePanelInfo === 'function') {
+          closePanelInfo(layerToClose);
+        } else {
+          clearDrawnFeatureEditing(false);
+        }
+      } else if (e.mode === 'simple_select' && !_geometryEditMode) {
         drawOverlayMap.getCanvas().style.pointerEvents = 'none';
         lowerSlider();
       }
     });
 
-    // Polygon completed — keep canvas open so user can move it before clicking off
+    // Polygon completed — save immediately and open the panel
     drawOverlayMap.on('draw.create', function(e) {
-      editDrawPending = e.features[0];
-      drawOverlayMap.getCanvas().style.pointerEvents = 'auto';
-      raiseSlider();
+      var feature = e.features[0];
+      drawOverlayMap.getCanvas().style.pointerEvents = 'none';
+      lowerSlider();
+      _suppressDrawDelete = true;
+      drawOverlayDraw.deleteAll();
+      _suppressDrawDelete = false;
+      _autoSaveNewFeature(feature, buildsLayer);
     });
 
     // Feature moved/vertex edited before first save → update pending geometry.
@@ -308,65 +446,14 @@ function initDrawTool() {
       }
     });
 
-    // Trash button
-    drawOverlayMap.on('draw.delete', async function() {
+    // draw.delete fires if MapboxDraw deletes in simple_select mode (e.g. keyboard Delete key).
+    // The trash button in direct_select mode is intercepted above; this is a fallback.
+    drawOverlayMap.on('draw.delete', function() {
       if (_suppressDrawDelete) return;
-
       if (_geometryEditMode && _editingLayer && _editingDrawKey) {
-        var layer     = _editingLayer;
-        var drawKey   = _editingDrawKey;
-        var numericId = parseInt(drawKey, 10);
-        var origFeat  = _editingOriginalFeature;
-
-        if (window.supabaseClient && !isNaN(numericId)) {
-          var deletedGeom  = _editingCurrentGeom || (origFeat && origFeat.geometry);
-          var deletedProps = origFeat ? origFeat.properties : {};
-          var redoId       = { current: null };  // mutable ref so redo can re-delete
-
-          pushUndo(
-            async function() {
-              if (!deletedGeom) return;
-              var res = await window.supabaseClient.from('features').insert({
-                layer_id: LIVE_LAYER_ID,
-                label:    deletedProps.label    || null,
-                DayStart: deletedProps.DayStart || null,
-                DayEnd:   deletedProps.DayEnd   || null,
-                source:   'drawn',
-                geom_json: deletedGeom,
-              }).select('feature_id, nid');
-              if (res.error) { console.error('[undo delete]', res.error); return; }
-              var s   = res.data && res.data[0];
-              var key = s ? String(s.feature_id) : ('tmp-' + Date.now());
-              redoId.current = s ? s.feature_id : null;
-              addDrawnFeature(layer, key, deletedGeom,
-                Object.assign({}, deletedProps, { _drawKey: key }));
-            },
-            async function() {
-              if (!redoId.current) return;
-              var lid = layer.id;
-              var key = String(redoId.current);
-              await window.supabaseClient.from('features').delete().eq('feature_id', redoId.current);
-              if (window.promotedData[lid]) {
-                window.promotedData[lid].features = window.promotedData[lid].features.filter(function(f) {
-                  return String(f.properties._drawKey) !== key;
-                });
-                [['left', beforeMap], ['right', afterMap]].forEach(function(pair) {
-                  var src = pair[1].getSource(lid + '-promoted-' + pair[0]);
-                  if (src) src.setData(window.promotedData[lid]);
-                });
-              }
-            }
-          );
-
-          var r = await window.supabaseClient.from('features').delete().eq('feature_id', numericId);
-          if (r.error) { console.error('[draw delete]', r.error); return; }
-        }
-        clearDrawnFeatureEditing(true);
-        if (typeof closePanelInfo === 'function') closePanelInfo(layer);
+        _deleteEditingFeature();
         return;
       }
-
-      // Trash pressed on an in-progress (unsaved) new feature — just discard
       if (editDrawPending) {
         editDrawPending = null;
         drawOverlayMap.getCanvas().style.pointerEvents = 'none';

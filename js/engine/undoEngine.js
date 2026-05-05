@@ -15,18 +15,18 @@ function clearUndoStack() {
   redoStack = [];
 }
 
-async function performUndo() {
+function performUndo() {
   if (!undoStack.length) return;
   var op = undoStack.pop();
   if (op.redo) redoStack.push(op);
-  await op.undo();
+  op.undo();
 }
 
-async function performRedo() {
+function performRedo() {
   if (!redoStack.length) return;
   var op = redoStack.pop();
   undoStack.push(op);
-  await op.redo();
+  op.redo();
 }
 
 window.addEventListener('keydown', function(e) {
