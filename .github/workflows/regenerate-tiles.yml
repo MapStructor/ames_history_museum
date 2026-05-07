@@ -20,37 +20,41 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
         run: |
-          curl -s \
-            -H "apikey: $SUPABASE_SERVICE_KEY" \
-            -H "Authorization: Bearer $SUPABASE_SERVICE_KEY" \
-            -H "Range-Unit: items" \
-            -H "Range: 0-99999" \
-            "$SUPABASE_URL/rest/v1/buildings_ames_2026?select=*&limit=100000" \
-            -o raw.json
-
           python3 - <<'EOF'
-          import json
+          import json, urllib.request, urllib.error
 
-          with open('raw.json') as f:
-              rows = json.load(f)
+          url_base = f"{__import__('os').environ['SUPABASE_URL']}/rest/v1/buildings_ames_2026?select=*"
+          key = __import__('os').environ['SUPABASE_SERVICE_KEY']
+          headers = {"apikey": key, "Authorization": f"Bearer {key}"}
+
+          all_rows = []
+          page_size = 1000
+          offset = 0
+
+          while True:
+              url = f"{url_base}&limit={page_size}&offset={offset}"
+              req = urllib.request.Request(url, headers=headers)
+              with urllib.request.urlopen(req) as r:
+                  batch = json.loads(r.read())
+              all_rows.extend(batch)
+              print(f"Fetched {len(all_rows)} rows so far...")
+              if len(batch) < page_size:
+                  break
+              offset += page_size
 
           features = []
-          for row in rows:
+          for row in all_rows:
               geom = row.get('geom')
               if not geom:
                   continue
               props = {k: v for k, v in row.items() if k != 'geom'}
-              features.append({
-                  "type": "Feature",
-                  "geometry": geom,
-                  "properties": props
-              })
+              features.append({"type": "Feature", "geometry": geom, "properties": props})
 
           geojson = {"type": "FeatureCollection", "features": features}
           with open('buildings.geojson', 'w') as f:
               json.dump(geojson, f)
 
-          print(f"Exported {len(features)} features")
+          print(f"Exported {len(features)} features total")
           EOF
 
       - name: Generate PMTiles
