@@ -23,7 +23,9 @@ jobs:
           curl -s \
             -H "apikey: $SUPABASE_SERVICE_KEY" \
             -H "Authorization: Bearer $SUPABASE_SERVICE_KEY" \
-            "$SUPABASE_URL/rest/v1/buildings_ames_2026?select=*" \
+            -H "Range-Unit: items" \
+            -H "Range: 0-99999" \
+            "$SUPABASE_URL/rest/v1/buildings_ames_2026?select=*&limit=100000" \
             -o raw.json
 
           python3 - <<'EOF'
