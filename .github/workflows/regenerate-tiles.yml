@@ -1,0 +1,72 @@
+name: Regenerate PMTiles
+
+on:
+  schedule:
+    - cron: '0 3 * * *'  # nightly at 3am UTC
+  workflow_dispatch:       # manual trigger from GitHub Actions UI
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install Tippecanoe
+        run: sudo apt-get install -y tippecanoe
+
+      - name: Export GeoJSON from Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          curl -s \
+            -H "apikey: $SUPABASE_SERVICE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_KEY" \
+            "$SUPABASE_URL/rest/v1/buildings_ames_2026?select=*" \
+            -o raw.json
+
+          python3 - <<'EOF'
+          import json
+
+          with open('raw.json') as f:
+              rows = json.load(f)
+
+          features = []
+          for row in rows:
+              geom = row.get('geom')
+              if not geom:
+                  continue
+              props = {k: v for k, v in row.items() if k != 'geom'}
+              features.append({
+                  "type": "Feature",
+                  "geometry": geom,
+                  "properties": props
+              })
+
+          geojson = {"type": "FeatureCollection", "features": features}
+          with open('buildings.geojson', 'w') as f:
+              json.dump(geojson, f)
+
+          print(f"Exported {len(features)} features")
+          EOF
+
+      - name: Generate PMTiles
+        run: |
+          tippecanoe \
+            -o buildings.pmtiles \
+            -l buildings \
+            --use-attribute-for-id=nid \
+            --drop-densest-as-needed \
+            --maximum-zoom=16 \
+            --minimum-zoom=10 \
+            buildings.geojson
+
+      - name: Upload to R2
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: auto
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        run: |
+          aws s3 cp buildings.pmtiles s3://$R2_BUCKET/buildings.pmtiles \
+            --endpoint-url $R2_ENDPOINT
