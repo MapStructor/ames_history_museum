@@ -4,6 +4,8 @@ on:
   schedule:
     - cron: '0 3 * * *'  # nightly at 3am UTC
   workflow_dispatch:       # manual trigger from GitHub Actions UI
+  push:
+    branches: [dev]        # TEMP: remove after first successful test run
 
 jobs:
   build:
