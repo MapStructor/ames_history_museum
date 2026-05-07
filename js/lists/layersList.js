@@ -231,12 +231,17 @@ var layers = [
         iconType: "square",
         checked: true,
         type: "fill",
+        // source: {                                          // OLD: Mapbox tileset
+        //   type: "vector",                                  // OLD: Mapbox tileset
+        //   url: "mapbox://nittyjee.du0aopr8",              // OLD: Mapbox tileset
+        // },                                                 // OLD: Mapbox tileset
+        // "source-layer": "buildings_ames_2026-9v0yur",     // OLD: Mapbox tileset
         source: {
           type: "vector",
-          url: "mapbox://nittyjee.du0aopr8",
+          url: "pmtiles://https://pub-411b8477c87c4a26b335ecde4062e140.r2.dev/buildings.pmtiles",
         },
         layout: { visibility: "visible" },
-        "source-layer": "buildings_ames_2026-9v0yur",
+        "source-layer": "buildings",
         paint: {
           "fill-color": "#ffb255",
           "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], false],
