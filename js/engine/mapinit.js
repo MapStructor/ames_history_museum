@@ -7,8 +7,6 @@
 //Restricted Token (defined in js/lists/restrictedToken.js)
 mapboxgl.accessToken = (typeof mapboxToken !== 'undefined') ? mapboxToken : restrictedToken;
 
-var _pmtilesProtocol = new pmtiles.Protocol();
-maplibregl.addProtocol('pmtiles', _pmtilesProtocol.tile.bind(_pmtilesProtocol));
 
 
 var beforeMap;
@@ -60,13 +58,19 @@ var map;
 		return parseInt(moment.unix(sliderVal).format("YYYYMMDD"));
 	}
 
-	var initialLoadDone = false;
+	var initialLoadDone  = false;
+	var _mapsLoadedCount = 0;
+	function _onBothMapsLoaded() {
+		if (++_mapsLoadedCount === 2 && typeof loadBuildingsFromSupabase === 'function')
+			loadBuildingsFromSupabase();
+	}
 
 	beforeMap.on("style.load", function() {
 		var date = getDate();
 		addLayersToMap(beforeMap, "left", date);
 		initPromotedLayers("left", beforeMap, date);
 		refreshLayers();
+		_onBothMapsLoaded();
 	});
 
 	afterMap.on("style.load", function() {
@@ -79,6 +83,7 @@ var map;
 			addEvents();
 			registerInfoPanelClicks();
 		}
+		_onBothMapsLoaded();
 	});
 	
 	

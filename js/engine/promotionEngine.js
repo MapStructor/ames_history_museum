@@ -198,6 +198,49 @@ function buildLayerFilter(layerId, date) {
   return filter;
 }
 
+// Load all buildings from Supabase ames_buildings_2026 and set as GeoJSON on both maps.
+// Called once after both maps' style.load events fire.
+async function loadBuildingsFromSupabase() {
+  if (!window.supabaseClient) return;
+
+  var allRows = [];
+  var pageSize = 1000;
+  var offset   = 0;
+
+  while (true) {
+    var result = await window.supabaseClient
+      .from('ames_buildings_2026')
+      .select('id, nid, DayStart, DayEnd, geom')
+      .range(offset, offset + pageSize - 1);
+    if (result.error || !result.data || !result.data.length) break;
+    allRows = allRows.concat(result.data);
+    if (result.data.length < pageSize) break;
+    offset += pageSize;
+  }
+
+  var features = allRows
+    .filter(function(row) { return row.geom; })
+    .map(function(row) {
+      return {
+        type: 'Feature',
+        id: row.id,
+        geometry: row.geom,
+        properties: { id: row.id, nid: row.nid, DayStart: row.DayStart, DayEnd: row.DayEnd },
+      };
+    });
+
+  var geojson = { type: 'FeatureCollection', features: features };
+
+  ['curr-builds-left', 'curr-builds-highlighted-left'].forEach(function(sid) {
+    var src = beforeMap.getSource(sid);
+    if (src) src.setData(geojson);
+  });
+  ['curr-builds-right', 'curr-builds-highlighted-right'].forEach(function(sid) {
+    var src = afterMap.getSource(sid);
+    if (src) src.setData(geojson);
+  });
+}
+
 function getCurrentSliderDate() {
   var sliderVal = moment($('#date').text()).unix();
   return parseInt(moment.unix(sliderVal).format('YYYYMMDD'));

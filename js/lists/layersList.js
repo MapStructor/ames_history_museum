@@ -240,11 +240,10 @@ var layers = [
         // },                                                 // OLD: Mapbox tileset
         // "source-layer": "buildings_ames_2026-9v0yur",     // OLD: Mapbox tileset
         source: {
-          type: "vector",
-          url: "pmtiles://https://pub-411b8477c87c4a26b335ecde4062e140.r2.dev/buildings.pmtiles",
+          type: "geojson",
+          data: { type: "FeatureCollection", features: [] },
         },
         layout: { visibility: "visible" },
-        "source-layer": "buildings",
         paint: {
           "fill-color": "#ffb255",
           "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], false],
