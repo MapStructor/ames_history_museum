@@ -1,0 +1,8 @@
+{
+  "name": "ames-tiles-worker",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "pmtiles": "^3.0.0"
+  }
+}

@@ -3,8 +3,9 @@
 // On a fresh page load, previously edited features revert to tileset rendering
 // (a future RPC-based geometry fetch would fix this; deferred to phase 2).
 
-window.promotedNids = {};  // { [layerId]: string[] }  — NIDs excluded from tileset
-window.promotedData = {};  // { [layerId]: GeoJSON FeatureCollection }
+window.promotedNids     = {};  // { [layerId]: string[] }  — NIDs excluded from tileset
+window.promotedData     = {};  // { [layerId]: GeoJSON FeatureCollection }
+window.promotedBuiltIds = {};  // { [layerId]: string[] }  — PostGIS ids excluded from tileset
 
 var LIVE_LAYER_ID = 'a4b20188-34fb-4723-90a9-ff105a73ce76';
 
@@ -37,13 +38,30 @@ function addDrawnFeature(layer, featureKey, geometry, props) {
 async function loadLiveFeatures(layer) {
   if (!window.supabaseClient) return;
 
+  var _logLive = function(msg) {
+    console.log('[loadLive]', msg);
+    try {
+      var stored = JSON.parse(localStorage.getItem('_drawLog') || '[]');
+      stored.push(new Date().toISOString().slice(11,23) + '  [loadLive] ' + msg);
+      if (stored.length > 300) stored = stored.slice(-300);
+      localStorage.setItem('_drawLog', JSON.stringify(stored));
+    } catch(e) {}
+  };
+
+  _logLive('start layer=' + layer.id);
+
   var result = await window.supabaseClient
     .from('features')
     .select('feature_id, nid, label, DayStart, DayEnd, source, geom_json')
     .eq('layer_id', LIVE_LAYER_ID)
     .in('source', ['drawn', 'edited']);
 
-  if (result.error || !result.data || !result.data.length) return;
+  if (result.error || !result.data || !result.data.length) {
+    _logLive('no rows (error=' + (result.error && result.error.message) + ')');
+    return;
+  }
+
+  _logLive('got ' + result.data.length + ' rows: ' + result.data.map(function(r){ return 'id=' + r.feature_id + '(src=' + r.source + ')'; }).join(', '));
 
   var withGeom  = [];
   var needsGeom = [];
@@ -114,7 +132,7 @@ function initPromotedLayers(side, map, date) {
 
     map.on('mouseenter', srcId, function() { map.getCanvas().style.cursor = 'pointer'; });
     map.on('mouseleave', srcId, function() { map.getCanvas().style.cursor = ''; });
-    map.on('click', srcId, function(e) { handlePanelClick(layer, e); });
+    map.on('click', srcId, function(e) { handlePanelClick(layer, e, false); });
 
     // Load existing drawn/edited features from Supabase once (right side only)
     if (side === 'right') loadLiveFeatures(layer);
@@ -174,6 +192,9 @@ function buildLayerFilter(layerId, date) {
   var excluded = window.promotedNids[layerId];
   if (excluded && excluded.length > 0)
     filter.push(['!in', 'nid'].concat(excluded.map(function(s) { return parseInt(s, 10); })));
+  var excludedIds = window.promotedBuiltIds[layerId];
+  if (excludedIds && excludedIds.length > 0)
+    filter.push(['!in', '$id'].concat(excludedIds.map(Number)));
   return filter;
 }
 

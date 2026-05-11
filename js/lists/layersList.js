@@ -1,3 +1,6 @@
+// Update this after running: cd workers/tiles && npm install && wrangler deploy
+var TILES_WORKER_URL = "https://ames-tiles.mapstructor.workers.dev";
+
 var layers = [
 
   // Roads
@@ -238,7 +241,9 @@ var layers = [
         // "source-layer": "buildings_ames_2026-9v0yur",     // OLD: Mapbox tileset
         source: {
           type: "vector",
-          url: "pmtiles://https://pub-411b8477c87c4a26b335ecde4062e140.r2.dev/buildings.pmtiles",
+          tiles: [TILES_WORKER_URL + "/buildings/{z}/{x}/{y}.pbf"],
+          minzoom: 0,
+          maxzoom: 14,
         },
         layout: { visibility: "visible" },
         "source-layer": "buildings",
@@ -432,7 +437,6 @@ var layers = [
                 0.1,  // default
               ],
               "fill-outline-color": "#000000",
-              "fill-outline-color-opacity": 1,
             },
             highlight: {
               "fill-color": "#ff1493",

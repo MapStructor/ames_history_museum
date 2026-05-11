@@ -1,4 +1,6 @@
 // sync-to-drupal — Supabase Edge Function
+// ⚠️ NOTE (2026-05-10): This file had uncommitted modifications that were lost in a git reset --hard.
+// The current version is the last committed state. Review before working on the Drupal sync pipeline.
 //
 // Three modes:
 //   1. Manual CREATE — called directly with { label, content_type, feature_id }

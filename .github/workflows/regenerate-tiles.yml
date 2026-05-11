@@ -62,7 +62,7 @@ jobs:
           tippecanoe \
             -o buildings.pmtiles \
             -l buildings \
-            --use-attribute-for-id=nid \
+            --use-attribute-for-id=id \
             --drop-densest-as-needed \
             --maximum-zoom=16 \
             --minimum-zoom=10 \

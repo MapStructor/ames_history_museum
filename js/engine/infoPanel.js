@@ -101,8 +101,8 @@ function registerInfoPanelClicks() {
       hoveredId.right = null;
     });
 
-    beforeMap.on("click", layer.id + "-left",  function(e) { handlePanelClick(layer, e); });
-    afterMap.on("click",  layer.id + "-right", function(e) { handlePanelClick(layer, e); });
+    beforeMap.on("click", layer.id + "-left",  function(e) { handlePanelClick(layer, e, true); });
+    afterMap.on("click",  layer.id + "-right", function(e) { handlePanelClick(layer, e, true); });
   });
 }
 
@@ -116,7 +116,7 @@ function infoPanelDefaultHandle() {
   }
 }
 
-function handlePanelClick(layer, event) {
+function handlePanelClick(layer, event, isTileset) {
   if (infoPanelClickFired[layer.id]) return;
   infoPanelClickFired[layer.id] = true;
   setTimeout(function() { infoPanelClickFired[layer.id] = false; }, 300);
@@ -124,6 +124,7 @@ function handlePanelClick(layer, event) {
   var state     = infoPanelState[layer.id];
   var panel     = layer.panel;
   var props     = event.features[0].properties;
+  if (isTileset) props = Object.assign({}, props, { _tileFeatureId: event.features[0].id });
   var clickedId = event.features[0].id;
   var geometry  = event.features[0].geometry;
 
@@ -168,6 +169,68 @@ function fetchAndRender(layer, props, geometry) {
   var $el     = $("#" + state.divId);
   var drawKey = props._drawKey != null ? String(props._drawKey) : null;
   var nid     = props[panel.nidProp];
+
+  // Tileset feature in edit mode: fetch real geometry from PostGIS, then enter geometry edit.
+  // The tile geometry is simplified at render zoom — always use the PostGIS source for editing.
+  if (!drawKey && window.editMode && typeof _newKey === 'function' && geometry) {
+    var tileKey    = _newKey();
+    var buildingId = props._tileFeatureId != null ? props._tileFeatureId : (props.id != null ? props.id : null);
+
+    var geomPromise = (buildingId && window.supabaseClient)
+      ? window.supabaseClient
+          .from('buildings_ames_2026')
+          .select('geom')
+          .eq('id', buildingId)
+          .limit(1)
+          .then(function(r) {
+            return (r.data && r.data[0] && r.data[0].geom) ? r.data[0].geom : geometry;
+          })
+          .catch(function() { return geometry; })
+      : Promise.resolve(geometry);
+
+    $el.html("<p style='padding:5px;'>Loading...</p>");
+    $el.slideDown();
+
+    geomPromise.then(function(realGeom) {
+      var tileProps = Object.assign({}, props, { _drawKey: tileKey });
+
+      if (typeof _dbInsert === 'function') {
+        _dbInsert(tileKey, {
+          layer_id: typeof LIVE_LAYER_ID !== 'undefined' ? LIVE_LAYER_ID : null,
+          source:   'drawn',
+          geom_json: realGeom,
+          nid:      nid      || null,
+          label:    props.label    || null,
+          DayStart: props.DayStart || null,
+          DayEnd:   props.DayEnd   || null,
+        });
+      }
+      if (nid && window.promotedNids) {
+        if (!window.promotedNids[layer.id]) window.promotedNids[layer.id] = [];
+        var nidStr = String(nid);
+        if (window.promotedNids[layer.id].indexOf(nidStr) === -1)
+          window.promotedNids[layer.id].push(nidStr);
+      }
+      if (buildingId != null) {
+        if (!window.promotedBuiltIds) window.promotedBuiltIds = {};
+        if (!window.promotedBuiltIds[layer.id]) window.promotedBuiltIds[layer.id] = [];
+        var bidStr = String(buildingId);
+        if (window.promotedBuiltIds[layer.id].indexOf(bidStr) === -1)
+          window.promotedBuiltIds[layer.id].push(bidStr);
+      }
+      window._editingBuildingId = buildingId;
+      if (typeof refreshTilesetFilter === 'function') refreshTilesetFilter(layer);
+
+      var f = function() { return ''; };
+      $el.html(panel.render(tileProps, f));
+      appendEditSection($el, tileKey, tileProps, layer, realGeom);
+
+      if (typeof loadDrawnFeatureForEditing === 'function')
+        loadDrawnFeatureForEditing(layer, tileKey, realGeom);
+    });
+
+    return;
+  }
 
   // For UUID-keyed drawn features, resolve the actual Supabase feature_id via _drawKeyToDbId
   var lookupId = drawKey;
@@ -423,17 +486,34 @@ function appendEditSection($el, featureId, props, layer, geometry) {
         var _dk  = String(props._drawKey);
         var _dbLookup = typeof _drawKeyToDbId !== 'undefined' && _drawKeyToDbId[_dk];
         var _fid = _dbLookup || parseInt(String(featureId), 10);
+        var _buildingId  = props._tileFeatureId != null ? props._tileFeatureId : (props.id != null ? props.id : null);
+        var _buildingNid = props.nid != null ? props.nid : null;
         var _prevProps = { nid: props.nid, label: props.label || null, DayStart: props.DayStart || null, DayEnd: props.DayEnd || null };
         var _nextProps = { nid: props.nid, label: labelVal, DayStart: dayStartVal, DayEnd: dayEndVal };
         var _prevGeom  = geometry;
         var _nextGeom  = savedGeom;
+
+        // Write geometry back to PostGIS source table so QGIS and PMTiles stay in sync.
+        // Look up by PostGIS id (fresh tileset click) or by nid (reloaded promoted feature).
+        function _writeBackGeom(geom) {
+          if (!window.supabaseClient) return;
+          var q = window.supabaseClient.from('buildings_ames_2026').update({ geom: geom });
+          if (_buildingId != null)       q = q.eq('id', _buildingId);
+          else if (_buildingNid != null) q = q.eq('nid', _buildingNid);
+          else return;
+          q.then(function(r) { if (r.error) console.warn('geom write-back failed:', r.error.message); });
+        }
+        _writeBackGeom(savedGeom);
+
         pushUndo(
           async function() {
             await window.supabaseClient.from('features').update({ label: _prevProps.label, DayStart: _prevProps.DayStart, DayEnd: _prevProps.DayEnd, geom_json: _prevGeom }).eq('feature_id', _fid);
+            _writeBackGeom(_prevGeom);
             addDrawnFeature(layer, _dk, _prevGeom, _prevProps);
           },
           async function() {
             await window.supabaseClient.from('features').update({ label: _nextProps.label, DayStart: _nextProps.DayStart, DayEnd: _nextProps.DayEnd, geom_json: _nextGeom }).eq('feature_id', _fid);
+            _writeBackGeom(_nextGeom);
             addDrawnFeature(layer, _dk, _nextGeom, _nextProps);
           }
         );

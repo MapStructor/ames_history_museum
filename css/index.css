@@ -146,6 +146,45 @@
   transform-origin: top center;
 }
 
+#draw-edit-actions {
+  position: fixed;
+  top: 210px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 500;
+  display: none;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+  background: rgba(20, 20, 20, 0.88);
+  border-radius: 5px;
+  padding: 5px 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+#draw-edit-actions button {
+  padding: 4px 10px;
+  border: none;
+  border-radius: 3px;
+  background: #2e2e2e;
+  color: #ddd;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: 'Source Sans Pro', sans-serif;
+  white-space: nowrap;
+}
+
+#draw-edit-actions button:hover:not(:disabled) { background: #444; color: #fff; }
+#draw-edit-actions button:disabled { opacity: 0.3; cursor: default; }
+#draw-edit-actions button.active   { background: #b0691d; color: #fff; }
+
+#draw-edit-actions .ea-sep {
+  width: 1px;
+  height: 18px;
+  background: #555;
+  flex-shrink: 0;
+}
+
 
 /* ── MAP STYLE ───────────────────────────────────────────────────────────── */
 
