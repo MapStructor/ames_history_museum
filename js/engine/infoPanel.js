@@ -178,7 +178,7 @@ function fetchAndRender(layer, props, geometry) {
 
     var geomPromise = (buildingId && window.supabaseClient)
       ? window.supabaseClient
-          .from('buildings_ames_2026')
+          .from('ames_buildings_2026')
           .select('geom')
           .eq('id', buildingId)
           .limit(1)
@@ -497,7 +497,7 @@ function appendEditSection($el, featureId, props, layer, geometry) {
         // Look up by PostGIS id (fresh tileset click) or by nid (reloaded promoted feature).
         function _writeBackGeom(geom) {
           if (!window.supabaseClient) return;
-          var q = window.supabaseClient.from('buildings_ames_2026').update({ geom: geom });
+          var q = window.supabaseClient.from('ames_buildings_2026').update({ geom: geom });
           if (_buildingId != null)       q = q.eq('id', _buildingId);
           else if (_buildingNid != null) q = q.eq('nid', _buildingNid);
           else return;

@@ -23,7 +23,7 @@ jobs:
           python3 - <<'EOF'
           import json, urllib.request, urllib.error
 
-          url_base = f"{__import__('os').environ['SUPABASE_URL']}/rest/v1/buildings_ames_2026?select=*"
+          url_base = f"{__import__('os').environ['SUPABASE_URL']}/rest/v1/ames_buildings_2026?select=*"
           key = __import__('os').environ['SUPABASE_SERVICE_KEY']
           headers = {"apikey": key, "Authorization": f"Bearer {key}"}
 
