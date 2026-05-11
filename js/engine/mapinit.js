@@ -7,6 +7,9 @@
 //Restricted Token (defined in js/lists/restrictedToken.js)
 mapboxgl.accessToken = (typeof mapboxToken !== 'undefined') ? mapboxToken : restrictedToken;
 
+var _pmtilesProtocol = new pmtiles.Protocol();
+maplibregl.addProtocol('pmtiles', _pmtilesProtocol.tile.bind(_pmtilesProtocol));
+
 
 var beforeMap;
 var afterMap;

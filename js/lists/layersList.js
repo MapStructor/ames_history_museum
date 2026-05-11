@@ -241,9 +241,7 @@ var layers = [
         // "source-layer": "buildings_ames_2026-9v0yur",     // OLD: Mapbox tileset
         source: {
           type: "vector",
-          tiles: [TILES_WORKER_URL + "/buildings/{z}/{x}/{y}.pbf"],
-          minzoom: 0,
-          maxzoom: 14,
+          url: "pmtiles://https://pub-411b8477c87c4a26b335ecde4062e140.r2.dev/buildings.pmtiles",
         },
         layout: { visibility: "visible" },
         "source-layer": "buildings",
