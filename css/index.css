@@ -3,7 +3,7 @@
 #disclaimer-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(20, 10, 0, 0.65);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -12,31 +12,54 @@
 
 #disclaimer-card {
   background: #fff;
-  border-radius: 6px;
-  padding: 32px 36px;
-  max-width: 380px;
+  border-radius: 8px;
+  max-width: 270px;
   width: 90%;
-  text-align: center;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
   font-family: 'Source Sans Pro', sans-serif;
+}
+
+#disclaimer-accent {
+  height: 5px;
+  background: #b0691d;
+}
+
+#disclaimer-card-inner {
+  padding: 32px 32px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 #disclaimer-card p {
-  margin: 0 0 24px;
-  font-size: 15px;
+  margin: 0 0 12px;
+  font-weight: 700;
   color: #333;
   line-height: 1.6;
+  text-align: center;
+}
+
+#disclaimer-card p:last-of-type {
+  margin-bottom: 20px;
 }
 
 #disclaimer-ok {
-  padding: 10px 32px;
+  width: 70px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: #b0691d;
   color: #fff;
   border: none;
-  border-radius: 4px;
+  border-radius: 5px;
   font-size: 15px;
   font-family: 'Source Sans Pro', sans-serif;
+  font-weight: 700;
   cursor: pointer;
+  letter-spacing: 0.03em;
+  transition: background 0.15s;
 }
 
 #disclaimer-ok:hover {
