@@ -38,6 +38,8 @@ modal_content_html["about"] = `
 	historic maps and records, adding precise dates, showing changes of
 	ownership, drawing changes and adding features.
 <br><br>
+	The map data varies in accuracy. Dates may not be exact, and few previous buildings so far have not been drawn. In some cases there are missing buildings and other features that currently exist. To understand the details of accuracy in each layer, click the Info button next to the layer names in the layers sidebar on the left.
+<br><br>
 	See the following map that was created for the Dutch Period in New
 	York City, that begins to show how much further the work can go:
 <br>
