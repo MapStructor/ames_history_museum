@@ -25,8 +25,6 @@ class R2Source {
   }
 }
 
-const tileCache = {};
-
 export default {
   async fetch(request, env) {
     if (request.method === "OPTIONS") {
@@ -41,11 +39,8 @@ export default {
     const key = `${name}.pmtiles`;
 
     try {
-      if (!tileCache[key]) {
-        tileCache[key] = new PMTiles(new R2Source(env.TILES_BUCKET, key));
-      }
-
-      const tile = await tileCache[key].getZxy(parseInt(z), parseInt(x), parseInt(y));
+      const pmtiles = new PMTiles(new R2Source(env.TILES_BUCKET, key));
+      const tile = await pmtiles.getZxy(parseInt(z), parseInt(x), parseInt(y));
       if (!tile || !tile.data) return new Response("", { status: 204, headers: CORS });
 
       return new Response(tile.data, {
@@ -53,7 +48,7 @@ export default {
           ...CORS,
           "Content-Type": "application/x-protobuf",
           "Content-Encoding": "gzip",
-          "Cache-Control": "public, max-age=86400",
+          "Cache-Control": "public, max-age=300",
         },
       });
     } catch (err) {

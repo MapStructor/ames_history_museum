@@ -1,16 +1,8 @@
-// Promotion system: when a tileset feature's dates are edited in-session,
-// it gets added to a live GeoJSON layer and excluded from the tileset via NID filter.
-// On a fresh page load, previously edited features revert to tileset rendering
-// (a future RPC-based geometry fetch would fix this; deferred to phase 2).
-
-window.promotedNids     = {};  // { [layerId]: string[] }  — NIDs excluded from tileset
 window.promotedData     = {};  // { [layerId]: GeoJSON FeatureCollection }
-window.promotedBuiltIds = {};  // { [layerId]: string[] }  — PostGIS ids excluded from tileset
+window.promotedBuiltIds = {};  // { [layerId]: string[] } — ames_buildings_2026 ids suppressed in tileset
 
-var LIVE_LAYER_ID = 'a4b20188-34fb-4723-90a9-ff105a73ce76';
-
-// Add a drawn (new) feature to the live GeoJSON layer without touching the tileset filter.
-// featureKey is any stable string (feature_id or a placeholder).
+// Add a feature to the live GeoJSON overlay. featureKey is the ames_buildings_2026 id (as string)
+// for promoted buildings, or a local UUID for drawn buildings.
 function addDrawnFeature(layer, featureKey, geometry, props) {
   var lid = layer.id;
   if (!window.promotedData[lid])
@@ -32,81 +24,33 @@ function addDrawnFeature(layer, featureKey, geometry, props) {
   });
 }
 
-// Fetch drawn+edited features from Supabase and load them onto the map.
-// For edited features missing geom_json, falls back to a PostGIS RPC and self-heals by
-// writing the geometry back so future loads skip the RPC entirely.
+// On page load: fetch all draft/editing buildings from ames_buildings_2026 and put them
+// in the GeoJSON overlay. Editing buildings also get ghost-suppressed in the tileset.
 async function loadLiveFeatures(layer) {
   if (!window.supabaseClient) return;
 
-  var _logLive = function(msg) {
-    console.log('[loadLive]', msg);
-    try {
-      var stored = JSON.parse(localStorage.getItem('_drawLog') || '[]');
-      stored.push(new Date().toISOString().slice(11,23) + '  [loadLive] ' + msg);
-      if (stored.length > 300) stored = stored.slice(-300);
-      localStorage.setItem('_drawLog', JSON.stringify(stored));
-    } catch(e) {}
-  };
-
-  _logLive('start layer=' + layer.id);
-
   var result = await window.supabaseClient
-    .from('features')
-    .select('feature_id, nid, label, DayStart, DayEnd, source, geom_json')
-    .eq('layer_id', LIVE_LAYER_ID)
-    .in('source', ['drawn', 'edited']);
+    .from('ames_buildings_2026')
+    .select('id, nid, label, DayStart, DayEnd, notes, status, geom')
+    .in('status', ['draft', 'editing']);
 
-  if (result.error || !result.data || !result.data.length) {
-    _logLive('no rows (error=' + (result.error && result.error.message) + ')');
-    return;
-  }
+  if (result.error || !result.data || !result.data.length) return;
 
-  _logLive('got ' + result.data.length + ' rows: ' + result.data.map(function(r){ return 'id=' + r.feature_id + '(src=' + r.source + ')'; }).join(', '));
-
-  var withGeom  = [];
-  var needsGeom = [];
+  var lid = layer.id;
+  if (!window.promotedBuiltIds[lid]) window.promotedBuiltIds[lid] = [];
 
   result.data.forEach(function(row) {
-    if (row.geom_json) {
-      withGeom.push(row);
-    } else if (row.source === 'edited' && row.nid) {
-      needsGeom.push(row);
-    }
-    // drawn features without geom_json cannot be shown — skip
-  });
-
-  withGeom.forEach(function(row) {
-    var props = { nid: row.nid, label: row.label, DayStart: row.DayStart, DayEnd: row.DayEnd };
-    if (row.source === 'edited' && row.nid) {
-      promoteFeature(layer, row.nid, row.geom_json, props);
-    } else {
-      addDrawnFeature(layer, row.feature_id, row.geom_json, props);
+    if (!row.geom) return;
+    var props = { id: row.id, nid: row.nid, label: row.label, DayStart: row.DayStart, DayEnd: row.DayEnd, notes: row.notes };
+    addDrawnFeature(layer, String(row.id), row.geom, props);
+    if (row.status === 'editing') {
+      var idStr = String(row.id);
+      if (window.promotedBuiltIds[lid].indexOf(idStr) === -1)
+        window.promotedBuiltIds[lid].push(idStr);
     }
   });
 
-  if (!needsGeom.length) return;
-
-  // Fetch geometry via RPC in parallel for edited features with null geom_json
-  var rpcResults = await Promise.all(needsGeom.map(function(row) {
-    return window.supabaseClient
-      .rpc('get_feature_geojson', { p_feature_id: row.feature_id })
-      .then(function(r) { return { row: row, geom: r.data }; })
-      .catch(function()  { return { row: row, geom: null };  });
-  }));
-
-  rpcResults.forEach(function(item) {
-    if (!item.geom) return;
-    var row   = item.row;
-    var props = { nid: row.nid, label: row.label, DayStart: row.DayStart, DayEnd: row.DayEnd };
-
-    promoteFeature(layer, row.nid, item.geom, props);
-
-    // Self-heal: write geom_json back so future loads skip the RPC
-    window.supabaseClient
-      .from('features')
-      .update({ geom_json: item.geom })
-      .eq('feature_id', row.feature_id);
-  });
+  refreshTilesetFilter(layer, getCurrentSliderDate());
 }
 
 // Called per-side from mapinit.js style.load, after addLayersToMap
@@ -118,7 +62,7 @@ function initPromotedLayers(side, map, date) {
     var emptyFC = { type: 'FeatureCollection', features: [] };
     var d       = (date && !isNaN(date)) ? date : 0;
 
-    map.addSource(srcId, { type: 'geojson', data: emptyFC });
+    map.addSource(srcId, { type: 'geojson', data: emptyFC, promoteId: '_drawKey' });
     map.addLayer({
       id:     srcId,
       type:   layer.type,
@@ -130,51 +74,61 @@ function initPromotedLayers(side, map, date) {
       ],
     });
 
-    map.on('mouseenter', srcId, function() { map.getCanvas().style.cursor = 'pointer'; });
-    map.on('mouseleave', srcId, function() { map.getCanvas().style.cursor = ''; });
+    var hoveredPromKey = null;
+    map.on('mousemove', srcId, function(e) {
+      map.getCanvas().style.cursor = 'pointer';
+      if (e.features.length > 0) {
+        if (hoveredPromKey !== null)
+          map.setFeatureState({ source: srcId, id: hoveredPromKey }, { hover: false });
+        hoveredPromKey = e.features[0].properties._drawKey;
+        map.setFeatureState({ source: srcId, id: hoveredPromKey }, { hover: true });
+        if (side === 'right') {
+          var _lbl = e.features[0].properties.label;
+          var _state = typeof infoPanelState !== 'undefined' && infoPanelState[layer.id];
+          if (_lbl && _state && !_state.isOpen) {
+            _state.afterPopup
+              .setLngLat(e.lngLat)
+              .setHTML("<div class='" + _state.popupClass + "'>" + _lbl + "</div>")
+              .addTo(map);
+          }
+        }
+      }
+    });
+    map.on('mouseleave', srcId, function() {
+      map.getCanvas().style.cursor = '';
+      if (hoveredPromKey !== null)
+        map.setFeatureState({ source: srcId, id: hoveredPromKey }, { hover: false });
+      hoveredPromKey = null;
+      if (side === 'right') {
+        var _state = typeof infoPanelState !== 'undefined' && infoPanelState[layer.id];
+        if (_state && !_state.isOpen) _state.afterPopup.remove();
+      }
+    });
     map.on('click', srcId, function(e) { handlePanelClick(layer, e, false); });
 
-    // Load existing drawn/edited features from Supabase once (right side only)
     if (side === 'right') loadLiveFeatures(layer);
   });
 }
 
-// Call after a successful edit save on a tileset feature:
-// adds the feature to the live GeoJSON layer and hides the tileset version.
-function promoteFeature(layer, nidVal, geometry, props) {
-  var nidStr = String(nidVal);
-  var lid    = layer.id;
+// Mark a tileset building as editing: adds to ghost suppression and GeoJSON overlay.
+// Called from infoPanel.js when a permanent building is clicked in edit mode.
+function promoteFeature(layer, buildingId, geometry, props) {
+  var lid   = layer.id;
+  var idStr = String(buildingId);
 
-  if (!window.promotedNids[lid]) window.promotedNids[lid] = [];
-  if (window.promotedNids[lid].indexOf(nidStr) === -1)
-    window.promotedNids[lid].push(nidStr);
+  if (!window.promotedBuiltIds[lid]) window.promotedBuiltIds[lid] = [];
+  if (window.promotedBuiltIds[lid].indexOf(idStr) === -1)
+    window.promotedBuiltIds[lid].push(idStr);
 
-  if (!window.promotedData[lid])
-    window.promotedData[lid] = { type: 'FeatureCollection', features: [] };
+  addDrawnFeature(layer, idStr, geometry, props);
 
-  var nidProp  = layer.panel.nidProp;
-  var features = window.promotedData[lid].features.filter(function(f) {
-    return String(f.properties[nidProp]) !== nidStr;
-  });
-  // Use NID as stable feature id so toggle-to-close works in handlePanelClick
-  features.push({ type: 'Feature', id: parseInt(nidStr, 10), geometry: geometry, properties: props });
-  window.promotedData[lid] = { type: 'FeatureCollection', features: features };
+  if (window.supabaseClient) {
+    window.supabaseClient.from('ames_buildings_2026')
+      .update({ status: 'editing' }).eq('id', buildingId)
+      .then(function(r) { if (r.error) console.warn('[promote] status update failed:', r.error.message); });
+  }
 
-  var date       = getCurrentSliderDate();
-  var dateFilter = ['all',
-    ['<=', ['coalesce', ['get', 'DayStart'], 0], date],
-    ['>=', ['coalesce', ['get', 'DayEnd'], 99999999], date],
-  ];
-
-  [['left', beforeMap], ['right', afterMap]].forEach(function(pair) {
-    var side = pair[0], map = pair[1];
-    var srcId = lid + '-promoted-' + side;
-    var src   = map.getSource(srcId);
-    if (src) src.setData(window.promotedData[lid]);
-    if (map.getLayer(srcId)) map.setFilter(srcId, dateFilter);
-  });
-
-  refreshTilesetFilter(layer, date);
+  refreshTilesetFilter(layer, getCurrentSliderDate());
 }
 
 function refreshTilesetFilter(layer, date) {
@@ -186,59 +140,16 @@ function refreshTilesetFilter(layer, date) {
   if (afterMap.getLayer(rightId))  afterMap.setFilter(rightId,  filter);
 }
 
-// Builds the date filter for a layer, including NID exclusions for promoted features
+// Builds the date filter for a layer, suppressing any promoted/editing buildings by id.
 function buildLayerFilter(layerId, date) {
-  var filter   = ['all', ['<=', 'DayStart', date], ['>=', 'DayEnd', date]];
-  var excluded = window.promotedNids[layerId];
-  if (excluded && excluded.length > 0)
-    filter.push(['!in', 'nid'].concat(excluded.map(function(s) { return parseInt(s, 10); })));
+  var filter = ['all',
+    ['<=', ['coalesce', ['get', 'DayStart'], 0],        date],
+    ['>=', ['coalesce', ['get', 'DayEnd'],   99999999], date],
+  ];
   var excludedIds = window.promotedBuiltIds[layerId];
   if (excludedIds && excludedIds.length > 0)
-    filter.push(['!in', '$id'].concat(excludedIds.map(Number)));
+    filter.push(['match', ['id'], excludedIds.map(Number), false, true]);
   return filter;
-}
-
-// Load all buildings from Supabase ames_buildings_2026 and set as GeoJSON on both maps.
-// Called once after both maps' style.load events fire.
-async function loadBuildingsFromSupabase() {
-  if (!window.supabaseClient) return;
-
-  var allRows = [];
-  var pageSize = 1000;
-  var offset   = 0;
-
-  while (true) {
-    var result = await window.supabaseClient
-      .from('ames_buildings_2026')
-      .select('id, nid, DayStart, DayEnd, geom')
-      .range(offset, offset + pageSize - 1);
-    if (result.error || !result.data || !result.data.length) break;
-    allRows = allRows.concat(result.data);
-    if (result.data.length < pageSize) break;
-    offset += pageSize;
-  }
-
-  var features = allRows
-    .filter(function(row) { return row.geom; })
-    .map(function(row) {
-      return {
-        type: 'Feature',
-        id: row.id,
-        geometry: row.geom,
-        properties: { id: row.id, nid: row.nid, DayStart: row.DayStart, DayEnd: row.DayEnd },
-      };
-    });
-
-  var geojson = { type: 'FeatureCollection', features: features };
-
-  ['curr-builds-left', 'curr-builds-highlighted-left'].forEach(function(sid) {
-    var src = beforeMap.getSource(sid);
-    if (src) src.setData(geojson);
-  });
-  ['curr-builds-right', 'curr-builds-highlighted-right'].forEach(function(sid) {
-    var src = afterMap.getSource(sid);
-    if (src) src.setData(geojson);
-  });
 }
 
 function getCurrentSliderDate() {

@@ -38,6 +38,8 @@ modal_content_html["about"] = `
 	historic maps and records, adding precise dates, showing changes of
 	ownership, drawing changes and adding features.
 <br><br>
+	The map data varies in accuracy. Dates may not be exact, and few previous buildings so far have not been drawn. In some cases there are missing buildings and other features that currently exist. To understand the details of accuracy in each layer, click the Info button next to the layer names in the layers sidebar on the left.
+<br><br>
 	See the following map that was created for the Dutch Period in New
 	York City, that begins to show how much further the work can go:
 <br>
@@ -50,6 +52,15 @@ modal_content_html["about"] = `
 	Seed funding provided by Bob Bourne.
 	</p>
 `;
+
+modal_header_text["satellite-info"] = "Satellite";
+modal_content_html["satellite-info"] = `<p>Satellite imagery base map.</p>`;
+
+modal_header_text["streets-info"] = "Streets";
+modal_content_html["streets-info"] = `<p>Streets base map.</p>`;
+
+modal_header_text["sanborn-1961-info"] = "1961 Sanborn Map Downtown";
+modal_content_html["sanborn-1961-info"] = `<p>1961 Sanborn fire insurance map of downtown Ames, Iowa.</p>`;
 
 modal_header_text["builds-info-layer"] = "Buildings";
 modal_content_html["builds-info-layer"] = `

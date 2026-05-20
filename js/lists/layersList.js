@@ -212,9 +212,11 @@ var layers = [
           nidProp: "nid",
           color: "#FF7F50",
           render: function(_props, f) {
+            var url = f("node-url") || ((_props.nid != null) ? this.encyclopediaBase + "/node/" + _props.nid : "");
+            var title = f("node-title") || _props.label || "Building";
             return `
               <div class="panel-hero">${f("field-main-image", "hero")}</div>
-              <h3><a href="${f("node-url")}" target="_blank">${f("node-title") || "Building"}</a></h3>
+              <h3>${url ? '<a href="' + url + '" target="_blank">' + title + '</a>' : title}</h3>
               <hr/>
               ${f()}
             `;
@@ -234,15 +236,13 @@ var layers = [
         iconType: "square",
         checked: true,
         type: "fill",
-        // source: {                                          // OLD: Mapbox tileset
-        //   type: "vector",                                  // OLD: Mapbox tileset
-        //   url: "mapbox://nittyjee.du0aopr8",              // OLD: Mapbox tileset
-        // },                                                 // OLD: Mapbox tileset
-        // "source-layer": "buildings_ames_2026-9v0yur",     // OLD: Mapbox tileset
         source: {
-          type: "geojson",
-          data: { type: "FeatureCollection", features: [] },
+          type: "vector",
+          tiles: [TILES_WORKER_URL + "/buildings/{z}/{x}/{y}.pbf"],
+          minzoom: 10,
+          maxzoom: 16,
         },
+        "source-layer": "buildings",
         layout: { visibility: "visible" },
         paint: {
           "fill-color": "#ffb255",
@@ -263,7 +263,6 @@ var layers = [
         groupId: "builds_items",
         popupStyle: "infoLayerGreenPopUp",
         prop: "label",
-        click: true,
         toggleElement: "curr-builds",
         panel: {
           encyclopediaBase: "https://mapstructor.com/ames/encyclopedia",
@@ -271,9 +270,11 @@ var layers = [
           supabaseLookup: true,
           color: "#35b779",
           render: function(_props, f) {
+            var url = f("node-url") || ((_props.nid != null) ? this.encyclopediaBase + "/node/" + _props.nid : "");
+            var title = f("node-title") || _props.label || "Building";
             return `
               <div class="panel-hero">${f("field-main-image", "hero")}</div>
-              <h3><a href="${f("node-url")}" target="_blank">${f("node-title") || "Building"}</a></h3>
+              <h3>${url ? '<a href="' + url + '" target="_blank">' + title + '</a>' : title}</h3>
               <hr/>
               ${f()}
             `;
@@ -747,5 +748,60 @@ var layers = [
     toggleElement: "plss-parcels",
   },
   */
+
+  // TEMP GROUP — delete any time
+  /*
+  {
+    type: "group",
+    id: "temp-group",
+    containerId: "temp-group-layers",
+    caretId: "temp-group-caret",
+    label: "temp group delete any time",
+    itemSelector: ".temp_layer_item",
+    collapsed: false,
+    checked: true,
+    children: [
+
+      {
+        id: "northern-south",
+        name: "northern-south",
+        label: "Northern South",
+        iconColor: "#ff6b6b",
+        className: "temp_layer",
+        topLayerClass: "temp_layer",
+        isSolid: true,
+        iconType: "square",
+        checked: true,
+        type: "fill",
+        source: {
+          type: "vector",
+          url: "mapbox://nittyjee.9sjcd4tg",
+        },
+        layout: { visibility: "visible" },
+        "source-layer": "northern_south",
+        paint: {
+          "fill-color": "#ff6b6b",
+          "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], false],
+            0.7,
+            0.4,
+          ],
+          "fill-outline-color": "#ff6b6b",
+        },
+        highlight: {
+          "fill-color": "#ff6b6b",
+          "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], false],
+            0.3,
+            0,
+          ],
+          "fill-outline-color": "#ff6b6b",
+        },
+        popupStyle: "infoLayerCoralPopUp",
+        prop: "label",
+        click: true,
+        toggleElement: "northern-south",
+      },
+
+    ],
+  },*/
 
 ];

@@ -7,6 +7,23 @@
  */
 
 window.editMode = false;
+window._buildingsOpacity = 1.0;
+
+window.applyBuildingsOpacity = function (opacity) {
+  opacity = typeof opacity === 'number' ? opacity : 1;
+  var mainExpr = ['case', ['boolean', ['feature-state', 'hover'], false], 0.5 * opacity, 1.0 * opacity];
+  var hlExpr   = ['case', ['boolean', ['feature-state', 'hover'], false], 0.7 * opacity, 0];
+  [
+    ['curr-builds-left',          'curr-builds-highlighted-left',  'curr-builds-promoted-left',  window.beforeMap],
+    ['curr-builds-right',         'curr-builds-highlighted-right', 'curr-builds-promoted-right', window.afterMap],
+  ].forEach(function (entry) {
+    var mainId = entry[0], hlId = entry[1], promId = entry[2], map = entry[3];
+    if (!map) return;
+    if (map.getLayer(mainId))  map.setPaintProperty(mainId,  'fill-opacity', mainExpr);
+    if (map.getLayer(hlId))    map.setPaintProperty(hlId,    'fill-opacity', hlExpr);
+    if (map.getLayer(promId))  map.setPaintProperty(promId,  'fill-opacity', mainExpr);
+  });
+};
 
 (function () {
   if (!new URLSearchParams(window.location.search).has('edit')) return;
@@ -66,6 +83,42 @@ window.editMode = false;
 
   function activateEditMode() {
     window.editMode = true;
+    _buildBuildingsOpacitySlider();
     if (typeof initDrawTool === 'function') initDrawTool();
+  }
+
+  function _buildBuildingsOpacitySlider() {
+    if (document.getElementById('buildings-opacity-wrap')) return;
+
+    var wrap = document.createElement('div');
+    wrap.id = 'buildings-opacity-wrap';
+
+    var label = document.createElement('label');
+    label.htmlFor = 'buildings-opacity-slider';
+    label.textContent = 'Buildings';
+
+    var slider = document.createElement('input');
+    slider.type  = 'range';
+    slider.id    = 'buildings-opacity-slider';
+    slider.min   = '0';
+    slider.max   = '100';
+    slider.value = '100';
+    slider.step  = '5';
+
+    var valEl = document.createElement('span');
+    valEl.id = 'buildings-opacity-val';
+    valEl.textContent = '100%';
+
+    slider.addEventListener('input', function () {
+      var pct = parseInt(slider.value, 10);
+      valEl.textContent = pct + '%';
+      window._buildingsOpacity = pct / 100;
+      window.applyBuildingsOpacity(window._buildingsOpacity);
+    });
+
+    wrap.appendChild(label);
+    wrap.appendChild(slider);
+    wrap.appendChild(valEl);
+    document.body.appendChild(wrap);
   }
 })();

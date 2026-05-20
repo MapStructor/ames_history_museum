@@ -21,6 +21,7 @@ var map;
 		hash: true,
 		zoom: mapConfig.zoom,
 		attributionControl: true,
+		projection: 'mercator',
 	};
 
 	const afterMapConfig  = {
@@ -30,6 +31,7 @@ var map;
 		hash: true,
 		zoom: mapConfig.zoom,
 		attributionControl: true,
+		projection: 'mercator',
 	};
 	
 	//ADD MAP CONTAINER
@@ -58,19 +60,15 @@ var map;
 		return parseInt(moment.unix(sliderVal).format("YYYYMMDD"));
 	}
 
-	var initialLoadDone  = false;
-	var _mapsLoadedCount = 0;
-	function _onBothMapsLoaded() {
-		if (++_mapsLoadedCount === 2 && typeof loadBuildingsFromSupabase === 'function')
-			loadBuildingsFromSupabase();
-	}
+	var initialLoadDone = false;
 
 	beforeMap.on("style.load", function() {
 		var date = getDate();
 		addLayersToMap(beforeMap, "left", date);
 		initPromotedLayers("left", beforeMap, date);
 		refreshLayers();
-		_onBothMapsLoaded();
+		if (window._buildingsOpacity < 1 && typeof applyBuildingsOpacity === 'function')
+			applyBuildingsOpacity(window._buildingsOpacity);
 	});
 
 	afterMap.on("style.load", function() {
@@ -78,12 +76,13 @@ var map;
 		addLayersToMap(afterMap, "right", date);
 		initPromotedLayers("right", afterMap, date);
 		refreshLayers();
+		if (window._buildingsOpacity < 1 && typeof applyBuildingsOpacity === 'function')
+			applyBuildingsOpacity(window._buildingsOpacity);
 		if (!initialLoadDone) {
 			initialLoadDone = true;
 			addEvents();
 			registerInfoPanelClicks();
 		}
-		_onBothMapsLoaded();
 	});
 	
 	
@@ -138,7 +137,7 @@ setupMapSwitching();
 
 function changeDate(unixDate) {
   var date       = parseInt(moment.unix(unixDate).format("YYYYMMDD"));
-  var dateFilter = ["all", ["<=", "DayStart", date], [">=", "DayEnd", date]];
+  var dateFilter = ["all", ["<=", ["coalesce", ["get", "DayStart"], 0], date], [">=", ["coalesce", ["get", "DayEnd"], 99999999], date]];
 
   flatLayers(layers).forEach(layer => {
     const leftId  = layer.id + "-left";

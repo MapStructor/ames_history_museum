@@ -92,6 +92,13 @@ function registerInfoPanelClicks() {
           afterMap.setFeatureState({ source: layer.id + "-right", sourceLayer: sourceLayer, id: hoveredId.right }, { hover: false });
         hoveredId.right = e.features[0].id;
         afterMap.setFeatureState({ source: layer.id + "-right", sourceLayer: sourceLayer, id: hoveredId.right }, { hover: true });
+        var _lbl = e.features[0].properties.label;
+        if (_lbl && !state.isOpen) {
+          state.afterPopup
+            .setLngLat(e.lngLat)
+            .setHTML("<div class='" + state.popupClass + "'>" + _lbl + "</div>")
+            .addTo(afterMap);
+        }
       }
     });
     afterMap.on("mouseleave", layer.id + "-right", function() {
@@ -99,6 +106,7 @@ function registerInfoPanelClicks() {
       if (hoveredId.right !== null)
         afterMap.setFeatureState({ source: layer.id + "-right", sourceLayer: sourceLayer, id: hoveredId.right }, { hover: false });
       hoveredId.right = null;
+      if (!state.isOpen) state.afterPopup.remove();
     });
 
     beforeMap.on("click", layer.id + "-left",  function(e) { handlePanelClick(layer, e, true); });
@@ -130,7 +138,7 @@ function handlePanelClick(layer, event, isTileset) {
 
   var popupHTML =
     "<div class='" + state.popupClass + "'>" +
-    (props.name || "") +
+    (props.label || props.name || "") +
     (panel.popupLabel ? "<br><b>" + panel.popupLabel + ": </b>" + props[panel.popupProp] : "") +
     "</div>";
 
@@ -194,23 +202,17 @@ function fetchAndRender(layer, props, geometry) {
     geomPromise.then(function(realGeom) {
       var tileProps = Object.assign({}, props, { _drawKey: tileKey });
 
-      if (typeof _dbInsert === 'function') {
-        _dbInsert(tileKey, {
-          layer_id: typeof LIVE_LAYER_ID !== 'undefined' ? LIVE_LAYER_ID : null,
-          source:   'drawn',
-          geom_json: realGeom,
-          nid:      nid      || null,
-          label:    props.label    || null,
-          DayStart: props.DayStart || null,
-          DayEnd:   props.DayEnd   || null,
-        });
+      // Map the session key → known building id so saves/geom-updates use it immediately
+      if (typeof _drawKeyToDbId !== 'undefined' && buildingId != null)
+        _drawKeyToDbId[tileKey] = buildingId;
+
+      // Mark building as editing in DB
+      if (buildingId != null && window.supabaseClient) {
+        window.supabaseClient.from('ames_buildings_2026')
+          .update({ status: 'editing' }).eq('id', buildingId)
+          .then(function(r) { if (r.error) console.warn('[promote] status update failed:', r.error.message); });
       }
-      if (nid && window.promotedNids) {
-        if (!window.promotedNids[layer.id]) window.promotedNids[layer.id] = [];
-        var nidStr = String(nid);
-        if (window.promotedNids[layer.id].indexOf(nidStr) === -1)
-          window.promotedNids[layer.id].push(nidStr);
-      }
+
       if (buildingId != null) {
         if (!window.promotedBuiltIds) window.promotedBuiltIds = {};
         if (!window.promotedBuiltIds[layer.id]) window.promotedBuiltIds[layer.id] = [];
@@ -261,16 +263,16 @@ function fetchAndRender(layer, props, geometry) {
   var supabasePromise;
   if (panel.supabaseLookup && window.supabaseClient && drawKey) {
     supabasePromise = window.supabaseClient
-      .from("features")
-      .select("feature_id,label,description,DayStart,DayEnd,nid")
-      .eq("feature_id", lookupId)
+      .from("ames_buildings_2026")
+      .select("id,label,DayStart,DayEnd,nid,notes")
+      .eq("id", lookupId)
       .limit(1)
       .then(function(r) { return (!r.error && r.data && r.data.length) ? r.data[0] : null; })
       .catch(function() { return null; });
   } else if (panel.supabaseLookup && window.supabaseClient && nid) {
     supabasePromise = window.supabaseClient
-      .from("features")
-      .select("feature_id,label,description,DayStart,DayEnd,nid")
+      .from("ames_buildings_2026")
+      .select("id,label,DayStart,DayEnd,nid,notes")
       .eq("nid", String(nid))
       .limit(1)
       .then(function(r) { return (!r.error && r.data && r.data.length) ? r.data[0] : null; })
@@ -280,14 +282,15 @@ function fetchAndRender(layer, props, geometry) {
   }
 
   supabasePromise.then(function(live) {
-    var featureId = drawKey || null;  // drawn features always have a featureId
+    var featureId = drawKey ? (typeof _drawKeyToDbId !== 'undefined' && _drawKeyToDbId[drawKey] != null ? _drawKeyToDbId[drawKey] : drawKey) : null;
     if (live) {
       props = Object.assign({}, props);
-      featureId            = live.feature_id  || featureId;
-      if (live.label)       props.label       = live.label;
-      if (live.description) props.description = live.description;
-      if (live.DayStart)    props.DayStart    = live.DayStart;
-      if (live.DayEnd)      props.DayEnd      = live.DayEnd;
+      featureId         = live.id        || featureId;
+      if (live.id)            props.id       = live.id;
+      if (live.label)         props.label    = live.label;
+      if (live.DayStart)      props.DayStart = live.DayStart;
+      if (live.DayEnd)        props.DayEnd   = live.DayEnd;
+      if (live.notes != null) props.notes    = live.notes;
     }
 
     // Step 2: fetch Drupal content, or render with empty f()
@@ -295,6 +298,7 @@ function fetchAndRender(layer, props, geometry) {
       fetch(panel.encyclopediaBase + "/rendered-export-single?nid=" + nid)
         .then(function(r) { return r.json(); })
         .then(function(data) {
+          if (!data || !data[0] || !data[0].rendered_entity) throw new Error('empty');
           var docEl = document.createElement("div");
           docEl.innerHTML = processEncyclopediaHtml(data[0].rendered_entity, panel.encyclopediaBase);
           var $doc = $(docEl);
@@ -342,6 +346,11 @@ function fetchAndRender(layer, props, geometry) {
           });
           $el.html(rendered.innerHTML);
           appendEditSection($el, featureId, props, layer, geometry);
+        })
+        .catch(function() {
+          var f = function() { return ""; };
+          $el.html(panel.render(props, f));
+          appendEditSection($el, featureId, props, layer, geometry);
         });
     } else {
       var f = function() { return ""; };
@@ -365,11 +374,11 @@ function setPanelHighlight(layer, featureId, hover) {
   if (featureId == null) return;
   var sourceLayer = layer["source-layer"];
   afterMap.setFeatureState(
-    { source: layer.id + "-highlighted-right", sourceLayer: sourceLayer, id: featureId },
+    { source: layer.id + "-right", sourceLayer: sourceLayer, id: featureId },
     { hover: hover }
   );
   beforeMap.setFeatureState(
-    { source: layer.id + "-highlighted-left", sourceLayer: sourceLayer, id: featureId },
+    { source: layer.id + "-left", sourceLayer: sourceLayer, id: featureId },
     { hover: hover }
   );
 }
@@ -427,11 +436,13 @@ function appendEditSection($el, featureId, props, layer, geometry) {
       '<hr/>',
       '<p class="edit-section-title">Edit</p>',
       '<label class="edit-label">Label</label>',
-      '<input type="text"  class="edit-input" id="ei-label"    value="' + (props.label || '') + '"/>',
+      '<input type="text" class="edit-input" id="ei-label" maxlength="25" value="' + (props.label || '') + '"/>',
       '<label class="edit-label">Start Date</label>',
       '<input type="date"  class="edit-input" id="ei-daystart" value="' + toDateInput(props.DayStart) + '"/>',
       '<label class="edit-label">End Date</label>',
       '<input type="date"  class="edit-input" id="ei-dayend"   value="' + toDateInput(props.DayEnd) + '"/>',
+      '<label class="edit-label">Notes</label>',
+      '<textarea class="edit-input" id="ei-notes" maxlength="500">' + (props.notes || '') + '</textarea>',
       '<button class="edit-save-btn" id="ei-save">Save</button>',
       '<p class="edit-status" id="ei-status"></p>',
     '</div>',
@@ -439,12 +450,23 @@ function appendEditSection($el, featureId, props, layer, geometry) {
 
   $el.append(html);
 
+  $el.append(
+    '<div class="edit-section">' +
+      '<hr/>' +
+      '<p class="edit-section-title">Debug — Supabase Data</p>' +
+      '<pre style="font-size:11px;overflow:auto;max-height:200px;background:#f5f5f5;padding:6px;border-radius:3px;">' +
+        JSON.stringify({ featureId: featureId, props: props }, null, 2) +
+      '</pre>' +
+    '</div>'
+  );
+
   var isDrawn = !!props._drawKey;
 
   document.getElementById('ei-save').addEventListener('click', async function () {
     var labelVal    = document.getElementById('ei-label').value.trim() || null;
     var dayStartVal = fromDateInput(document.getElementById('ei-daystart').value);
     var dayEndVal   = fromDateInput(document.getElementById('ei-dayend').value);
+    var notesVal    = document.getElementById('ei-notes').value.trim() || null;
 
     // For drawn features, capture updated geometry from the overlay
     var savedGeom = geometry;
@@ -453,90 +475,60 @@ function appendEditSection($el, featureId, props, layer, geometry) {
       if (all.features.length > 0) savedGeom = all.features[0].geometry;
     }
 
-    var payload = {
-      label:     labelVal,
-      DayStart:  dayStartVal,
-      DayEnd:    dayEndVal,
-      source:    isDrawn ? 'drawn' : 'edited',
-      geom_json: savedGeom || null,
-    };
     var statusEl = document.getElementById('ei-status');
     var btn      = document.getElementById('ei-save');
 
     btn.disabled         = true;
     statusEl.textContent = 'Saving...';
 
-    // Resolve effective DB ID at save time — UUID-keyed drawn features need _drawKeyToDbId lookup
-    var _saveId = featureId;
-    if (isDrawn && props._drawKey && typeof _drawKeyToDbId !== 'undefined') {
+    // Resolve ames_buildings_2026.id — drawn features use _drawKeyToDbId; promoted use buildingId
+    var _saveId = null;
+    if (props._drawKey && typeof _drawKeyToDbId !== 'undefined') {
       var _dk0 = String(props._drawKey);
       if (_drawKeyToDbId[_dk0] !== undefined) _saveId = _drawKeyToDbId[_dk0];
     }
+    if (_saveId == null) {
+      _saveId = props._tileFeatureId != null ? props._tileFeatureId
+              : props.id             != null ? props.id
+              : null;
+    }
+
+    if (!_saveId || !window.supabaseClient) {
+      statusEl.textContent = 'Error: could not resolve building id.';
+      btn.disabled = false;
+      return;
+    }
+
+    var _prevProps = { nid: props.nid, label: props.label || null, DayStart: props.DayStart || null, DayEnd: props.DayEnd || null, notes: props.notes || null };
+    var _nextProps = { nid: props.nid, label: labelVal, DayStart: dayStartVal, DayEnd: dayEndVal, notes: notesVal };
+    var _prevGeom  = geometry;
+    var _nextGeom  = savedGeom;
+    var _dk        = props._drawKey ? String(props._drawKey) : null;
 
     var result = await window.supabaseClient
-      .from('features')
-      .update(payload)
-      .eq('feature_id', _saveId);
+      .from('ames_buildings_2026')
+      .update({ label: labelVal, DayStart: dayStartVal, DayEnd: dayEndVal, notes: notesVal, geom: toMultiPolygon(savedGeom) })
+      .eq('id', _saveId);
 
     if (result.error) {
       statusEl.textContent = 'Error: ' + result.error.message;
     } else {
       statusEl.textContent = 'Saved.';
-      if (isDrawn) {
-        var _dk  = String(props._drawKey);
-        var _dbLookup = typeof _drawKeyToDbId !== 'undefined' && _drawKeyToDbId[_dk];
-        var _fid = _dbLookup || parseInt(String(featureId), 10);
-        var _buildingId  = props._tileFeatureId != null ? props._tileFeatureId : (props.id != null ? props.id : null);
-        var _buildingNid = props.nid != null ? props.nid : null;
-        var _prevProps = { nid: props.nid, label: props.label || null, DayStart: props.DayStart || null, DayEnd: props.DayEnd || null };
-        var _nextProps = { nid: props.nid, label: labelVal, DayStart: dayStartVal, DayEnd: dayEndVal };
-        var _prevGeom  = geometry;
-        var _nextGeom  = savedGeom;
 
-        // Write geometry back to PostGIS source table so QGIS and PMTiles stay in sync.
-        // Look up by PostGIS id (fresh tileset click) or by nid (reloaded promoted feature).
-        function _writeBackGeom(geom) {
-          if (!window.supabaseClient) return;
-          var q = window.supabaseClient.from('ames_buildings_2026').update({ geom: geom });
-          if (_buildingId != null)       q = q.eq('id', _buildingId);
-          else if (_buildingNid != null) q = q.eq('nid', _buildingNid);
-          else return;
-          q.then(function(r) { if (r.error) console.warn('geom write-back failed:', r.error.message); });
-        }
-        _writeBackGeom(savedGeom);
+      function _applyUndo(bProps, bGeom) {
+        return async function() {
+          await window.supabaseClient.from('ames_buildings_2026')
+            .update({ label: bProps.label, DayStart: bProps.DayStart, DayEnd: bProps.DayEnd, notes: bProps.notes, geom: toMultiPolygon(bGeom) })
+            .eq('id', _saveId);
+          if (_dk) addDrawnFeature(layer, _dk, bGeom, bProps);
+        };
+      }
 
-        pushUndo(
-          async function() {
-            await window.supabaseClient.from('features').update({ label: _prevProps.label, DayStart: _prevProps.DayStart, DayEnd: _prevProps.DayEnd, geom_json: _prevGeom }).eq('feature_id', _fid);
-            _writeBackGeom(_prevGeom);
-            addDrawnFeature(layer, _dk, _prevGeom, _prevProps);
-          },
-          async function() {
-            await window.supabaseClient.from('features').update({ label: _nextProps.label, DayStart: _nextProps.DayStart, DayEnd: _nextProps.DayEnd, geom_json: _nextGeom }).eq('feature_id', _fid);
-            _writeBackGeom(_nextGeom);
-            addDrawnFeature(layer, _dk, _nextGeom, _nextProps);
-          }
-        );
+      pushUndo(_applyUndo(_prevProps, _prevGeom), _applyUndo(_nextProps, _nextGeom));
+
+      if (_dk) {
         addDrawnFeature(layer, _dk, savedGeom, _nextProps);
         if (typeof clearDrawnFeatureEditing === 'function') clearDrawnFeatureEditing(true);
-      } else if (layer && layer.panel && layer.panel.supabaseLookup && geometry) {
-        var nidVal = props[layer.panel.nidProp];
-        if (nidVal != null) {
-          var _fid2      = parseInt(String(featureId), 10);
-          var _prevP     = Object.assign({}, props);
-          var _nextP     = Object.assign({}, props, { label: labelVal, DayStart: dayStartVal, DayEnd: dayEndVal });
-          pushUndo(
-            async function() {
-              if (window.supabaseClient && _fid2) await window.supabaseClient.from('features').update({ label: _prevP.label || null, DayStart: _prevP.DayStart || null, DayEnd: _prevP.DayEnd || null }).eq('feature_id', _fid2);
-              promoteFeature(layer, nidVal, geometry, Object.assign({}, _prevP));
-            },
-            async function() {
-              if (window.supabaseClient && _fid2) await window.supabaseClient.from('features').update({ label: _nextP.label || null, DayStart: _nextP.DayStart || null, DayEnd: _nextP.DayEnd || null }).eq('feature_id', _fid2);
-              promoteFeature(layer, nidVal, geometry, Object.assign({}, _nextP));
-            }
-          );
-          promoteFeature(layer, nidVal, geometry, Object.assign({}, _nextP));
-        }
       }
     }
     btn.disabled = false;

@@ -1,3 +1,17 @@
+// geom column in ames_buildings_2026 is MultiPolygon — wrap/unwrap for DB writes and MapboxDraw.
+function toMultiPolygon(geom) {
+  if (!geom || geom.type === 'MultiPolygon') return geom;
+  if (geom.type === 'Polygon') return { type: 'MultiPolygon', coordinates: [geom.coordinates] };
+  return geom;
+}
+
+function toPolygon(geom) {
+  if (!geom || geom.type === 'Polygon') return geom;
+  if (geom.type === 'MultiPolygon' && geom.coordinates.length === 1)
+    return { type: 'Polygon', coordinates: geom.coordinates[0] };
+  return geom;
+}
+
 function flatLayers(nodes) {
   const result = [];
   nodes.forEach(node => {

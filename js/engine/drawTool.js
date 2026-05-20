@@ -18,8 +18,8 @@ var _editingOriginalFeature = null;
 var _editingCurrentGeom     = null;   // tracks latest geometry for restore on close
 var _suppressDrawDelete     = false;  // prevents deleteAll() re-triggering draw.delete
 var _suppressModeClose      = false;  // prevents draw.modechange simple_select from closing panel during programmatic mode changes
-var _drawKeyToDbId          = {};     // localKey → Supabase feature_id (DB sync only)
-var _pendingState           = {};     // localKey → 'drawn'|'inactive' — desired source when INSERT resolves
+var _drawKeyToDbId          = {};     // localKey → ames_buildings_2026.id
+var _pendingState           = {};     // localKey → 'draft'|'inactive' — desired status when INSERT resolves
 var _clipboard              = null;   // copied geometry for paste
 var _splitMode              = false;  // true while draw_line_string mode is active for split
 var _mergeMode              = false;  // true while waiting for user to pick second feature
@@ -61,62 +61,67 @@ function _getDbId(localKey) {
   return isNaN(n) ? null : n;
 }
 
-// One-time DB insert — called only when a feature is first created (draw, split, merge).
-// Undo/redo never calls this again for the same key; instead use _dbHide / _dbShow.
-// On resolve: checks _pendingState[key] — the last hide/show intent recorded while the
-// insert was in-flight — and applies it once. No matter how many undos/redos fired
-// during the flight, only the final intent matters.
+// One-time INSERT into ames_buildings_2026 with status='draft'.
+// Undo/redo uses _dbHide/_dbShow (status toggles) instead of re-inserting.
+// On resolve: applies any hide/show intent that fired while INSERT was in-flight.
 function _dbInsert(key, data) {
   if (!window.supabaseClient) return;
   _log('INSERT start key=' + key.slice(0,8));
 
-  window.supabaseClient.from('features').insert(data).select('feature_id')
+  window.supabaseClient.from('ames_buildings_2026')
+    .insert({
+      geom:     toMultiPolygon(data.geom_json),
+      nid:      data.nid      || null,
+      label:    data.label    || null,
+      DayStart: data.DayStart || null,
+      DayEnd:   data.DayEnd   || null,
+      notes:    data.notes    || null,
+      status:   'draft',
+    })
+    .select('id')
     .then(function(r) {
       if (r.error) { _log('INSERT error key=' + key.slice(0,8) + ' ' + r.error.message); return; }
       var saved = r.data && r.data[0];
       if (!saved) { _log('INSERT no row returned key=' + key.slice(0,8)); return; }
 
-      _drawKeyToDbId[key] = saved.feature_id;
+      _drawKeyToDbId[key] = saved.id;
 
       var pending = _pendingState[key];
       delete _pendingState[key];
 
-      _log('INSERT resolved key=' + key.slice(0,8) + ' dbId=' + saved.feature_id + ' pending=' + (pending || 'none'));
+      _log('INSERT resolved key=' + key.slice(0,8) + ' id=' + saved.id + ' pending=' + (pending || 'none'));
 
       if (pending === 'inactive') {
-        window.supabaseClient.from('features')
-          .update({ source: 'inactive' }).eq('feature_id', saved.feature_id)
+        window.supabaseClient.from('ames_buildings_2026')
+          .update({ status: 'inactive' }).eq('id', saved.id)
           .then(function(r2) { if (r2.error) _log('UPDATE inactive error ' + r2.error.message); });
       }
-      // pending==='drawn' or undefined → row already inserted as source='drawn', nothing to do
     });
 }
 
-// Soft-hide a feature (source → 'inactive'). Used by undo/redo instead of physical DELETE.
-// If INSERT is still in-flight, records intent in _pendingState — applied on resolve.
+// Soft-hide a drawn feature (status → 'inactive'). Used by undo instead of physical DELETE.
 function _dbHide(key) {
   var dbId = _getDbId(key);
-  _log('dbHide key=' + key.slice(0,8) + ' dbId=' + (dbId || 'pending'));
+  _log('dbHide key=' + key.slice(0,8) + ' id=' + (dbId || 'pending'));
   if (window.supabaseClient && dbId) {
-    window.supabaseClient.from('features')
-      .update({ source: 'inactive' }).eq('feature_id', dbId)
-      .then(function(r) { if (r.error) _log('UPDATE inactive error ' + r.error.message); });
+    window.supabaseClient.from('ames_buildings_2026')
+      .update({ status: 'inactive' }).eq('id', dbId)
+      .then(function(r) { if (r.error) _log('dbHide error ' + r.error.message); });
   } else {
     _pendingState[key] = 'inactive';
   }
 }
 
-// Restore a soft-hidden feature (source → 'drawn'). Used by undo/redo instead of re-INSERT.
-// If INSERT is still in-flight, records intent in _pendingState — applied on resolve.
+// Restore a soft-hidden feature (status → 'draft'). Used by redo.
 function _dbShow(key) {
   var dbId = _getDbId(key);
-  _log('dbShow key=' + key.slice(0,8) + ' dbId=' + (dbId || 'pending'));
+  _log('dbShow key=' + key.slice(0,8) + ' id=' + (dbId || 'pending'));
   if (window.supabaseClient && dbId) {
-    window.supabaseClient.from('features')
-      .update({ source: 'drawn' }).eq('feature_id', dbId)
-      .then(function(r) { if (r.error) _log('UPDATE drawn error ' + r.error.message); });
+    window.supabaseClient.from('ames_buildings_2026')
+      .update({ status: 'draft' }).eq('id', dbId)
+      .then(function(r) { if (r.error) _log('dbShow error ' + r.error.message); });
   } else {
-    _pendingState[key] = 'drawn';
+    _pendingState[key] = 'draft';
   }
 }
 
@@ -142,10 +147,11 @@ function _setMode(mode, opts) {
 
 function loadDrawnFeatureForEditing(layer, drawKey, geometry) {
   if (!drawOverlayDraw || !drawOverlayMap) return;
+  var editGeom = toPolygon(geometry);
   _geometryEditMode   = true;
   _editingLayer       = layer;
   _editingDrawKey     = String(drawKey);
-  _editingCurrentGeom = geometry;
+  _editingCurrentGeom = editGeom;
 
   var lid = layer.id;
   _editingOriginalFeature = null;
@@ -164,7 +170,7 @@ function loadDrawnFeatureForEditing(layer, drawKey, geometry) {
 
   _suppressDrawDelete = true;
   try { drawOverlayDraw.deleteAll(); } finally { _suppressDrawDelete = false; }
-  var ids    = drawOverlayDraw.add({ type: 'Feature', geometry: geometry, properties: {} });
+  var ids    = drawOverlayDraw.add({ type: 'Feature', geometry: editGeom, properties: {} });
   var drawId = ids[0];
   drawOverlayMap.getCanvas().style.pointerEvents = 'auto';
   raiseSlider();
@@ -248,7 +254,7 @@ function _autoSaveNewFeature(feature, layer) {
     if (typeof openSidebarIfHidden === 'function') openSidebarIfHidden();
   }
 
-  _dbInsert(localKey, { layer_id: LIVE_LAYER_ID, source: 'drawn', geom_json: geom });
+  _dbInsert(localKey, { geom_json: geom });
 
   pushUndo(
     function() {
@@ -287,8 +293,8 @@ function _autoSaveGeometryUpdate(newGeom) {
 
   var dbId = _getDbId(localKey);
   if (window.supabaseClient && dbId) {
-    window.supabaseClient.from('features')
-      .update({ geom_json: newGeom }).eq('feature_id', dbId)
+    window.supabaseClient.from('ames_buildings_2026')
+      .update({ geom: toMultiPolygon(newGeom) }).eq('id', dbId)
       .then(function(r) { if (r.error) console.error('[autosave geom]', r.error); });
   }
 
@@ -319,8 +325,8 @@ function _autoSaveGeometryUpdate(newGeom) {
       // DB sync using whatever ID is current at execution time
       var currentDbId = _getDbId(localKey);
       if (window.supabaseClient && currentDbId) {
-        window.supabaseClient.from('features')
-          .update({ geom_json: geom }).eq('feature_id', currentDbId)
+        window.supabaseClient.from('ames_buildings_2026')
+          .update({ geom: toMultiPolygon(geom) }).eq('id', currentDbId)
           .then(function(r) { if (r.error) console.error('[undo/redo geom]', r.error); });
       }
     };
@@ -370,42 +376,89 @@ function _deleteEditingFeature() {
 
 // ─── split polygon geometry ───────────────────────────────────────────────────
 
-// Extends the cut line in both directions, builds two half-plane rectangles,
-// and intersects each with the polygon to produce two halves.
+// Splits a polygon along an arbitrary drawn polyline, preserving the full path.
+// Finds the two points where the line crosses the polygon boundary, slices the
+// ring at those points into two arcs, and uses the drawn cut path as the shared
+// edge. Only handles exactly 2 boundary crossings (one clean cut through).
 function _splitPolygonWithLine(polygon, lineFeature) {
-  var coords = lineFeature.geometry.coordinates;
-  var p1 = coords[0];
-  var p2 = coords[coords.length - 1];
+  var ring     = polygon.geometry.coordinates[0];
+  var ringLine = turf.lineString(ring);
+  var xings    = turf.lineIntersect(lineFeature, ringLine);
+  if (xings.features.length !== 2) return [];
 
-  var dx = p2[0] - p1[0], dy = p2[1] - p1[1];
-  var len = Math.sqrt(dx * dx + dy * dy);
-  if (len === 0) return [];
+  var ix0 = xings.features[0].geometry.coordinates;
+  var ix1 = xings.features[1].geometry.coordinates;
 
-  var nx = dx / len, ny = dy / len;   // line direction (normalized)
-  var px = -ny,      py = nx;         // perpendicular (left side)
-  var far = 2.0;                      // degrees — safely beyond any local polygon
+  // Which intersection does the drawn line hit first?
+  var loc0      = turf.nearestPointOnLine(lineFeature, turf.point(ix0)).properties.location;
+  var loc1      = turf.nearestPointOnLine(lineFeature, turf.point(ix1)).properties.location;
+  var lineEntry = loc0 <= loc1 ? ix0 : ix1;
+  var lineExit  = loc0 <= loc1 ? ix1 : ix0;
 
-  var eA = [p1[0] - nx * far, p1[1] - ny * far];
-  var eB = [p2[0] + nx * far, p2[1] + ny * far];
+  // Slice the drawn line to keep only the portion inside the polygon
+  var cutSlice  = turf.lineSlice(turf.point(lineEntry), turf.point(lineExit), lineFeature);
+  var cutCoords = cutSlice.geometry.coordinates.slice();
+  cutCoords[0]                    = lineEntry;  // snap to exact ring intersection
+  cutCoords[cutCoords.length - 1] = lineExit;
 
-  var leftHalf = turf.polygon([[
-    eA, eB,
-    [eB[0] + px * far, eB[1] + py * far],
-    [eA[0] + px * far, eA[1] + py * far],
-    eA,
-  ]]);
-  var rightHalf = turf.polygon([[
-    eA, eB,
-    [eB[0] - px * far, eB[1] - py * far],
-    [eA[0] - px * far, eA[1] - py * far],
-    eA,
-  ]]);
+  // Open ring (drop closing duplicate vertex)
+  var openRing = (ring[0][0] === ring[ring.length-1][0] && ring[0][1] === ring[ring.length-1][1])
+    ? ring.slice(0, ring.length - 1) : ring.slice();
+  var n = openRing.length;
 
-  var poly   = turf.feature(polygon.geometry);
-  var piece1 = turf.intersect(poly, leftHalf);
-  var piece2 = turf.intersect(poly, rightHalf);
+  // Find which segment of the ring each intersection lies on
+  function findSegPos(pt) {
+    var best = { segIdx: 0, t: 0, dist: Infinity };
+    for (var i = 0; i < n; i++) {
+      var a = openRing[i], b = openRing[(i + 1) % n];
+      var dx = b[0]-a[0], dy = b[1]-a[1];
+      var len2 = dx*dx + dy*dy;
+      var t    = len2 === 0 ? 0 : Math.max(0, Math.min(1, ((pt[0]-a[0])*dx + (pt[1]-a[1])*dy) / len2));
+      var d    = Math.pow(pt[0]-(a[0]+t*dx), 2) + Math.pow(pt[1]-(a[1]+t*dy), 2);
+      if (d < best.dist) best = { segIdx: i, t: t, dist: d };
+    }
+    return best;
+  }
 
-  return [piece1, piece2].filter(Boolean);
+  var posEntry = findSegPos(lineEntry);
+  var posExit  = findSegPos(lineExit);
+
+  // Order intersections by ring winding position
+  var entryFirst = posEntry.segIdx < posExit.segIdx ||
+    (posEntry.segIdx === posExit.segIdx && posEntry.t <= posExit.t);
+  var posFirst  = entryFirst ? posEntry : posExit;
+  var posSecond = entryFirst ? posExit  : posEntry;
+  var ptFirst   = entryFirst ? lineEntry : lineExit;
+  var ptSecond  = entryFirst ? lineExit  : lineEntry;
+
+  // Cut coords running ptFirst → ptSecond
+  var cutFwd = (ptFirst === lineEntry) ? cutCoords : cutCoords.slice().reverse();
+
+  // Build arc: startPt → numVerts ring vertices (forward) → endPt
+  function buildArc(startPt, startSeg, numVerts, endPt) {
+    var arc = [startPt];
+    for (var k = 0; k < numVerts; k++) arc.push(openRing[(startSeg + 1 + k) % n]);
+    arc.push(endPt);
+    return arc;
+  }
+
+  var fwd  = (posSecond.segIdx - posFirst.segIdx + n) % n;
+  var arc1 = buildArc(ptFirst,  posFirst.segIdx,  fwd,     ptSecond);
+  var arc2 = buildArc(ptSecond, posSecond.segIdx, n - fwd, ptFirst);
+
+  // Ring 1: arc1 (ptFirst→ptSecond via ring) + reversed cut (ptSecond→ptFirst)
+  var ring1 = arc1.concat(cutFwd.slice().reverse().slice(1));
+  // Ring 2: arc2 (ptSecond→ptFirst via ring) + forward cut (ptFirst→ptSecond)
+  var ring2 = arc2.concat(cutFwd.slice(1));
+
+  var results = [];
+  [ring1, ring2].forEach(function(r) {
+    if (r.length < 4) return;
+    if (r[0][0] !== r[r.length-1][0] || r[0][1] !== r[r.length-1][1]) r = r.concat([r[0].slice()]);
+    try { results.push(turf.polygon([r])); }
+    catch(e) { console.warn('[split] degenerate ring skipped'); }
+  });
+  return results;
 }
 
 // ─── copy / paste ─────────────────────────────────────────────────────────────
@@ -508,8 +561,7 @@ function _doSplit(lineFeature, layer) {
   addDrawnFeature(layer, key2, half2Geom, sharedProps);
 
   function _insertHalf(key, geom) {
-    _dbInsert(key, { layer_id: LIVE_LAYER_ID, source: 'drawn', geom_json: geom,
-      DayStart: sharedProps.DayStart, DayEnd: sharedProps.DayEnd });
+    _dbInsert(key, { geom_json: geom, DayStart: sharedProps.DayStart, DayEnd: sharedProps.DayEnd });
   }
   _insertHalf(key1, half1Geom);
   _insertHalf(key2, half2Geom);
@@ -593,12 +645,12 @@ function _enterMergeMode() {
       properties: Object.assign({}, tf.properties, { _drawKey: tileKey }),
     };
 
-    // Exclude the tileset version so it doesn't ghost after merge
-    if (tf.properties.nid) {
-      if (!window.promotedNids[lid]) window.promotedNids[lid] = [];
-      var nidStr = String(tf.properties.nid);
-      if (window.promotedNids[lid].indexOf(nidStr) === -1) {
-        window.promotedNids[lid].push(nidStr);
+    // Suppress the tileset version of the picked building while it's being merged
+    if (tf.id != null) {
+      if (!window.promotedBuiltIds[lid]) window.promotedBuiltIds[lid] = [];
+      var bidStr = String(tf.id);
+      if (window.promotedBuiltIds[lid].indexOf(bidStr) === -1) {
+        window.promotedBuiltIds[lid].push(bidStr);
         refreshTilesetFilter(layer);
       }
     }
@@ -677,8 +729,7 @@ function _doMerge(featB, keyB, layer) {
   }
 
   // One-time insert for the new merged row
-  _dbInsert(mergedKey, { layer_id: LIVE_LAYER_ID, source: 'drawn', geom_json: mergedGeom,
-    DayStart: mergedProps.DayStart, DayEnd: mergedProps.DayEnd });
+  _dbInsert(mergedKey, { geom_json: mergedGeom, DayStart: mergedProps.DayStart, DayEnd: mergedProps.DayEnd });
 
   pushUndo(
     function() {

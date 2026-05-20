@@ -9,3 +9,4 @@ ames_history_museum.zip
 /scripts/sync_nids_to_drupal.py
 /scripts/populate_features.py
 /scripts/switch_layer_to_supabase.py
+_backups/

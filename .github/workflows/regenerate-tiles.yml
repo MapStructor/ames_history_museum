@@ -5,7 +5,7 @@ on:
     - cron: '0 3 * * *'  # nightly at 3am UTC
   workflow_dispatch:       # manual trigger from GitHub Actions UI
   push:
-    branches: [dev]        # TEMP: remove after first successful test run
+    paths: ['deploy/trigger.md']
 
 jobs:
   build:
@@ -23,7 +23,7 @@ jobs:
           python3 - <<'EOF'
           import json, urllib.request, urllib.error
 
-          url_base = f"{__import__('os').environ['SUPABASE_URL']}/rest/v1/ames_buildings_2026?select=*"
+          url_base = f"{__import__('os').environ['SUPABASE_URL']}/rest/v1/ames_buildings_2026?select=*&status=in.(permanent,editing)"
           key = __import__('os').environ['SUPABASE_SERVICE_KEY']
           headers = {"apikey": key, "Authorization": f"Bearer {key}"}
 
@@ -67,6 +67,24 @@ jobs:
             --maximum-zoom=16 \
             --minimum-zoom=10 \
             buildings.geojson
+
+      - name: Reset editing status to permanent
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          python3 - <<'EOF'
+          import urllib.request, os, json
+          url = os.environ['SUPABASE_URL'] + '/rest/v1/ames_buildings_2026?status=eq.editing'
+          key = os.environ['SUPABASE_SERVICE_KEY']
+          data = json.dumps({'status': 'permanent'}).encode()
+          req = urllib.request.Request(url, data=data, method='PATCH', headers={
+            'apikey': key, 'Authorization': 'Bearer ' + key,
+            'Content-Type': 'application/json', 'Prefer': 'return=minimal'
+          })
+          urllib.request.urlopen(req)
+          print('Reset editing → permanent')
+          EOF
 
       - name: Upload to R2
         env:

@@ -125,10 +125,10 @@ function buildContainerHTML(node) {
     var childHTML = node.children.map(buildContainerHTML).join('');
     return (
       '<div id="' + node.id + '">' +
-        '<div class="layer-list-row" style="display:flex;justify-content:center;align-items:center">' +
+        '<div class="layer-list-row group-header">' +
           '<i class="fas fa-minus-square compress-expand-icon" id="' + node.caretId + '" style="margin-right:5px"' +
             ' onclick="sectionCompressExpand(\'#' + node.containerId + '\',\'#' + node.caretId + '\')"></i>' +
-          '<label style="font-weight:bold;margin-bottom:0">' + node.label + '</label>' +
+          '<label class="panel-group-label">' + node.label + '</label>' +
         '</div>' +
         '<div id="' + node.containerId + '">' + childHTML + '</div>' +
       '</div>'
