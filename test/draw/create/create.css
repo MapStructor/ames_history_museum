@@ -120,13 +120,6 @@ body {
 
 #add-layer-btn:hover { background: #3a3a3a; color: #fff; }
 
-#save-btn {
-  background: #4a9eff;
-  color: #fff;
-}
-
-#save-btn:hover { background: #3a8eef; }
-
 /* ── Map ── */
 #map {
   flex: 1;

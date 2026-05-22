@@ -37,6 +37,7 @@
     controls: { polygon: true, line_string: true, point: true, trash: true }
   });
   map.addControl(draw, 'top-left');
+  map.on('load', function () { updateDrawControls(); });
 
   // Anonymous sign-in — no friction
   db.auth.getSession().then(function (res) {
@@ -85,6 +86,7 @@
       // Active typeless layer claims this type
       activeLayer.type = geomType;
       typeLayer = activeLayer;
+      updateDrawControls();
     } else if (activeLayer && activeLayer.type === geomType) {
       // Active layer already matches — use it directly
       typeLayer = activeLayer;
@@ -104,10 +106,11 @@
     typeLayer.featureIds.push(feature.id);
     renderLayerList();
     openFeaturePanel(feature.id);
+    scheduleSave();
   });
 
   map.on('draw.update', function (e) {
-    // Geometry changed — nothing extra needed, draw handles rendering
+    scheduleSave();
   });
 
   map.on('draw.delete', function (e) {
@@ -116,6 +119,7 @@
     });
     closeFeaturePanel();
     renderLayerList();
+    scheduleSave();
   });
 
   map.on('draw.selectionchange', function (e) {
@@ -147,6 +151,30 @@
   function setActiveLayer(id) {
     activeLayerId = id;
     renderLayerList();
+    updateDrawControls();
+  }
+
+  function updateDrawControls() {
+    var layer = layers.find(function (l) { return l.id === activeLayerId; });
+    var type = layer ? layer.type : null; // null = no active layer or typeless
+
+    var allDrawBtns = document.querySelectorAll('.mapbox-gl-draw_ctrl-draw-btn');
+    console.log('draw btns:', Array.from(allDrawBtns).map(function(b) { return b.className; }));
+
+    var buttons = {
+      Polygon:    document.querySelector('.mapbox-gl-draw_polygon'),
+      LineString: document.querySelector('.mapbox-gl-draw_line_string') || document.querySelector('.mapbox-gl-draw_line'),
+      Point:      document.querySelector('.mapbox-gl-draw_point')
+    };
+
+    Object.keys(buttons).forEach(function (geomType) {
+      var btn = buttons[geomType];
+      if (!btn) return;
+      var enabled = !type || type === geomType; // typeless = all enabled
+      btn.style.opacity = enabled ? '' : '0.3';
+      btn.style.pointerEvents = enabled ? '' : 'none';
+      btn.style.cursor = enabled ? '' : 'not-allowed';
+    });
   }
 
   function removeFeatureFromState(drawId) {
@@ -242,11 +270,13 @@
   document.getElementById('feature-label').addEventListener('input', function () {
     if (!selectedDrawId || !features[selectedDrawId]) return;
     features[selectedDrawId].label = this.value;
+    scheduleSave();
   });
 
   document.getElementById('feature-notes').addEventListener('input', function () {
     if (!selectedDrawId || !features[selectedDrawId]) return;
     features[selectedDrawId].notes = this.value;
+    scheduleSave();
   });
 
   document.getElementById('delete-feature-btn').addEventListener('click', function () {
@@ -271,8 +301,12 @@
     // name saved on next save
   });
 
-  // ── Save ─────────────────────────────────────────────────────────────────────
-  document.getElementById('save-btn').addEventListener('click', saveProject);
+  // ── Autosave ──────────────────────────────────────────────────────────────────
+  var _saveTimer = null;
+  function scheduleSave() {
+    clearTimeout(_saveTimer);
+    _saveTimer = setTimeout(saveProject, 1000);
+  }
 
   async function saveProject() {
     var name = document.getElementById('project-name').textContent.trim() || 'Untitled Map';

@@ -30,6 +30,8 @@ When a feature is drawn, the following logic runs in order:
 
 - On page load with no `?id=` in the URL, a new project is immediately created in Supabase and `?id=` is set in the URL
 - Every map has a permanent URL from the moment it opens
+- Changes are autosaved 1 second after the last action — no Save button
+- Autosave triggers on: feature drawn, feature deleted, geometry edited, label changed, notes changed
 - Saving updates the existing project row (never creates a duplicate)
 - Loading reads from `?id=` on page load if present
 
@@ -92,10 +94,12 @@ Run through this after any change to `create.js`.
 - [ ] Unchecking a layer checkbox hides all features in that layer
 - [ ] Re-checking restores them
 
-### Save & Load
+### Autosave & Load
 
 - [ ] Page load with no `?id=` → URL updates immediately with `?id=`
-- [ ] Clicking Save → toast confirms save, URL has `?id=`
+- [ ] Draw a feature → 1 second later a save occurs (reload to verify)
+- [ ] Edit a label or notes → triggers autosave
+- [ ] Delete a feature → triggers autosave
 - [ ] Reload the page with `?id=` in URL → all layers and features restored correctly
 - [ ] Copy URL, open in new tab → same map loads
-- [ ] Project name is editable and persists after save/reload
+- [ ] Project name is editable and persists after autosave/reload
