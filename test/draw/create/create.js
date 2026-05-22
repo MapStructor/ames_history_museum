@@ -18,6 +18,7 @@
   var features    = {};   // { drawId: { label, notes, layerId } }
   var activeLayerId = null;
   var selectedDrawId = null;
+  var hoveredDrawId  = null;
 
   // ── Init ────────────────────────────────────────────────────────────────────
   mapboxgl.accessToken = MAPBOX_TOKEN;
@@ -37,7 +38,52 @@
     controls: { polygon: true, line_string: true, point: true, trash: true }
   });
   map.addControl(draw, 'top-left');
-  map.on('load', function () { updateDrawControls(); });
+  map.on('load', function () {
+    updateDrawControls();
+
+    // Highlight source — used for both sidebar→map and map→sidebar hover
+    map.addSource('hover-highlight', {
+      type: 'geojson',
+      data: { type: 'FeatureCollection', features: [] }
+    });
+    // Insert below draw layers so the feature itself stays unchanged
+    var firstDrawLayer = map.getStyle().layers.find(function (l) { return l.id.indexOf('gl-draw') > -1; });
+    var beforeId = firstDrawLayer ? firstDrawLayer.id : undefined;
+
+    map.addLayer({ id: 'hover-highlight-line', type: 'line', source: 'hover-highlight',
+      filter: ['in', '$type', 'LineString', 'Polygon'],
+      paint: { 'line-color': '#fff', 'line-width': 16, 'line-opacity': 1, 'line-blur': 0 }
+    }, beforeId);
+    map.addLayer({ id: 'hover-highlight-point', type: 'circle', source: 'hover-highlight',
+      filter: ['==', '$type', 'Point'],
+      paint: { 'circle-color': '#fff', 'circle-radius': 16, 'circle-opacity': 1, 'circle-blur': 0 }
+    }, beforeId);
+
+    // Map → sidebar hover
+    var drawLayerIds = map.getStyle().layers
+      .filter(function (l) { return l.id.indexOf('gl-draw') > -1; })
+      .map(function (l) { return l.id; });
+
+    map.on('mousemove', function (e) {
+      var rendered = map.queryRenderedFeatures(e.point, { layers: drawLayerIds });
+      var fid = rendered.length ? (rendered[0].id || (rendered[0].properties && rendered[0].properties.id)) : null;
+      if (fid === hoveredDrawId) return;
+      hoveredDrawId = fid;
+      updateSidebarHover();
+      if (fid && features[fid]) {
+        var feat = draw.get(fid);
+        if (feat) map.getSource('hover-highlight').setData({ type: 'FeatureCollection', features: [feat] });
+      } else {
+        map.getSource('hover-highlight').setData({ type: 'FeatureCollection', features: [] });
+      }
+    });
+
+    map.getCanvas().addEventListener('mouseleave', function () {
+      hoveredDrawId = null;
+      updateSidebarHover();
+      map.getSource('hover-highlight').setData({ type: 'FeatureCollection', features: [] });
+    });
+  });
 
   // Anonymous sign-in — no friction
   db.auth.getSession().then(function (res) {
@@ -154,6 +200,12 @@
     updateDrawControls();
   }
 
+  function updateSidebarHover() {
+    document.querySelectorAll('.feature-item').forEach(function (el) {
+      el.classList.toggle('hover', el.dataset.id === hoveredDrawId);
+    });
+  }
+
   function updateDrawControls() {
     var layer = layers.find(function (l) { return l.id === activeLayerId; });
     var type = layer ? layer.type : null; // null = no active layer or typeless
@@ -174,6 +226,7 @@
       btn.style.opacity = enabled ? '' : '0.3';
       btn.style.pointerEvents = enabled ? '' : 'none';
       btn.style.cursor = enabled ? '' : 'not-allowed';
+      btn.style.boxShadow = (type && enabled) ? 'inset 0 0 0 2px #4a9eff' : '';
     });
   }
 
@@ -226,6 +279,46 @@
       div.addEventListener('click', function () { setActiveLayer(layer.id); });
 
       el.appendChild(div);
+
+      // Feature rows beneath the layer
+      layer.featureIds.forEach(function (fid) {
+        var meta = features[fid];
+        if (!meta) return;
+
+        var fDiv = document.createElement('div');
+        fDiv.className = 'feature-item' +
+          (fid === selectedDrawId ? ' active' : '') +
+          (fid === hoveredDrawId ? ' hover' : '');
+        fDiv.dataset.id = fid;
+
+        var fName = document.createElement('span');
+        fName.className = 'feature-item-label';
+        fName.textContent = meta.label || ('Untitled ' + (layer.type || 'Feature'));
+
+        fDiv.appendChild(fName);
+
+        fDiv.addEventListener('click', function (e) {
+          e.stopPropagation();
+          setActiveLayer(layer.id);
+          draw.changeMode('simple_select', { featureIds: [fid] });
+          openFeaturePanel(fid);
+        });
+
+        fDiv.addEventListener('mouseenter', function () {
+          var feat = draw.get(fid);
+          if (feat && map.getSource('hover-highlight')) {
+            map.getSource('hover-highlight').setData({ type: 'FeatureCollection', features: [feat] });
+          }
+        });
+
+        fDiv.addEventListener('mouseleave', function () {
+          if (map.getSource('hover-highlight')) {
+            map.getSource('hover-highlight').setData({ type: 'FeatureCollection', features: [] });
+          }
+        });
+
+        el.appendChild(fDiv);
+      });
     });
   }
 
@@ -255,11 +348,13 @@
     document.getElementById('feature-label').value = meta.label || '';
     document.getElementById('feature-notes').value = meta.notes || '';
     document.getElementById('feature-panel').classList.remove('hidden');
+    renderLayerList();
   }
 
   function closeFeaturePanel() {
     selectedDrawId = null;
     document.getElementById('feature-panel').classList.add('hidden');
+    renderLayerList();
   }
 
   document.getElementById('feature-panel-close').addEventListener('click', function () {

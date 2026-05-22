@@ -96,6 +96,32 @@ body {
   color: #666;
 }
 
+.feature-item {
+  display: flex;
+  align-items: center;
+  padding: 5px 12px 5px 32px;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+}
+
+.feature-item:hover,
+.feature-item.hover { background: #2a2a2a; }
+
+.feature-item.active {
+  background: #2a2a2a;
+  border-left-color: #4a9eff;
+}
+
+.feature-item-label {
+  font-size: 12px;
+  color: #aaa;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.feature-item.active .feature-item-label { color: #fff; }
+
 #sidebar-footer {
   padding: 10px 12px;
   border-top: 1px solid #333;
