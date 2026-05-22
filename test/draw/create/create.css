@@ -243,4 +243,16 @@ body {
   pointer-events: none;
 }
 
+#toast.error {
+  top: 50%;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  background: #c0392b;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 14px 24px;
+  border-radius: 6px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
 #toast.hidden { display: none; }

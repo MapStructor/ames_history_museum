@@ -76,20 +76,32 @@
   // ── Draw events ─────────────────────────────────────────────────────────────
   map.on('draw.create', function (e) {
     var feature = e.features[0];
-    var geomType = feature.geometry.type; // Polygon, LineString, Point
+    var geomType = feature.geometry.type;
 
-    // Find or create a layer for this geometry type
-    var targetLayer = layers.find(function (l) { return l.type === geomType && l.id === activeLayerId; });
-    if (!targetLayer) {
-      targetLayer = layers.find(function (l) { return l.type === geomType; });
-    }
-    if (!targetLayer) {
-      targetLayer = createLayer(geomType);
+    var activeLayer = layers.find(function (l) { return l.id === activeLayerId; });
+    var typeLayer;
+
+    if (activeLayer && activeLayer.type === null) {
+      // Active typeless layer claims this type
+      activeLayer.type = geomType;
+      typeLayer = activeLayer;
+    } else if (activeLayer && activeLayer.type === geomType) {
+      // Active layer already matches — use it directly
+      typeLayer = activeLayer;
+    } else {
+      // Active layer is wrong type or missing — find or auto-create
+      typeLayer = layers.find(function (l) { return l.type === geomType; });
+      if (!typeLayer) {
+        typeLayer = createLayer(geomType);
+      } else {
+        draw.delete(feature.id);
+        showToast('Select the correct layer in the sidebar first', true);
+        return;
+      }
     }
 
-    features[feature.id] = { label: '', notes: '', layerId: targetLayer.id };
-    targetLayer.featureIds.push(feature.id);
-    setActiveLayer(targetLayer.id);
+    features[feature.id] = { label: '', notes: '', layerId: typeLayer.id };
+    typeLayer.featureIds.push(feature.id);
     renderLayerList();
     openFeaturePanel(feature.id);
   });
@@ -120,8 +132,8 @@
     var names = { Polygon: 'Polygons', LineString: 'Lines', Point: 'Points' };
     var layer = {
       id: 'layer-' + Date.now() + '-' + Math.random().toString(36).slice(2),
-      name: names[type] || type,
-      type: type,
+      name: type ? (names[type] || type) : 'New Layer',
+      type: type || null,
       color: color,
       visible: true,
       featureIds: []
@@ -249,13 +261,7 @@
   document.getElementById('add-layer-btn').addEventListener('click', function () {
     var name = prompt('Layer name:');
     if (!name) return;
-    var type = prompt('Type (Polygon / LineString / Point):');
-    var validTypes = ['Polygon', 'LineString', 'Point'];
-    if (!validTypes.includes(type)) {
-      showToast('Type must be Polygon, LineString, or Point');
-      return;
-    }
-    var layer = createLayer(type);
+    var layer = createLayer(null);
     layer.name = name;
     renderLayerList();
   });
@@ -330,12 +336,13 @@
 
   // ── Toast ────────────────────────────────────────────────────────────────────
   var _toastTimer = null;
-  function showToast(msg) {
+  function showToast(msg, isError) {
     var el = document.getElementById('toast');
     el.textContent = msg;
+    el.classList.toggle('error', !!isError);
     el.classList.remove('hidden');
     clearTimeout(_toastTimer);
-    _toastTimer = setTimeout(function () { el.classList.add('hidden'); }, 3000);
+    _toastTimer = setTimeout(function () { el.classList.add('hidden'); }, isError ? 4000 : 3000);
   }
 
 })();
