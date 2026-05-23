@@ -191,6 +191,7 @@
     layers.push(layer);
     activeLayerId = layer.id;
     renderLayerList();
+    updateDrawControls();
     return layer;
   }
 
@@ -261,11 +262,45 @@
 
       var swatch = document.createElement('div');
       swatch.className = 'layer-swatch';
-      swatch.style.background = layer.color;
+      var svgIcons = {
+        Point:      '<circle cx="8" cy="8" r="5" fill="COLOR"/>',
+        LineString: '<line x1="2" y1="14" x2="14" y2="2" stroke="COLOR" stroke-width="2.5" stroke-linecap="round"/>',
+        Polygon:    '<polygon points="8,2 14,6 12,13 4,13 2,6" fill="none" stroke="COLOR" stroke-width="2" stroke-linejoin="round"/>'
+      };
+      var iconSvg = svgIcons[layer.type] || '<rect x="3" y="3" width="10" height="10" rx="2" fill="COLOR"/>';
+      swatch.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">' + iconSvg.replace(/COLOR/g, layer.color) + '</svg>';
 
       var name = document.createElement('span');
       name.className = 'layer-name';
       name.textContent = layer.name;
+      name.title = 'Double-click to rename';
+
+      name.addEventListener('dblclick', function (e) {
+        e.stopPropagation();
+        name.contentEditable = 'true';
+        name.focus();
+        // Select all text
+        var range = document.createRange();
+        range.selectNodeContents(name);
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+      });
+
+      name.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); name.blur(); }
+        if (e.key === 'Escape') { name.textContent = layer.name; name.blur(); }
+      });
+
+      name.addEventListener('blur', function () {
+        name.contentEditable = 'false';
+        var newName = name.textContent.trim();
+        if (newName && newName !== layer.name) {
+          layer.name = newName;
+          scheduleSave();
+        } else {
+          name.textContent = layer.name;
+        }
+      });
 
       var count = document.createElement('span');
       count.className = 'layer-count';
@@ -276,7 +311,9 @@
       div.appendChild(name);
       div.appendChild(count);
 
-      div.addEventListener('click', function () { setActiveLayer(layer.id); });
+      div.addEventListener('click', function () {
+        if (layer.id !== activeLayerId) setActiveLayer(layer.id);
+      });
 
       el.appendChild(div);
 
