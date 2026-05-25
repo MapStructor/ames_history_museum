@@ -10,3 +10,4 @@ ames_history_museum.zip
 /scripts/populate_features.py
 /scripts/switch_layer_to_supabase.py
 _backups/
+/_docs_backup
