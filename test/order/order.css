@@ -20,18 +20,14 @@ body {
   cursor: grab;
   user-select: none;
 }
-
 .row:hover { background: #2a2a2a; }
 
-.folder { font-weight: 600; color: #e0e0e0; }
-.file  { color: #bbb; }
-.file:hover { color: #e0e0e0; }
+.harddrive { font-weight: 700; color: #fff; border-bottom: 1px solid #2a2a2a; }
+.folder    { font-weight: 600; color: #ccc; }
+.file      { color: #bbb; }
+.file:hover, .folder:hover { color: #e0e0e0; }
 
-.toggle {
-  font-size: 10px;
-  color: #555;
-  cursor: pointer;
-}
+.toggle { font-size: 10px; color: #555; cursor: pointer; }
 .toggle:hover { color: #aaa; }
 
 .row.dragging    { opacity: 0.25; }

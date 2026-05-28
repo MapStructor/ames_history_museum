@@ -1,25 +1,25 @@
 (function () {
 
 var items = [
-  { id: 1, type: 'folder', name: 'Roads', open: true, children: [
-    { id: 2, type: 'file', name: 'roads.geojson' },
-    { id: 3, type: 'file', name: 'highways.geojson' },
-    { id: 4, type: 'file', name: 'railroads.geojson' },
-    { id: 5, type: 'file', name: 'bike_paths.geojson' },
+  { id: 1, type: 'harddrive', name: 'Macintosh HD', open: true, children: [
+    { id: 2, type: 'folder', name: 'Roads', open: true, children: [
+      { id: 3, type: 'file', name: 'roads.geojson' },
+      { id: 4, type: 'file', name: 'highways.geojson' },
+      { id: 5, type: 'file', name: 'railroads.geojson' },
+    ]},
+    { id: 6, type: 'file', name: 'buildings.geojson' },
+    { id: 7, type: 'file', name: 'building_footprints.geojson' },
   ]},
-  { id: 6, type: 'file', name: 'buildings.geojson' },
-  { id: 7, type: 'file', name: 'building_footprints.geojson' },
-  { id: 8, type: 'folder', name: 'Water', open: true, children: [
-    { id: 9, type: 'file', name: 'rivers.geojson' },
-    { id: 10, type: 'file', name: 'lakes.geojson' },
+  { id: 8, type: 'harddrive', name: 'External Drive', open: true, children: [
+    { id: 9, type: 'folder', name: 'Water', open: true, children: [
+      { id: 10, type: 'file', name: 'rivers.geojson' },
+      { id: 11, type: 'file', name: 'lakes.geojson' },
+    ]},
+    { id: 12, type: 'file', name: 'parcels.geojson' },
   ]},
-  { id: 11, type: 'file', name: 'parcels.geojson' },
-  { id: 12, type: 'file', name: 'landmarks.geojson' },
-  { id: 13, type: 'file', name: 'points_of_interest.geojson' },
-  { id: 14, type: 'file', name: 'boundaries.geojson' },
-  { id: 15, type: 'file', name: 'neighborhoods.geojson' },
-  { id: 16, type: 'file', name: 'zoning.geojson' },
-  { id: 17, type: 'file', name: 'elevation.geojson' },
+  { id: 13, type: 'file', name: 'landmarks.geojson' },
+  { id: 14, type: 'file', name: 'points_of_interest.geojson' },
+  { id: 15, type: 'file', name: 'boundaries.geojson' },
 ];
 
 var dragId        = null;
@@ -35,16 +35,13 @@ function buildHTML(arr, depth) {
   var html   = '';
   var indent = 12 + depth * 16;
   arr.forEach(function (item) {
-    if (item.type === 'folder') {
-      html += '<div class="row folder" data-id="' + item.id + '" style="padding-left:' + indent + 'px" draggable="true">'
-            + '<span class="toggle">' + (item.open ? '▾' : '▸') + '</span> '
-            + esc(item.name) + '</div>';
-      if (item.open && item.children && item.children.length) {
-        html += buildHTML(item.children, depth + 1);
-      }
-    } else {
-      html += '<div class="row file" data-id="' + item.id + '" style="padding-left:' + indent + 'px" draggable="true">'
-            + esc(item.name) + '</div>';
+    var isContainer = item.type === 'harddrive' || item.type === 'folder';
+    html += '<div class="row ' + item.type + '" data-id="' + item.id + '"'
+          + ' style="padding-left:' + indent + 'px" draggable="true">';
+    if (isContainer) html += '<span class="toggle">' + (item.open ? '▾' : '▸') + '</span> ';
+    html += esc(item.name) + '</div>';
+    if (isContainer && item.open && item.children && item.children.length) {
+      html += buildHTML(item.children, depth + 1);
     }
   });
   return html;
@@ -166,8 +163,10 @@ function moveItemBefore(fromId, toId) {
   var to = findItem(toId);
   if (!to) { from.arr.splice(from.idx, 0, from.item); return; }
 
-  // Folders can only live at root
-  if (from.item.type === 'folder' && to.parentType !== null) {
+  if (from.item.type === 'harddrive' && to.parentType !== null) {
+    from.arr.splice(from.idx, 0, from.item); return;
+  }
+  if (from.item.type === 'folder' && to.parentType === 'folder') {
     from.arr.splice(from.idx, 0, from.item); return;
   }
 
