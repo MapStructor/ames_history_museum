@@ -41,7 +41,7 @@ body {
 }
 #add-bar { display: flex; gap: 6px; }
 
-#add-file-btn, #add-folder-btn {
+#add-file-btn, #add-folder-btn, #add-hd-btn {
   background: none;
   border: 1px dashed #3a3a3a;
   border-radius: 4px;
@@ -51,7 +51,7 @@ body {
   cursor: pointer;
   width: 100%;
 }
-#add-file-btn:hover, #add-folder-btn:hover { color: #4a9eff; border-color: #4a9eff; }
+#add-file-btn:hover, #add-folder-btn:hover, #add-hd-btn:hover { color: #4a9eff; border-color: #4a9eff; }
 #add-input {
   width: 100%;
   background: #2a2a2a;

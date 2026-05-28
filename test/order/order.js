@@ -147,13 +147,14 @@ function init() {
 
   var fileBtn    = document.getElementById('add-file-btn');
   var folderBtn  = document.getElementById('add-folder-btn');
+  var hdBtn      = document.getElementById('add-hd-btn');
   var input      = document.getElementById('add-input');
   var pendingType = null;
+  var allBtns    = [fileBtn, folderBtn, hdBtn];
 
   function openAddInput(type) {
     pendingType = type;
-    fileBtn.style.display = 'none';
-    folderBtn.style.display = 'none';
+    allBtns.forEach(function (b) { b.style.display = 'none'; });
     input.style.display = '';
     input.value = '';
     input.focus();
@@ -161,20 +162,20 @@ function init() {
 
   function closeAddInput() {
     input.style.display = 'none';
-    fileBtn.style.display = '';
-    folderBtn.style.display = '';
+    allBtns.forEach(function (b) { b.style.display = ''; });
     pendingType = null;
   }
 
   fileBtn.addEventListener('click', function () { openAddInput('file'); });
   folderBtn.addEventListener('click', function () { openAddInput('folder'); });
+  hdBtn.addEventListener('click', function () { openAddInput('harddrive'); });
 
   input.addEventListener('keydown', function (e) {
     if (e.key === 'Enter') {
       var name = input.value.trim();
       if (name && pendingType) {
         var item = { id: nextId++, type: pendingType, name: name };
-        if (pendingType === 'folder') { item.children = []; item.open = true; }
+        if (pendingType !== 'file') { item.children = []; item.open = true; }
         items.push(item);
         render();
       }
