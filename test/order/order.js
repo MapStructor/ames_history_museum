@@ -41,7 +41,9 @@ function buildHTML(arr, depth) {
     html += '<div class="row ' + item.type + '" data-id="' + item.id + '"'
           + ' style="padding-left:' + indent + 'px" draggable="true">';
     if (isContainer) html += '<span class="toggle">' + (item.open ? '▾' : '▸') + '</span> ';
-    html += esc(item.name) + '</div>';
+    html += esc(item.name);
+    if (item.type === 'file' || (isContainer && item.children.length === 0)) html += '<span class="delete-btn">&#x2715;</span>';
+    html += '</div>';
     if (isContainer && item.open && item.children && item.children.length) {
       html += buildHTML(item.children, depth + 1);
     }
@@ -65,6 +67,16 @@ function attachItemListeners() {
       el.classList.remove('dragging');
       clearIndicator();
     });
+
+    var del = el.querySelector('.delete-btn');
+    if (del) {
+      del.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var found = findItem(id);
+        if (found) found.arr.splice(found.idx, 1);
+        render();
+      });
+    }
 
     var toggle = el.querySelector('.toggle');
     if (toggle) {

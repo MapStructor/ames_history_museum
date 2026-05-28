@@ -19,7 +19,21 @@ body {
   text-overflow: ellipsis;
   cursor: grab;
   user-select: none;
+  position: relative;
 }
+
+.delete-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0;
+  cursor: pointer;
+  color: #888;
+  font-size: 11px;
+}
+.row:hover .delete-btn { opacity: 1; }
+.delete-btn:hover { color: #ff4a4a; }
 .row:hover { background: #2a2a2a; }
 
 .harddrive { font-weight: 700; color: #fff; border-bottom: 1px solid #2a2a2a; }
