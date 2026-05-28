@@ -22,6 +22,7 @@ var items = [
   { id: 15, type: 'file', name: 'boundaries.geojson' },
 ];
 
+var nextId        = 100;
 var dragId        = null;
 var insertBeforeId = null;
 
@@ -115,6 +116,29 @@ function init() {
     if (dragId === null) return;
     moveItemBefore(dragId, insertBeforeId);
     insertBeforeId = null;
+  });
+
+  var btn   = document.getElementById('add-file-btn');
+  var input = document.getElementById('add-input');
+
+  btn.addEventListener('click', function () {
+    btn.style.display = 'none';
+    input.style.display = '';
+    input.value = '';
+    input.focus();
+  });
+
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+      var name = input.value.trim();
+      if (name) { items.push({ id: nextId++, type: 'file', name: name }); render(); }
+      input.style.display = 'none';
+      btn.style.display = '';
+    }
+    if (e.key === 'Escape') {
+      input.style.display = 'none';
+      btn.style.display = '';
+    }
   });
 
   render();
