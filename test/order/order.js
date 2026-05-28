@@ -25,6 +25,7 @@ var items = [
 var nextId        = 100;
 var dragId        = null;
 var insertBeforeId = null;
+var dropIntoId    = null;
 
 // ── Render ────────────────────────────────────────────────────────────────────
 function render() {
@@ -87,58 +88,99 @@ function init() {
 
     var els    = Array.from(list.querySelectorAll('.row:not(.dragging)'));
     var cursor = e.clientY;
-    var newId  = null;
+    var newInsert  = null;
+    var newInto    = null;
 
     for (var i = 0; i < els.length; i++) {
       var r = els[i].getBoundingClientRect();
-      if (cursor < r.top + r.height / 2) { newId = +els[i].dataset.id; break; }
+      var isContainer = els[i].classList.contains('folder') || els[i].classList.contains('harddrive');
+      var mid = r.top + r.height / 2;
+
+      if (cursor < mid) {
+        // top half — for containers, bottom part of top half = drop into
+        if (isContainer && cursor >= r.top + r.height * 0.35) {
+          newInto = +els[i].dataset.id;
+        } else {
+          newInsert = +els[i].dataset.id;
+        }
+        break;
+      } else if (isContainer && cursor < r.bottom) {
+        // bottom half of a container = drop into
+        newInto = +els[i].dataset.id;
+        break;
+      }
+      // bottom half of a file: continue to next item
     }
 
-    if (newId === insertBeforeId) return;
-    insertBeforeId = newId;
+    if (newInsert === insertBeforeId && newInto === dropIntoId) return;
+    insertBeforeId = newInsert;
+    dropIntoId     = newInto;
     clearIndicator();
 
-    if (insertBeforeId !== null) {
-      var target = list.querySelector('[data-id="' + insertBeforeId + '"]');
-      if (target) target.classList.add('drop-before');
+    if (dropIntoId !== null) {
+      var t = list.querySelector('[data-id="' + dropIntoId + '"]');
+      if (t) t.classList.add('drop-into');
+    } else if (insertBeforeId !== null) {
+      var t2 = list.querySelector('[data-id="' + insertBeforeId + '"]');
+      if (t2) t2.classList.add('drop-before');
     } else {
       list.classList.add('drop-after-last');
     }
   });
 
   list.addEventListener('dragleave', function (e) {
-    if (!list.contains(e.relatedTarget)) { clearIndicator(); insertBeforeId = null; }
+    if (!list.contains(e.relatedTarget)) { clearIndicator(); insertBeforeId = null; dropIntoId = null; }
   });
 
   list.addEventListener('drop', function (e) {
     e.preventDefault();
     clearIndicator();
     if (dragId === null) return;
-    moveItemBefore(dragId, insertBeforeId);
+    if (dropIntoId !== null) {
+      moveItemInto(dragId, dropIntoId);
+    } else {
+      moveItemBefore(dragId, insertBeforeId);
+    }
     insertBeforeId = null;
+    dropIntoId = null;
   });
 
-  var btn   = document.getElementById('add-file-btn');
-  var input = document.getElementById('add-input');
+  var fileBtn    = document.getElementById('add-file-btn');
+  var folderBtn  = document.getElementById('add-folder-btn');
+  var input      = document.getElementById('add-input');
+  var pendingType = null;
 
-  btn.addEventListener('click', function () {
-    btn.style.display = 'none';
+  function openAddInput(type) {
+    pendingType = type;
+    fileBtn.style.display = 'none';
+    folderBtn.style.display = 'none';
     input.style.display = '';
     input.value = '';
     input.focus();
-  });
+  }
+
+  function closeAddInput() {
+    input.style.display = 'none';
+    fileBtn.style.display = '';
+    folderBtn.style.display = '';
+    pendingType = null;
+  }
+
+  fileBtn.addEventListener('click', function () { openAddInput('file'); });
+  folderBtn.addEventListener('click', function () { openAddInput('folder'); });
 
   input.addEventListener('keydown', function (e) {
     if (e.key === 'Enter') {
       var name = input.value.trim();
-      if (name) { items.push({ id: nextId++, type: 'file', name: name }); render(); }
-      input.style.display = 'none';
-      btn.style.display = '';
+      if (name && pendingType) {
+        var item = { id: nextId++, type: pendingType, name: name };
+        if (pendingType === 'folder') { item.children = []; item.open = true; }
+        items.push(item);
+        render();
+      }
+      closeAddInput();
     }
-    if (e.key === 'Escape') {
-      input.style.display = 'none';
-      btn.style.display = '';
-    }
+    if (e.key === 'Escape') closeAddInput();
   });
 
   render();
@@ -146,6 +188,7 @@ function init() {
 
 function clearIndicator() {
   document.querySelectorAll('.drop-before').forEach(function (el) { el.classList.remove('drop-before'); });
+  document.querySelectorAll('.drop-into').forEach(function (el) { el.classList.remove('drop-into'); });
   var list = document.getElementById('list');
   if (list) list.classList.remove('drop-after-last');
 }
@@ -162,6 +205,28 @@ function findItem(id, arr, parentType) {
     }
   }
   return null;
+}
+
+function moveItemInto(fromId, containerId) {
+  var from = findItem(fromId);
+  if (!from) return;
+
+  var cont = findItem(containerId);
+  if (!cont) return;
+
+  // Hard drives can't go inside anything
+  if (from.item.type === 'harddrive') return;
+  // Folders can't go inside another folder
+  if (from.item.type === 'folder' && cont.item.type === 'folder') return;
+
+  from.arr.splice(from.idx, 1);
+
+  var cont2 = findItem(containerId);
+  if (!cont2) { from.arr.splice(from.idx, 0, from.item); return; }
+
+  cont2.item.children.push(from.item);
+  cont2.item.open = true;
+  render();
 }
 
 function moveItemBefore(fromId, toId) {
