@@ -1,112 +1,184 @@
 (function () {
 
-var files = [
-  'roads.geojson',
-  'highways.geojson',
-  'buildings.geojson',
-  'building_footprints.geojson',
-  'parcels.geojson',
-  'rivers.geojson',
-  'lakes.geojson',
-  'landmarks.geojson',
-  'points_of_interest.geojson',
-  'boundaries.geojson',
-  'neighborhoods.geojson',
-  'zoning.geojson',
-  'elevation.geojson',
-  'railroads.geojson',
-  'bike_paths.geojson',
+var items = [
+  { id: 1, type: 'folder', name: 'Roads', open: true, children: [
+    { id: 2, type: 'file', name: 'roads.geojson' },
+    { id: 3, type: 'file', name: 'highways.geojson' },
+    { id: 4, type: 'file', name: 'railroads.geojson' },
+    { id: 5, type: 'file', name: 'bike_paths.geojson' },
+  ]},
+  { id: 6, type: 'file', name: 'buildings.geojson' },
+  { id: 7, type: 'file', name: 'building_footprints.geojson' },
+  { id: 8, type: 'folder', name: 'Water', open: true, children: [
+    { id: 9, type: 'file', name: 'rivers.geojson' },
+    { id: 10, type: 'file', name: 'lakes.geojson' },
+  ]},
+  { id: 11, type: 'file', name: 'parcels.geojson' },
+  { id: 12, type: 'file', name: 'landmarks.geojson' },
+  { id: 13, type: 'file', name: 'points_of_interest.geojson' },
+  { id: 14, type: 'file', name: 'boundaries.geojson' },
+  { id: 15, type: 'file', name: 'neighborhoods.geojson' },
+  { id: 16, type: 'file', name: 'zoning.geojson' },
+  { id: 17, type: 'file', name: 'elevation.geojson' },
 ];
 
 var dragId        = null;
-var insertBefore  = null; // index to insert before, null = end of list
+var insertBeforeId = null;
 
 // ── Render ────────────────────────────────────────────────────────────────────
 function render() {
-  var list = document.getElementById('list');
-  list.innerHTML = files.map(function (name, i) {
-    return '<div class="file" data-i="' + i + '" draggable="true">' + esc(name) + '</div>';
-  }).join('');
-  attachListeners();
+  document.getElementById('list').innerHTML = buildHTML(items, 0);
+  attachItemListeners();
 }
 
-// ── Listeners ─────────────────────────────────────────────────────────────────
-function attachListeners() {
-  var list = document.getElementById('list');
+function buildHTML(arr, depth) {
+  var html   = '';
+  var indent = 12 + depth * 16;
+  arr.forEach(function (item) {
+    if (item.type === 'folder') {
+      html += '<div class="row folder" data-id="' + item.id + '" style="padding-left:' + indent + 'px" draggable="true">'
+            + '<span class="toggle">' + (item.open ? '▾' : '▸') + '</span> '
+            + esc(item.name) + '</div>';
+      if (item.open && item.children && item.children.length) {
+        html += buildHTML(item.children, depth + 1);
+      }
+    } else {
+      html += '<div class="row file" data-id="' + item.id + '" style="padding-left:' + indent + 'px" draggable="true">'
+            + esc(item.name) + '</div>';
+    }
+  });
+  return html;
+}
 
-  list.querySelectorAll('.file').forEach(function (el) {
+// ── Per-item listeners (re-attached each render) ───────────────────────────────
+function attachItemListeners() {
+  document.querySelectorAll('.row').forEach(function (el) {
+    var id = +el.dataset.id;
+
     el.addEventListener('dragstart', function (e) {
-      dragId = +el.dataset.i;
+      dragId = id;
       e.dataTransfer.effectAllowed = 'move';
       setTimeout(function () { el.classList.add('dragging'); }, 0);
     });
+
     el.addEventListener('dragend', function () {
       dragId = null;
       el.classList.remove('dragging');
       clearIndicator();
     });
+
+    var toggle = el.querySelector('.toggle');
+    if (toggle) {
+      toggle.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var found = findItem(id);
+        if (found) found.item.open = !found.item.open;
+        render();
+      });
+    }
   });
+}
+
+// ── Container listeners (set up once) ────────────────────────────────────────
+function init() {
+  var list = document.getElementById('list');
 
   list.addEventListener('dragover', function (e) {
     e.preventDefault();
     if (dragId === null) return;
 
-    var els    = Array.from(list.querySelectorAll('.file:not(.dragging)'));
+    var els    = Array.from(list.querySelectorAll('.row:not(.dragging)'));
     var cursor = e.clientY;
-    var newVal = null; // index in 'files' to insert before, null = end
+    var newId  = null;
 
     for (var i = 0; i < els.length; i++) {
       var r = els[i].getBoundingClientRect();
-      if (cursor < r.top + r.height / 2) {
-        newVal = +els[i].dataset.i;
-        break;
-      }
+      if (cursor < r.top + r.height / 2) { newId = +els[i].dataset.id; break; }
     }
 
-    if (newVal === insertBefore) return;
-    insertBefore = newVal;
+    if (newId === insertBeforeId) return;
+    insertBeforeId = newId;
     clearIndicator();
 
-    if (insertBefore !== null) {
-      list.querySelector('[data-i="' + insertBefore + '"]').classList.add('drop-before');
+    if (insertBeforeId !== null) {
+      var target = list.querySelector('[data-id="' + insertBeforeId + '"]');
+      if (target) target.classList.add('drop-before');
     } else {
       list.classList.add('drop-after-last');
     }
   });
 
   list.addEventListener('dragleave', function (e) {
-    if (!list.contains(e.relatedTarget)) {
-      clearIndicator();
-      insertBefore = null;
-    }
+    if (!list.contains(e.relatedTarget)) { clearIndicator(); insertBeforeId = null; }
   });
 
   list.addEventListener('drop', function (e) {
     e.preventDefault();
     clearIndicator();
     if (dragId === null) return;
-
-    var item = files.splice(dragId, 1)[0];
-    var dest = insertBefore === null ? files.length : (insertBefore > dragId ? insertBefore - 1 : insertBefore);
-    files.splice(dest, 0, item);
-
-    insertBefore = null;
-    render();
+    moveItemBefore(dragId, insertBeforeId);
+    insertBeforeId = null;
   });
+
+  render();
 }
 
 function clearIndicator() {
-  document.querySelectorAll('.drop-before').forEach(function (el) {
-    el.classList.remove('drop-before');
-  });
+  document.querySelectorAll('.drop-before').forEach(function (el) { el.classList.remove('drop-before'); });
   var list = document.getElementById('list');
   if (list) list.classList.remove('drop-after-last');
+}
+
+// ── Tree ops ──────────────────────────────────────────────────────────────────
+function findItem(id, arr, parentType) {
+  arr        = arr        || items;
+  parentType = parentType || null;
+  for (var i = 0; i < arr.length; i++) {
+    if (arr[i].id === id) return { item: arr[i], arr: arr, idx: i, parentType: parentType };
+    if (arr[i].children) {
+      var r = findItem(id, arr[i].children, arr[i].type);
+      if (r) return r;
+    }
+  }
+  return null;
+}
+
+function moveItemBefore(fromId, toId) {
+  var from = findItem(fromId);
+  if (!from) return;
+
+  // No-op: already in this position
+  if (toId === null) {
+    if (from.arr === items && from.idx === items.length - 1) return;
+  } else {
+    var check = findItem(toId);
+    if (check && check.arr === from.arr && check.idx === from.idx + 1) return;
+  }
+
+  from.arr.splice(from.idx, 1);
+
+  if (toId === null) {
+    items.push(from.item);
+    render();
+    return;
+  }
+
+  var to = findItem(toId);
+  if (!to) { from.arr.splice(from.idx, 0, from.item); return; }
+
+  // Folders can only live at root
+  if (from.item.type === 'folder' && to.parentType !== null) {
+    from.arr.splice(from.idx, 0, from.item); return;
+  }
+
+  to.arr.splice(to.idx, 0, from.item);
+  render();
 }
 
 function esc(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-render();
+init();
 
 })();
