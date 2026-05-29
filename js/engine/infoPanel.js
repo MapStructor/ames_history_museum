@@ -126,6 +126,8 @@ function handlePanelClick(layer, event) {
   var props = event.features[0].properties;
   var clickedId = event.features[0].id;
 
+  if (!props[panel.nidProp]) return;
+
   var popupHTML =
     "<div class='" + state.popupClass + "'>" +
     (props.name || "") +
@@ -136,40 +138,25 @@ function handlePanelClick(layer, event) {
     if (state.isOpen) {
       closePanelInfo(layer);
     } else {
-      fetchAndRender(layer, props);
-      floatPanelToTop(state.divId);
-      openSidebarIfHidden();
-      state.isOpen = true;
-      setPanelHighlight(layer, state.viewId, true);
-      showPanelPopups(state, event.lngLat, popupHTML);
+      fetchAndRender(layer, props, clickedId, event.lngLat, popupHTML);
     }
   } else {
     setPanelHighlight(layer, state.viewId, false);
     state.viewId = clickedId;
-    fetchAndRender(layer, props);
-    floatPanelToTop(state.divId);
-    openSidebarIfHidden();
-    state.isOpen = true;
-    setPanelHighlight(layer, clickedId, true);
-    showPanelPopups(state, event.lngLat, popupHTML);
+    fetchAndRender(layer, props, clickedId, event.lngLat, popupHTML);
   }
-
-  state.viewId = clickedId;
 }
 
-function fetchAndRender(layer, props) {
+function fetchAndRender(layer, props, clickedId, lngLat, popupHTML) {
   var panel = layer.panel;
   var state = infoPanelState[layer.id];
   var $el = $("#" + state.divId);
+  var nid = props[panel.nidProp];
 
-  if (panel.encyclopediaBase && props[panel.nidProp]) {
-    // Show loading placeholder immediately so slideDown has real height
-    $el.html("<p style='padding:5px;'>Loading...</p>");
-    $el.slideDown();
-    var nid = props[panel.nidProp];
-    fetch(panel.encyclopediaBase + "/rendered-export-single?nid=" + nid)
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
+  fetch(panel.encyclopediaBase + "/rendered-export-single?nid=" + nid)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (!data || !data[0] || !data[0].rendered_entity) { return; }
         var docEl = document.createElement("div");
         docEl.innerHTML = processEncyclopediaHtml(data[0].rendered_entity, panel.encyclopediaBase);
         var $doc = $(docEl);
@@ -216,10 +203,13 @@ function fetchAndRender(layer, props) {
           }
         });
         $el.html(rendered.innerHTML);
+        floatPanelToTop(state.divId);
+        openSidebarIfHidden();
+        state.isOpen = true;
+        setPanelHighlight(layer, clickedId, true);
+        showPanelPopups(state, lngLat, popupHTML);
+        $el.slideDown();
       });
-  } else {
-    $el.html(panel.render(props, null));
-  }
 }
 
 function closePanelInfo(layer) {
