@@ -17,6 +17,15 @@ function generateMapHTML(map) {
 
 document.getElementById('base-maps-section').innerHTML = baseMaps.map(generateMapHTML).join('');
 
+document.getElementById('zoom-buttons-section').innerHTML =
+  '<center>' +
+  zoomButtons.map(function(b) {
+    return '<button onclick="zoomtobounds(\'' + b.target + '\')" class="zoom-labels">' +
+      '&nbsp; &nbsp; <i class="fa ' + b.icon + '"></i> &nbsp; <b>' + b.label + '</b> &nbsp; &nbsp; &nbsp;' +
+      '</button>';
+  }).join('<br /><br />') +
+  '</center>';
+
 // Called from mapinit.js after maps are initialized
 function setupMapSwitching() {
   var rightInputs = document.getElementsByName("rtoggle");
@@ -24,21 +33,21 @@ function setupMapSwitching() {
 
   function switchRightLayer(layer) {
     var id = (typeof layer.className === "undefined") ? layer.target.className : layer.className;
-    afterMap.setStyle("mapbox://styles/nittyjee/" + id);
+    afterMap.setStyle("mapbox://styles/" + siteConfig.mapboxUsername + "/" + id);
   }
 
   function switchLeftLayer(layer) {
     var id = (typeof layer.className === "undefined") ? layer.target.className : layer.className;
-    beforeMap.setStyle("mapbox://styles/nittyjee/" + id);
+    beforeMap.setStyle("mapbox://styles/" + siteConfig.mapboxUsername + "/" + id);
   }
 
   for (var i = 0; i < rightInputs.length; i++) {
     if (rightInputs[i].checked) switchRightLayer(rightInputs[i]);
-    rightInputs[i].onclick = switchRightLayer;
+    rightInputs[i].onchange = switchRightLayer;
   }
 
   for (var i = 0; i < leftInputs.length; i++) {
     if (leftInputs[i].checked) switchLeftLayer(leftInputs[i]);
-    leftInputs[i].onclick = switchLeftLayer;
+    leftInputs[i].onchange = switchLeftLayer;
   }
 }

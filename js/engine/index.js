@@ -3,9 +3,9 @@ var layer_view_flag = true;
 var timeline_pointer_flag = true;
 var windoWidth = 0;
 
-var sliderStart = moment("06/01/1852").unix();
+var sliderStart = moment(sliderStartDate).unix();
 var sliderStartDrag = sliderStart;
-var sliderEnd = moment("01/01/2025").unix(); //01/01/2025
+var sliderEnd = moment(sliderEndDate).unix();
 var sliderEndDrag = sliderEnd;
 var sliderMiddle = (sliderStart + sliderEnd) / 2;
 var tooltiPos = -100;
@@ -45,6 +45,20 @@ function simple_tooltip(target_items, name) {
 }
 
 $(document).ready(function () {
+  $("#logo-link").attr("href", siteLogoLink);
+  $("#header-text-value").text(siteHeaderText);
+
+  headerButtons.forEach(btn => {
+    let el;
+    if (btn.type === "modal") {
+      el = $(`<label class="trigger-popup header-btn" id="${btn.id}">${btn.label}</label>`);
+    } else {
+      const target = btn.newTab === false ? "_self" : "_blank";
+      el = $(`<a href="${btn.url}" target="${target}" class="header-btn">${btn.label}</a>`);
+    }
+    $("#header-right-buttons").append(el);
+  });
+
 if (jQuery.browser.msie)
     alert(
       "Sorry, this application uses state of the art HTML5 techniques which are not (well) supported by Internet Explorer.\nUse Google Chrome or Mozilla Firefox to experience the full power of HTML5 and this application"
