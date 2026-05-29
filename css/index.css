@@ -151,7 +151,8 @@ body * {
 /* HEADER ELEMENTS STYLES */
 
 .header a.encyclopedia,
-.header label#about {
+.header label#about,
+.header .header-btn {
   float: left;
   color: black;
   text-align: center;
@@ -348,6 +349,42 @@ label[for="current_buildings"] {
 
 .rightInfoBarBorder {
   border: solid #ffffff 3px;
+}
+
+.panel-hero {
+  margin: -5px -5px 10px -5px;
+}
+
+.panel-hero img {
+  width: 100%;
+  display: block;
+}
+
+.infoLayerElem figure {
+  width: 100%;
+  margin: 0;
+}
+
+.infoLayerElem img {
+  max-width: 100%;
+  height: auto;
+}
+
+.infoLayerElem {
+  padding: 5px;
+  margin-top: 1px;
+  margin-bottom: 1px;
+  width: 270px;
+  border: solid 2px;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  -ms-word-break: break-all;
+  word-break: break-word;
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+  display: none;
 }
 
 #studioMenu {
@@ -634,7 +671,8 @@ img#logo-img {
 /*438*/
 @media (max-width: 503px) {
   .header a.encyclopedia,
-  .header label#about {
+  .header label#about,
+  .header .header-btn {
     display: none;
   }
   .header i#info {
@@ -719,7 +757,8 @@ img#logo-img {
   }
 
   .header a.encyclopedia,
-  .header label#about {
+  .header label#about,
+  .header .header-btn {
     color: black;
     text-align: center;
     padding: 3px;
@@ -749,6 +788,15 @@ i.slash-icon {
 
 .field__label {
   font-weight: bold;
+}
+
+.infoLayerElem b {
+  font-weight: bold;
+}
+
+.infoLayerElem p {
+  margin-top: 0;
+  margin-bottom: 1rem;
 }
 
 .field__item::after {
