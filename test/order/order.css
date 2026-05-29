@@ -36,7 +36,7 @@ body {
 .delete-btn:hover { color: #ff4a4a; }
 .row:hover { background: #2a2a2a; }
 
-.harddrive { font-weight: 700; color: #fff; border-bottom: 1px solid #2a2a2a; }
+.harddrive { font-weight: 700; color: #fff; border-bottom: 1px solid #2a2a2a; text-align: center; }
 .folder    { font-weight: 600; color: #ccc; }
 .file      { color: #bbb; }
 .file:hover, .folder:hover { color: #e0e0e0; }
