@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>AHM — MapLibre minimal (buildings via PMTiles)</title>
+  <!-- BARE-MINIMUM MapLibre + PMTiles page (2026-07-11, restart after the full-copy attempt lagged).
+       ONE layer — the buildings PMTiles straight from R2, no Worker — on a free basemap.
+       No engine, no sidebar, no timeline, no swipe, no adapters. Grow from here layer by layer.
+       Modeled on the proven in-repo spike: test/buildings-maplibre4-test.html (git HEAD). -->
+  <script src="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.js"></script>
+  <link href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" rel="stylesheet" />
+  <script src="https://unpkg.com/pmtiles@3/dist/pmtiles.js"></script>
+  <style>
+    html, body, #map { margin: 0; height: 100%; }
+    #tag { position: fixed; left: 8px; bottom: 8px; z-index: 9; background: #154360; color: #fff;
+           font: 700 11px/1 Arial; padding: 5px 9px; border-radius: 12px; opacity: .85; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <div id="tag">MapLibre + PMTiles — buildings only</div>
+  <script>
+    var PMTILES_URL = "https://pub-411b8477c87c4a26b335ecde4062e140.r2.dev/buildings.pmtiles";
+
+    var protocol = new pmtiles.Protocol();
+    maplibregl.addProtocol("pmtiles", protocol.tile.bind(protocol));
+
+    var map = new maplibregl.Map({
+      container: "map",
+      style: "https://tiles.openfreemap.org/styles/liberty",
+      center: [-93.63661, 42.03112],   // Ames
+      zoom: 13.6
+    });
+    map.addControl(new maplibregl.NavigationControl(), "bottom-right");
+
+    map.on("load", function () {
+      map.addSource("buildings", { type: "vector", url: "pmtiles://" + PMTILES_URL });
+      map.addLayer({
+        id: "buildings-fill",
+        type: "fill",
+        source: "buildings",
+        "source-layer": "buildings",
+        paint: {
+          "fill-color": "#ffb255",
+          "fill-opacity": 0.8,
+          "fill-outline-color": "#cc7700"
+        }
+      });
+    });
+  </script>
+</body>
+</html>
