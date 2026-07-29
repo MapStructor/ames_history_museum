@@ -16,7 +16,7 @@
 
 (async function () {
   const SUPABASE_URL = 'https://padavlcmwidjnhxzkhyb.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBhZGF2bGNtd2lkam5oeHpraHliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3NzMzODEsImV4cCI6MjA5MjM0OTM4MX0.me5DqJgtSHBHKnZowf2AFIWqof-oydvly40Aeo6wC9o';
+  const SUPABASE_ANON_KEY = 'sb_publishable_jseMNQXnPRoeAMSj1t_lhQ_vYTj-FVi';
 
   /* Supabase stores layer config as pure JSON — it can't store JavaScript functions.
      Render functions (which build the info panel HTML) live in renderRegistry.js instead,

@@ -7,8 +7,12 @@ then writes the assigned NIDs back to Supabase.
 Usage:
   pip install pymysql requests
   python scripts/bulk_nid_insert.py
+
+Credentials are NOT stored in this file (it lives in a public repo). They are read from
+`secrets/bulk_nid_insert.env` (gitignored) — see the template printed on first run.
 """
 
+import os
 import pymysql
 import requests
 import time
@@ -16,14 +20,48 @@ import json
 import uuid
 
 # ── Config ────────────────────────────────────────────────────────────────────
-SUPABASE_URL = "https://padavlcmwidjnhxzkhyb.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBhZGF2bGNtd2lkam5oeHpraHliIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3Njc3MzM4MSwiZXhwIjoyMDkyMzQ5MzgxfQ.4MXhop7DdaZzUIl3x9r_NVCb7di2AeDiiUyIqWKKw5w"
+# Secrets load from secrets/bulk_nid_insert.env (gitignored) or the environment.
+_ENV_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                         "secrets", "bulk_nid_insert.env")
 
-DB_HOST = "p3plzcpnl506123.prod.phx3.secureserver.net"
-DB_USER = "nittyjee_plb01"
-DB_PASS = "p5MNZgKLkyV#yujj"
-DB_NAME = "nittyjee_plb01"
-TABLE_PREFIX = "iugm_"
+def _load_secrets():
+    """Read KEY=value lines from the gitignored env file into os.environ."""
+    if not os.path.exists(_ENV_PATH):
+        return
+    with open(_ENV_PATH, encoding="utf-8") as fh:
+        for line in fh:
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            k, v = line.split("=", 1)
+            os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
+
+def _require(name):
+    val = os.environ.get(name)
+    if not val:
+        raise SystemExit(
+            "Missing %s.\n\n"
+            "Create %s with:\n\n"
+            "  SUPABASE_URL=https://<project>.supabase.co\n"
+            "  SUPABASE_SERVICE_KEY=<service-role key>\n"
+            "  DRUPAL_DB_HOST=<host>\n"
+            "  DRUPAL_DB_USER=<user>\n"
+            "  DRUPAL_DB_PASS=<password>\n"
+            "  DRUPAL_DB_NAME=<database>\n"
+            % (name, _ENV_PATH)
+        )
+    return val
+
+_load_secrets()
+
+SUPABASE_URL = _require("SUPABASE_URL")
+SUPABASE_KEY = _require("SUPABASE_SERVICE_KEY")
+
+DB_HOST = _require("DRUPAL_DB_HOST")
+DB_USER = _require("DRUPAL_DB_USER")
+DB_PASS = _require("DRUPAL_DB_PASS")
+DB_NAME = _require("DRUPAL_DB_NAME")
+TABLE_PREFIX = os.environ.get("DRUPAL_TABLE_PREFIX", "iugm_")
 
 CONTENT_TYPE = "buildings"
 LANGCODE     = "en"
